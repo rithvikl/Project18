@@ -7,7 +7,8 @@ import java.util.Date;
  */
 public class Profile {
     String username;
-    Date birthdate;
+    //TODO use the Flickr API for the gallery
+    //Gallery gallery;
     //TODO information about the user
 
     public Profile(String[] args) {

@@ -26,16 +26,17 @@ public class Driver {
     public void setCurrent(AppCompatActivity current) {
         this.current = current;
     }
-
+    //TODO put into main activity
     public void handleFragmentSwitch(int content, Fragment next) {
         FragmentManager sfm = current.getSupportFragmentManager();
         sfm.beginTransaction().replace(content, next).commit();
     }
-
-    public void handleActivitySwitch(int content, Class next) {
+    public void handleActivitySwitch(int content, Class next, Bundle args) {
         Intent intent = new Intent(current, next);
+        intent.putExtra("args", args);
+        current.startActivity(intent);
     }
-
+    //TODO don't do this, put in three inputs
     public void openDatePicker(View view) {
         //TODO this is a fragment(?) that should be layed over
         //the current activity
