@@ -18,4 +18,13 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="profile_email">Enter Email</string>
+    <string name="profile_birthdate">Enter Birthdate</string>
+    <string name="profile_password">Enter Password</string>
+    <string name="profile_rules">"Must be longer than 6 characters, contain at least one number and one capital letter."</string>
+    <string name="profile_confirm">Confirm Password</string>
+    <string name="profile_submit">Submit</string>
 </resources>
