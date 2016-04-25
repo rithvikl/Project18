@@ -29,6 +29,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +47,8 @@ import static android.Manifest.permission.READ_CONTACTS;
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     Driver driver;
+
+    public static final String url = "http://cssgate.insttech.washington.edu/~memre/login.php";
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -307,6 +316,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
+        public final static String RESULT = "result", USER = "email", PSWD = "pwd",
+            FAIL = "fail", SUCCESS = "success";
         private final String mEmail;
         private final String mPassword;
 
@@ -316,26 +327,36 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... urls) {
             // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+            String response = FAIL;
+            HttpURLConnection urlConnection = null;
+            //some way to add the email and pswd to request...
+            String loginurl = url + "?email=" + this.mEmail + "?pwd=" + this.mPassword;
+                try {
+                    URL urlObject = new URL(loginurl);
+                    urlConnection = (HttpURLConnection) urlObject.openConnection();
+                    InputStream content = urlConnection.getInputStream();
+                    BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
+                    response = buffer.readLine();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+            if (response.contains(SUCCESS)) {
+                return true;
             }
-
+//                for (String credential : DUMMY_CREDENTIALS) {
+//                    String[] pieces = credential.split(":");
+//                    if (pieces[0].equals(mEmail)) {
+//                        // Account exists, return true if the password matches.
+//                        return pieces[1].equals(mPassword);
+//                    }
+//                }
+            //}
             // TODO: register the new account here.
-            return true;
+            return false;
         }
 
         @Override
