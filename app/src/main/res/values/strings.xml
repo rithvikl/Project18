@@ -29,4 +29,5 @@
     <string name="profile_rules">"Must be longer than 6 characters, contain at least one number and one capital letter."</string>
     <string name="profile_confirm">Confirm Password</string>
     <string name="profile_submit">Submit</string>
+    <string name="title_activity_event_list">EventListActivity</string>
 </resources>
