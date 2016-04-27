@@ -3,6 +3,7 @@ package tcss450.uw.edu.project18;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -46,7 +47,7 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
-    Driver driver;
+    private SharedPreferences mShared;
 
     public static final String url = "http://cssgate.insttech.washington.edu/~memre/login.php";
     /**
@@ -75,7 +76,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.driver = new Driver(this);
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -365,6 +365,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
+                //TODO go to list view
+                mShared.edit().putBoolean(getString(R.string.LOGGEDIN), true).commit();
+                //Intent i = new Intent(this, )
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
