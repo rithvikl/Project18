@@ -13,4 +13,11 @@
     tools:showIn="@layout/app_bar_main"
     android:id="@+id/main_fragment_container">
 
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/event_list_fragment"
+        android:name="tcss450.uw.edu.project18.EventListFragment">
+    </fragment>
+
 </FrameLayout>

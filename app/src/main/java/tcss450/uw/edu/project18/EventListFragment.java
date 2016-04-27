@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import tcss450.uw.edu.project18.event.EventContent;
-import tcss450.uw.edu.project18.event.EventContent.DummyItem;
+import tcss450.uw.edu.project18.event.EventContent.EventItem;
 
 /**
  * A fragment representing a list of Items.
@@ -102,6 +102,6 @@ public class EventListFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(EventItem item);
     }
 }
