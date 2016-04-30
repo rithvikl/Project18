@@ -3,6 +3,7 @@ package tcss450.uw.edu.project18;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -29,6 +30,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,24 +46,32 @@ import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
+ * There are also buttons to handle registering a new account
+ * and if the user forgot their password.
+ * @author Melinda Robertson
+ * @version 20160427
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends AppCompatActivity
+        implements LoaderCallbacks<Cursor>,
+        EditProfileFragment.EditProfileListener{
 
+    /**
+     * The shared preferences for the profile.
+     * Generally contains the login state, username, birthday and id
+     * for the picture gallery.
+     */
     private SharedPreferences mShared;
-
-    public static final String url = "http://cssgate.insttech.washington.edu/~memre/login.php";
     /**
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-
     /**
-     * A event authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
+     * Sent to the edit profile fragment if creating a new
+     * profile. The main activity has a corresponding String
+     * for when editing the profile.
      */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+    public static final String PROFILE_NEW = "newProfile";
+
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -171,20 +181,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+        if (!Driver.isValidEmail(email)) {
+            Toast.makeText(this, "Email is invalid.", Toast.LENGTH_LONG).show();
             cancel = true;
         }
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        String error = Driver.isValidPassword("login", password, null);
+        if (!error.equals("success")) {
+            Toast.makeText(this, error, Toast.LENGTH_LONG).show();
             cancel = true;
         }
 
@@ -202,13 +205,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() >= 6;
     }
 
     /**
@@ -290,13 +291,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailView.setAdapter(adapter);
     }
 
-    //TODO Check credentials against database.
-    public void onClick_SignIn(View view) {
-
-    }
-    //TODO Switch to update info fragment.
     public void onClick_Register(View view) {
+        EditProfileFragment epf = new EditProfileFragment();
+        Bundle args = new Bundle();
+        args.putCharSequence(PROFILE_NEW, "none");
+        epf.setArguments(args);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.login_form, epf)
+                .addToBackStack(null)
+                .commit();
+    }
 
+    @Override
+    public void editProfile(String url) {
+        //TODO so this needs to be accessed in the main activity to....
     }
 
 
@@ -310,12 +318,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
+    private void startMain() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+        finish();
+    }
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
+        public static final String url = "http://cssgate.insttech.washington.edu/~memre/login.php";
         public final static String RESULT = "result", USER = "email", PSWD = "pwd",
             FAIL = "fail", SUCCESS = "success";
         private final String mEmail;
@@ -365,9 +380,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                //TODO go to list view
                 mShared.edit().putBoolean(getString(R.string.LOGGEDIN), true).commit();
-                //Intent i = new Intent(this, )
+                startMain();
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
