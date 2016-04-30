@@ -20,6 +20,8 @@ import java.util.regex.Pattern;
  */
 public class Driver {
 
+    public static final boolean DEBUG = true;
+
     private Driver(){};
 
     /**

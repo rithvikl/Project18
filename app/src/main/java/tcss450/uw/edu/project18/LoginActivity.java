@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,6 +32,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -304,7 +308,17 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void editProfile(String url) {
-        //TODO so this needs to be accessed in the main activity to....
+        EditProfileTask ept = new EditProfileTask(this);
+        ept.execute(new String[]{url});
+
+    }
+
+    @Override
+    public void callback(boolean success, String message) {
+        Toast.makeText(getApplicationContext(), message,
+                Toast.LENGTH_LONG).show();
+        if (success)
+            getSupportFragmentManager().popBackStackImmediate();
     }
 
 
@@ -332,9 +346,11 @@ public class LoginActivity extends AppCompatActivity
 
         public static final String url = "http://cssgate.insttech.washington.edu/~memre/login.php";
         public final static String RESULT = "result", USER = "email", PSWD = "pwd",
-            FAIL = "fail", SUCCESS = "success";
+            FAIL = "fail", SUCCESS = "success", BDAY = "bday", GID = "gallid";
         private final String mEmail;
         private final String mPassword;
+
+        private String response;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -344,7 +360,7 @@ public class LoginActivity extends AppCompatActivity
         @Override
         protected Boolean doInBackground(Void... urls) {
             // TODO: attempt authentication against a network service.
-            String response = FAIL;
+            //String response = FAIL;
             HttpURLConnection urlConnection = null;
             //some way to add the email and pswd to request...
             String loginurl = url + "?email=" + this.mEmail + "?pwd=" + this.mPassword;
@@ -353,24 +369,17 @@ public class LoginActivity extends AppCompatActivity
                     urlConnection = (HttpURLConnection) urlObject.openConnection();
                     InputStream content = urlConnection.getInputStream();
                     BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
-                    response = buffer.readLine();
+                    String s = "";
+                    while ((s = buffer.readLine()) != null)
+                        response += s;
                 } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                    Log.d("Login:do", "MalformedURL; cannot update user data.");
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.d("Login:do", "IOException; could not open URL.");
                 }
             if (response.contains(SUCCESS)) {
                 return true;
             }
-//                for (String credential : DUMMY_CREDENTIALS) {
-//                    String[] pieces = credential.split(":");
-//                    if (pieces[0].equals(mEmail)) {
-//                        // Account exists, return true if the password matches.
-//                        return pieces[1].equals(mPassword);
-//                    }
-//                }
-            //}
-            // TODO: register the new account here.
             return false;
         }
 
@@ -378,11 +387,21 @@ public class LoginActivity extends AppCompatActivity
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
             if (success) {
-                mShared.edit().putBoolean(getString(R.string.LOGGEDIN), true).commit();
-                startMain();
-                finish();
+                try {
+                    JSONObject jo = new JSONObject(response);
+                    String status = (String) jo.get(RESULT);
+                    if (status.equals(SUCCESS)) {
+                        mShared.edit().putBoolean(getString(R.string.LOGGEDIN), true).commit();
+                        mShared.edit().putString(getString(R.string.USER), (String) jo.get(USER)).commit();
+                        mShared.edit().putString(getString(R.string.BDAY), (String) jo.get(BDAY)).commit();
+                        mShared.edit().putString(getString(R.string.GID), (String) jo.get(GID)).commit();
+                        startMain();
+                    }
+                } catch (JSONException e) {
+                    Log.d("Login:post", "Could not parse JSON response.");
+                    mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
+                }
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

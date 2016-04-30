@@ -1,5 +1,6 @@
 package tcss450.uw.edu.project18;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,9 +16,22 @@ import android.view.MenuItem;
 
 import tcss450.uw.edu.project18.event.EventContent;
 
+/**
+ * The main activity that has a drawer navigation pane for settings and
+ * searching for events.
+ * @author Melinda Robertson, Rithvik
+ * @version 20160430
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, EventListFragment.OnListFragmentInteractionListener {
 
+    private SharedPreferences mShared;
+
+    //hiding the toolbar
+    //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
+
+    //TODO read the user preferences and use them to access flickr
+    //TODO have listeners for the menu items
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +53,8 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);

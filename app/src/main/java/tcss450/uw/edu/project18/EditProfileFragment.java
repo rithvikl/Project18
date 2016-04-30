@@ -31,7 +31,7 @@ public class EditProfileFragment extends Fragment {
      * Not sure what I'm using this for.
      */
     public static final String PROFILE_ITEM = "profile";
-    //TODO create this php file
+    //TODO create these php files
     /**
      * The URLs for adding or editing the user
      * profile. I might consolidate this.
@@ -116,9 +116,9 @@ public class EditProfileFragment extends Fragment {
                 Context.MODE_PRIVATE);
         loggedin = sp.getBoolean(getString(R.string.LOGGEDIN), false);
         if (loggedin) {
-            profileEmail.setText(sp.getString(getString(R.string.USERNAME),""));
+            profileEmail.setText(sp.getString(getString(R.string.USER),""));
             try {
-                String[] date = Driver.parseDate(sp.getString(getString(R.string.BDATE),""));
+                String[] date = Driver.parseDate(sp.getString(getString(R.string.BDAY),""));
                 profileBDay.setText(date[0]);
                 profileBMonth.setText(date[1]);
                 profileBYear.setText(date[2]);
@@ -176,15 +176,17 @@ public class EditProfileFragment extends Fragment {
             if (!validate()) {
                 throw new IllegalArgumentException();
             }
-            sb.append("username=");
+            sb.append(getString(R.string.USER) + "=");
             sb.append(URLEncoder.encode(profileQuery[0], "UTF-8"));
-            sb.append("&birthday=");
+            sb.append("&" + getString(R.string.BDAY) + "=");
             sb.append(URLEncoder.encode(profileQuery[1], "UTF-8"));
-            sb.append("&password=");
+            sb.append("&" + getString(R.string.PWD) + "=");
             sb.append(URLEncoder.encode(profileQuery[2], "UTF-8"));
+            sb.append("&" + getString(R.string.GID) + "=");
             //TODO get the id for flickr
+            sb.append(URLEncoder.encode("0000", "UTF-8"));
         } catch (Exception e) {
-            Toast.makeText(view.getContext(), "Something bad happened.",
+            Toast.makeText(view.getContext(), "We were unable to update your profile.",
                     Toast.LENGTH_LONG).show();
         }
         return sb.toString();
@@ -200,7 +202,13 @@ public class EditProfileFragment extends Fragment {
             loggedin = false;
     }
 
+    /**
+     * The listener is for sending data to the database
+     * to be inserted or updated depending on whether the
+     * user is logged in.
+     */
     public interface EditProfileListener {
         void editProfile(String url);
+        void callback(boolean success, String message);
     }
 }
