@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity
 
     private SharedPreferences mShared;
 
-    //hiding the toolbar
+    //hiding the toolbar and fab
     //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
 
     //TODO read the user preferences and use them to access flickr
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //TODO do we want to have this add events?
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,13 +86,14 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_camera) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    //TODO do things in the buttons here
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {

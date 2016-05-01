@@ -93,8 +93,8 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        if(Driver.DEBUG) Log.i("LoginActivity:onCreate", "EmailView:" + mEmailView.toString());
         populateAutoComplete();
-
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -117,6 +117,34 @@ public class LoginActivity extends AppCompatActivity
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+    }
+
+    /**
+     * This is the callback function for the edit profile task
+     * that lets the calling object know if it was successful.
+     * If it is, it returns to the previous fragment which in this
+     * case should be the login form.
+     * @param success is true if the task successfully inserted a new record,
+     *                false otherwise.
+     * @param message is a message to display to the user about the task.
+     */
+    @Override
+    public void callback(boolean success, String message) {
+        Toast.makeText(getApplicationContext(), message,
+                Toast.LENGTH_LONG).show();
+        if (success)
+            getSupportFragmentManager().popBackStackImmediate();
+    }
+
+    /**
+     * Begins the main activity for the bulk of the app.
+     * This will initialize to the event list if the user
+     * successfully logs in.
+     */
+    private void startMain() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+        finish();
     }
 
     private void populateAutoComplete() {
@@ -184,21 +212,24 @@ public class LoginActivity extends AppCompatActivity
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
+        // Check for a valid email.
         if (!Driver.isValidEmail(email)) {
             Toast.makeText(this, "Email is invalid.", Toast.LENGTH_LONG).show();
+            focusView = mEmailView;
             cancel = true;
         }
+        // Check for a valid password, if the user entered one.
         String error = Driver.isValidPassword("login", password, null);
         if (!error.equals("success")) {
             Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+            if (focusView == null) focusView = mPasswordView;
             cancel = true;
         }
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
-            focusView.requestFocus();
+            if (focusView != null) focusView.requestFocus();
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
@@ -206,14 +237,6 @@ public class LoginActivity extends AppCompatActivity
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
-    }
-
-    private boolean isEmailValid(String email) {
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        return password.length() >= 6;
     }
 
     /**
@@ -269,6 +292,12 @@ public class LoginActivity extends AppCompatActivity
                 ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
     }
 
+    /**
+     * This would be for autocomplete.
+     * @param cursorLoader not sure.
+     * @param cursor don't know.
+     *               @see {LoaderCallbacks}
+     */
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         List<String> emails = new ArrayList<>();
@@ -283,11 +312,14 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
+        //TODO should something happen here?
     }
 
+    /**
+     * Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+     * @param emailAddressCollection is the list of emails previously saved.
+     */
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
@@ -295,31 +327,34 @@ public class LoginActivity extends AppCompatActivity
         mEmailView.setAdapter(adapter);
     }
 
+    /**
+     * Open the edit profile fragment to register a new user.
+     * @param view
+     */
     public void onClick_Register(View view) {
+        //TODO need to make everything else disappear
         EditProfileFragment epf = new EditProfileFragment();
         Bundle args = new Bundle();
         args.putCharSequence(PROFILE_NEW, "none");
         epf.setArguments(args);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.login_form, epf)
+                .replace(R.id.login_container, epf)
                 .addToBackStack(null)
                 .commit();
+
     }
 
+    /**
+     * Begins an edit profile task that will insert a new
+     * record into the database.
+     * @param url is the URL for the database.
+     */
     @Override
     public void editProfile(String url) {
         EditProfileTask ept = new EditProfileTask(this);
         ept.execute(new String[]{url});
-
     }
 
-    @Override
-    public void callback(boolean success, String message) {
-        Toast.makeText(getApplicationContext(), message,
-                Toast.LENGTH_LONG).show();
-        if (success)
-            getSupportFragmentManager().popBackStackImmediate();
-    }
 
 
     private interface ProfileQuery {
@@ -332,11 +367,6 @@ public class LoginActivity extends AppCompatActivity
         int IS_PRIMARY = 1;
     }
 
-    private void startMain() {
-        Intent i = new Intent(this, MainActivity.class);
-        startActivity(i);
-        finish();
-    }
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -344,12 +374,27 @@ public class LoginActivity extends AppCompatActivity
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
+        /**
+         * The URL for the database query.
+         */
         public static final String url = "http://cssgate.insttech.washington.edu/~memre/login.php";
+        /**
+         * The strings for the table attributes; also found in string.xml
+         */
         public final static String RESULT = "result", USER = "email", PSWD = "pwd",
             FAIL = "fail", SUCCESS = "success", BDAY = "bday", GID = "gallid";
+        /**
+         * The email to send to the database.
+         */
         private final String mEmail;
+        /**
+         * The password to send to the database.
+         */
         private final String mPassword;
 
+        /**
+         * The response from the database.
+         */
         private String response;
 
         UserLoginTask(String email, String password) {
@@ -359,7 +404,6 @@ public class LoginActivity extends AppCompatActivity
 
         @Override
         protected Boolean doInBackground(Void... urls) {
-            // TODO: attempt authentication against a network service.
             //String response = FAIL;
             HttpURLConnection urlConnection = null;
             //some way to add the email and pswd to request...

@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 /**
+ * This class holds miscellaneous functions for concurrency
+ * across activities and fragments.
  * Created by Mindy on 4/20/2016.
  */
 public class Driver {

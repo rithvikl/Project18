@@ -13,6 +13,7 @@
     tools:showIn="@layout/app_bar_main"
     android:id="@+id/main_fragment_container">
 
+    <!-- TODO this should not be in the xml but added and replaced as needed. -->
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"

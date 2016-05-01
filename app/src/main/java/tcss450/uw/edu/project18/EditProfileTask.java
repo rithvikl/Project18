@@ -34,6 +34,10 @@ public class EditProfileTask extends AsyncTask<String, Void, String> {
      */
     private EditProfileFragment.EditProfileListener epl;
 
+    /**
+     *
+     * @param epl
+     */
     public EditProfileTask(EditProfileFragment.EditProfileListener epl) {
         super();
         this.epl = epl;
