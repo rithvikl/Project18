@@ -89,6 +89,12 @@ public class LoginActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mShared = getSharedPreferences(getString(R.string.LOGIN_PREFS),
+                Context.MODE_PRIVATE);
+        if (mShared.getBoolean(getString(R.string.LOGGEDIN), false)) {
+            startMain();
+            return;
+        }
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         if(Driver.DEBUG) Log.i("LoginActivity:onCreate", "EmailView:" + mEmailView.toString());
@@ -418,6 +424,8 @@ public class LoginActivity extends AppCompatActivity
                     JSONObject jo = new JSONObject("{\"result\":\"success\",\"email\":\"memre@uw.edu\"," +
                             "\"bday\":\"06/17/1987\",\"gallid\":\"0000\"}");
                     String status = (String) jo.get(RESULT);
+                    //TODO need to instatiate the shared preferences
+                    //learn about it in lab...
                     if (status.equals(SUCCESS)) {
                         mShared.edit().putBoolean(getString(R.string.LOGGEDIN), true).commit();
                         mShared.edit().putString(getString(R.string.USER), (String) jo.get(USER)).commit();
