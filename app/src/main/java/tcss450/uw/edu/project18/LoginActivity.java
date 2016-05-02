@@ -3,6 +3,7 @@ package tcss450.uw.edu.project18;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -65,10 +66,7 @@ public class LoginActivity extends AppCompatActivity
      * for the picture gallery.
      */
     private SharedPreferences mShared;
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
+
     /**
      * Sent to the edit profile fragment if creating a new
      * profile. The main activity has a corresponding String
@@ -132,8 +130,10 @@ public class LoginActivity extends AppCompatActivity
     public void callback(boolean success, String message) {
         Toast.makeText(getApplicationContext(), message,
                 Toast.LENGTH_LONG).show();
-        if (success)
+        if (success) {
             getSupportFragmentManager().popBackStackImmediate();
+            mLoginFormView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -145,36 +145,6 @@ public class LoginActivity extends AppCompatActivity
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
         finish();
-    }
-
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
     }
 
     /**
@@ -234,7 +204,7 @@ public class LoginActivity extends AppCompatActivity
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(email, password, this.getApplicationContext());
             mAuthTask.execute((Void) null);
         }
     }
@@ -341,7 +311,13 @@ public class LoginActivity extends AppCompatActivity
                 .replace(R.id.login_container, epf)
                 .addToBackStack(null)
                 .commit();
+        mLoginFormView.setVisibility(View.GONE);
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mLoginFormView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -392,22 +368,25 @@ public class LoginActivity extends AppCompatActivity
          */
         private final String mPassword;
 
+        private final Context context;
+
         /**
          * The response from the database.
          */
         private String response;
 
-        UserLoginTask(String email, String password) {
+        UserLoginTask(String email, String password, Context c) {
             mEmail = email;
             mPassword = password;
+            context = c;
         }
 
         @Override
         protected Boolean doInBackground(Void... urls) {
-            //String response = FAIL;
+            response = FAIL;
             HttpURLConnection urlConnection = null;
             //some way to add the email and pswd to request...
-            String loginurl = url + "?email=" + this.mEmail + "?pwd=" + this.mPassword;
+            String loginurl = url + "?email=" + this.mEmail + "&pwd=" + this.mPassword;
                 try {
                     URL urlObject = new URL(loginurl);
                     urlConnection = (HttpURLConnection) urlObject.openConnection();
@@ -420,6 +399,9 @@ public class LoginActivity extends AppCompatActivity
                     Log.d("Login:do", "MalformedURL; cannot update user data.");
                 } catch (IOException e) {
                     Log.d("Login:do", "IOException; could not open URL.");
+                    if (Driver.DEBUG) Log.i("Login:do", loginurl);
+                } catch (Exception e) {
+                    if (Driver.DEBUG) Log.i("Login:do", e.getMessage());
                 }
             if (response.contains(SUCCESS)) {
                 return true;
@@ -433,7 +415,8 @@ public class LoginActivity extends AppCompatActivity
             showProgress(false);
             if (success) {
                 try {
-                    JSONObject jo = new JSONObject(response);
+                    JSONObject jo = new JSONObject("{\"result\":\"success\",\"email\":\"memre@uw.edu\"," +
+                            "\"bday\":\"06/17/1987\",\"gallid\":\"0000\"}");
                     String status = (String) jo.get(RESULT);
                     if (status.equals(SUCCESS)) {
                         mShared.edit().putBoolean(getString(R.string.LOGGEDIN), true).commit();
@@ -441,14 +424,21 @@ public class LoginActivity extends AppCompatActivity
                         mShared.edit().putString(getString(R.string.BDAY), (String) jo.get(BDAY)).commit();
                         mShared.edit().putString(getString(R.string.GID), (String) jo.get(GID)).commit();
                         startMain();
+                    } else if (Driver.DEBUG) {
+                        Log.i("Login:post", "Status:" + status);
                     }
                 } catch (JSONException e) {
-                    Log.d("Login:post", "Could not parse JSON response.");
+                    if (Driver.DEBUG){
+                        Log.d("Login:post", "Could not parse JSON response.");
+                        Log.i("Login:post", response);
+                    }
                     mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
                 }
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                if(Driver.DEBUG) {
+                    Log.i("Login:post", "Not successful.");
+                    Log.i("Login:post", response);
+                }
             }
         }
 
@@ -457,6 +447,41 @@ public class LoginActivity extends AppCompatActivity
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    /**
+     * Id to identity READ_CONTACTS permission request.
+     */
+    private static final int REQUEST_READ_CONTACTS = 0;
+
+    private void populateAutoComplete() {
+        if (!mayRequestContacts()) {
+            return;
+        }
+
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    private boolean mayRequestContacts() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
+            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(android.R.string.ok, new View.OnClickListener() {
+                        @Override
+                        @TargetApi(Build.VERSION_CODES.M)
+                        public void onClick(View v) {
+                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
+                        }
+                    });
+        } else {
+            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
+        }
+        return false;
     }
 }
 

@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -145,16 +146,19 @@ public class EditProfileFragment extends Fragment {
 
         if (!Driver.isValidEmail(email)){
             Toast.makeText(getActivity(), "Invalid email.", Toast.LENGTH_LONG).show();
+            profileEmail.requestFocus();
             return false;
         }
         String result = Driver.isValidPassword(LoginActivity.PROFILE_NEW, pass1, pass2);
         if (!result.contains("success")) {
             Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+            profilePass1.requestFocus();
             return false;
         }
         result = Driver.isValidDate(day, month, year);
         if (result.contains("error")){
             Toast.makeText(getActivity(), "Invalid date.", Toast.LENGTH_LONG).show();
+            profileBDay.requestFocus();
             return false;
         }
         profileQuery[0] = email;
@@ -176,18 +180,31 @@ public class EditProfileFragment extends Fragment {
             if (!validate()) {
                 throw new IllegalArgumentException();
             }
-            sb.append(getString(R.string.USER) + "=");
+            sb.append(getString(R.string.USER));
+            sb.append("=");
             sb.append(URLEncoder.encode(profileQuery[0], "UTF-8"));
-            sb.append("&" + getString(R.string.BDAY) + "=");
+            sb.append("&");
+            sb.append(getString(R.string.BDAY));
+            sb.append("=");
             sb.append(URLEncoder.encode(profileQuery[1], "UTF-8"));
-            sb.append("&" + getString(R.string.PWD) + "=");
+            sb.append("&");
+            sb.append(getString(R.string.PWD));
+            sb.append("=");
             sb.append(URLEncoder.encode(profileQuery[2], "UTF-8"));
-            sb.append("&" + getString(R.string.GID) + "=");
+            sb.append("&");
+            sb.append(getString(R.string.GID));
+            sb.append("=");
             //TODO get the id for flickr
             sb.append(URLEncoder.encode("0000", "UTF-8"));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            //Toast.makeText(view.getContext(), "We were unable to update your profile.",
+            //        Toast.LENGTH_LONG).show();
+        } catch (UnsupportedEncodingException e3) {
             Toast.makeText(view.getContext(), "We were unable to update your profile.",
                     Toast.LENGTH_LONG).show();
+        } catch(Exception e2) {
+            if(Driver.DEBUG) Toast.makeText(view.getContext(), e2.getLocalizedMessage(),
+                    Toast.LENGTH_SHORT).show();
         }
         return sb.toString();
     }
