@@ -14,7 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import tcss450.uw.edu.project18.event.EventContent;
+import tcss450.uw.edu.project18.event.Event;
 
 /**
  * The main activity that has a drawer navigation pane for settings and
@@ -55,10 +55,13 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        if (savedInstanceState == null || getSupportFragmentManager().findFragmentById(R.id.list) == null) {
+            EventListFragment courseListFragment = new EventListFragment();
+            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, courseListFragment).commit();
+        }
     }
 
     @Override
@@ -120,7 +123,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(EventContent.EventItem item) {
-
+    public void onListFragmentInteraction(Event item) {
+//        CourseDetailFragment courseDetailFragment = new CourseDetailFragment();
+//        Bundle args = new Bundle();
+//        args.putSerializable(CourseDetailFragment.COURSE_ITEM_SELECTED, item);
+//        courseDetailFragment.setArguments(args);
+//        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, courseDetailFragment).addToBackStack(null).commit();
     }
 }
