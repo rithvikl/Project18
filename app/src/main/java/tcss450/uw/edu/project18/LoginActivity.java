@@ -389,7 +389,7 @@ public class LoginActivity extends AppCompatActivity
 
         @Override
         protected Boolean doInBackground(Void... urls) {
-            response = FAIL;
+            response = "";
             HttpURLConnection urlConnection = null;
             //some way to add the email and pswd to request...
             String loginurl = url + "?email=" + this.mEmail + "&pwd=" + this.mPassword;
@@ -438,6 +438,7 @@ public class LoginActivity extends AppCompatActivity
                     if (Driver.DEBUG){
                         Log.d("Login:post", "Could not parse JSON response.");
                         Log.i("Login:post", response);
+                        Log.i("Login:post", e.toString());
                     }
                     mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
                 }
