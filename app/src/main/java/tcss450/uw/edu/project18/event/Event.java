@@ -28,12 +28,16 @@ public class Event implements Serializable {
     public static final String TAGS = "tags";
     public static final String DATE = "date";
 
-    public Event (String filename, String user, String title, String tags, java.sql.Date date) {
-        this.mFileName = filename;
-        this.mUser = user;
+//    public Event (String filename, String user, String title, String tags, java.sql.Date date) {
+//        this.mFileName = filename;
+//        this.mUser = user;
+//        this.mTitle = title;
+//        this.mTags = tags;
+//        this.mDate = date;
+//    }
+
+    public Event (String title) {
         this.mTitle = title;
-        this.mTags = tags;
-        this.mDate = date;
     }
 
     public String getFileName () {
@@ -88,6 +92,7 @@ public class Event implements Serializable {
         String reason = null;
         if (eventJSON != null) {
             try {
+                Log.i("Response", eventJSON);
                 JSONObject jsonBody = new JSONObject(eventJSON);
                 JSONObject photosJsonObject = jsonBody.getJSONObject("photos");
                 JSONArray arr = photosJsonObject.getJSONArray("photo");
@@ -95,11 +100,11 @@ public class Event implements Serializable {
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject obj = arr.getJSONObject(i);
                     Event event = new Event(
-                            obj.getString(Event.FILENAME),
-                            obj.getString(Event.USER),
-                            obj.getString(Event.TITLE),
-                            obj.getString(Event.TAGS),
-                            (java.sql.Date) obj.get(Event.DATE)
+//                            obj.getString(Event.FILENAME),
+//                            obj.getString(Event.USER),
+                            obj.getString(Event.TITLE)
+//                            obj.getString(Event.TAGS),
+//                            (java.sql.Date) obj.get(Event.DATE)
                     );
                     eventList.add(event);
                 }
