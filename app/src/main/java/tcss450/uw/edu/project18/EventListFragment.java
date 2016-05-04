@@ -1,12 +1,12 @@
 package tcss450.uw.edu.project18;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tcss450.uw.edu.project18.event.Event;
-//import tcss450.uw.edu.project18.event.Event.EventItem;
 
 /**
  * A fragment representing a list of Items.
@@ -41,8 +40,10 @@ public class EventListFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
-//    private CourseDB mCourseDB;
     private List<Event> mEventList;
+    private SharedPreferences mShared;
+    private String mUser;
+//    private CourseDB mCourseDB;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -67,6 +68,11 @@ public class EventListFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+
+        mShared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
+        mUser = mShared.getString(getString(R.string.USER), "");
+//        if (mShared.getBoolean(getString(R.string.USER), true)) {
+//        }
     }
 
     @Override
