@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity
             return true;
         } else if (id == R.id.menu_logout) {
             mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
+            mShared.edit().clear();
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
             finish();
