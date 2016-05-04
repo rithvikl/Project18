@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Project18</string>
+    <string name="app_name">Gather</string>
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings for the shared preferences. -->
@@ -37,7 +37,8 @@
     <string name="profile_submit">Submit</string>
 
 
-    <string name="title_activity_main"></string>
+    <string name="title_activity_main">Gather</string>
+    <string name="nav_subtext">Welcome!</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

@@ -1,9 +1,12 @@
 package tcss450.uw.edu.project18;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import tcss450.uw.edu.project18.event.Event;
 
@@ -36,8 +40,12 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mShared = getSharedPreferences(getString(R.string.LOGIN_PREFS),
+                Context.MODE_PRIVATE);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if (Driver.DEBUG)
+            Log.i("Main:create", "Toolbar" + toolbar.getMenu().size());
 
         //TODO do we want to have this add events?
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -90,6 +98,12 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_camera) {
+            return true;
+        } else if (id == R.id.menu_logout) {
+            mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+            finish();
             return true;
         }
 
