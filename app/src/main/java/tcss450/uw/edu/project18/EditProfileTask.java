@@ -57,6 +57,8 @@ public class EditProfileTask extends AsyncTask<String, Void, String> {
                 while ((s = br.readLine()) != null) {
                     response += s;
                 }
+                if(Driver.DEBUG)
+                    Log.i("EditProfileTask", response);
             } catch (MalformedURLException e) {
                 Log.d("EditProfile:do", "MalformedURL; cannot update user data.");
             } catch (IOException e) {

@@ -86,6 +86,7 @@ public class LoginActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        this.setTitle(R.string.title_activity_login);
         mShared = getSharedPreferences(getString(R.string.LOGIN_PREFS),
                 Context.MODE_PRIVATE);
         if (mShared.getBoolean(getString(R.string.LOGGEDIN), false)) {
@@ -305,7 +306,6 @@ public class LoginActivity extends AppCompatActivity
      * @param view
      */
     public void onClick_Register(View view) {
-        //TODO need to make everything else disappear
         EditProfileFragment epf = new EditProfileFragment();
         Bundle args = new Bundle();
         args.putCharSequence(PROFILE_NEW, "none");
@@ -418,8 +418,7 @@ public class LoginActivity extends AppCompatActivity
             showProgress(false);
             if (success) {
                 try {
-                    JSONObject jo = new JSONObject("{\"result\":\"success\",\"email\":\"memre@uw.edu\"," +
-                            "\"bday\":\"06/17/1987\",\"gallid\":\"0000\"}");
+                    JSONObject jo = new JSONObject(response);
                     String status = (String) jo.get(RESULT);
                     //TODO need to instatiate the shared preferences
                     //learn about it in lab...

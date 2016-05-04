@@ -26,24 +26,24 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
             <EditText
-                android:id="@+id/profile_month"
+                android:id="@+id/profile_day"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:hint="@string/profile_day"
-                android:inputType="textPassword"
+                android:inputType="number"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:clickable="false"
                 />
 
             <EditText
-                android:id="@+id/profile_day"
+                android:id="@+id/profile_month"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:hint="@string/profile_month"
-                android:inputType="textPassword"
+                android:inputType="number"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:clickable="false"
@@ -54,7 +54,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:hint="@string/profile_year"
-            android:inputType="textPassword"
+            android:inputType="number"
             android:maxLines="1"
             android:singleLine="true"
             android:clickable="false"

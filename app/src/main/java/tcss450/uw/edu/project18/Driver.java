@@ -9,12 +9,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.Time;
 import android.view.View;
 import android.widget.Toast;
 
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -50,19 +53,30 @@ public class Driver {
      * @return the date in MM/DD/YYYY format if valid,
      *          "error" otherwise.
      */
-    public static String isValidDate(String day, String month, String year) {
-        String format = "MM/DD/YYYY";
-        String date = month + "/" + day + "/" + year;
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        Date test = null;
-        try {
-            test = sdf.parse(date);
-        } catch (ParseException e) {
-            return "error";
+    public static String isValidDate(String day, String month, String year)
+        throws IllegalArgumentException {
+        String ret = "error";
+        int[] days;
+        int m = Integer.parseInt(month);
+        if (m > 12 || m < 1) throw new IllegalArgumentException("Month");
+        int y = Integer.parseInt(year);
+        if (y < 1900 || y > Calendar.getInstance().get(Calendar.YEAR))
+            throw new IllegalArgumentException("Year");
+        if (isLeapYear(y)) {
+            days = new int[]{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        } else {
+            days = new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
         }
-        if (!sdf.format(test).equals(date))
-            return "error";
-        return date;
+        int d = Integer.parseInt(day);
+        if (d < 1 || d > days[m]) throw new IllegalArgumentException("Day");
+        return month + "/" + day + "/" + year;
+    }
+
+    public static boolean isLeapYear(int y) {
+        if (y % 4 != 0) return false;
+        if (y % 400 == 0) return true;
+        if (y % 100 == 0) return false;
+        return true;
     }
 
     /**
