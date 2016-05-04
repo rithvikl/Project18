@@ -35,8 +35,7 @@ import tcss450.uw.edu.project18.event.Event;
 public class EventListFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
-    private static final String FLICKR_URL = "https://api.flickr.com/services/rest/";
-    private static final String API_KEY = "219eeae9d3fec8448f88e5cf788a390a";
+    private static final String GET_EVENTS_URL = "http://cssgate.insttech.washington.edu/~_450atm18/download.php?email=test@test.com";
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
@@ -69,10 +68,9 @@ public class EventListFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
 
+        // Get the user's username from shared preferences
         mShared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
         mUser = mShared.getString(getString(R.string.USER), "");
-//        if (mShared.getBoolean(getString(R.string.USER), true)) {
-//        }
     }
 
     @Override
@@ -89,7 +87,6 @@ public class EventListFragment extends Fragment {
             } else {
                 mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-//            mRecyclerView.setAdapter(new MyEventRecyclerViewAdapter(Event.ITEMS, mListener));
         }
 
         // If we can't use menu buttons, will use floating button
@@ -102,8 +99,7 @@ public class EventListFragment extends Fragment {
         // Get the list of events if network connection exists
         if (networkInfo != null && networkInfo.isConnected()) {
 
-            // Get the user's gallery ID from shared preferences
-            // Build the Flickr query url
+            // Build the query url
             // Execute async task with url
             DownloadEventsTask task = new DownloadEventsTask();
             String method_url = buildUrlString();
@@ -120,12 +116,10 @@ public class EventListFragment extends Fragment {
     }
 
     public String buildUrlString () {
-        String url = Uri.parse(FLICKR_URL)
+        String url = Uri.parse(GET_EVENTS_URL)
                 .buildUpon()
-                .appendQueryParameter("method", "flickr.photos.getRecent")
-                .appendQueryParameter("api_key", API_KEY)
-                .appendQueryParameter("format", "json")
-                .appendQueryParameter("nojsoncallback", "1")
+                .appendQueryParameter("email", mUser)
+                .appendQueryParameter("tag", "ALL")
                 .build()
                 .toString();
         return url;

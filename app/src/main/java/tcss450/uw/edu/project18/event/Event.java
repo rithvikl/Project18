@@ -16,70 +16,65 @@ import java.util.List;
  */
 public class Event implements Serializable {
 
-    private String mFileName;
-    private String mUser;
+    private String mFile;
     private String mTitle;
-    private String mTags;
-    private java.sql.Date mDate;
+    private String mComment;
+    private String mDate;
+    //    private String mTags;
 
-    public static final String FILENAME = "filename";
-    public static final String USER = "user";
+    public static final String FILE = "file";
     public static final String TITLE = "title";
-    public static final String TAGS = "tags";
+    public static final String COMMENT = "comment";
     public static final String DATE = "date";
+    //    public static final String TAGS = "tags";
 
-//    public Event (String filename, String user, String title, String tags, java.sql.Date date) {
-//        this.mFileName = filename;
-//        this.mUser = user;
-//        this.mTitle = title;
-//        this.mTags = tags;
-//        this.mDate = date;
-//    }
-
-    public Event (String title) {
+    public Event (String filename, String title, String comment, String date) {
+        this.mFile = filename;
         this.mTitle = title;
+        this.mComment = comment;
+        this.mDate = date;
+        //        this.mTags = tags;
     }
 
-    public String getFileName () {
-        return this.mFileName;
+    public String getFile () {
+        return this.mFile;
     }
 
     public String getTitle () {
         return this.mTitle;
     }
 
-    public String getUser () {
-        return this.mUser;
+    public String getComment() {
+        return mComment;
     }
 
-    public String getTags () {
-        return this.mTags;
+    public void setComment(String comment) {
+        this.mComment = comment;
     }
 
-    public java.sql.Date getDate () {
+    public String getDate () {
         return this.mDate;
     }
 
+//    public String getTags () {
+//        return this.mTags;
+//    }
 
-    public void setFilename (String filename) {
-        this.mFileName = filename;
+    public void setFile (String filename) {
+        this.mFile = filename;
     }
 
     public void setTitle (String title) {
         this.mTitle = title;
     }
 
-    public void setUser (String user) {
-        this.mUser = user;
-    }
-
-    public void setTags (String tags) {
-        this.mTags = tags;
-    }
-
-    public void setDate (java.sql.Date date) {
+    public void setDate (String date) {
         this.mDate = date;
     }
+
+//    public void setTags (String tags) {
+//        this.mTags = tags;
+//    }
 
 
     /**
@@ -94,17 +89,17 @@ public class Event implements Serializable {
             try {
                 Log.i("Response", eventJSON);
                 JSONObject jsonBody = new JSONObject(eventJSON);
-                JSONObject photosJsonObject = jsonBody.getJSONObject("photos");
-                JSONArray arr = photosJsonObject.getJSONArray("photo");
+//                JSONObject photosJsonObject = jsonBody.getJSONObject("photos");
+                JSONArray arr = jsonBody.getJSONArray("data");
 
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject obj = arr.getJSONObject(i);
                     Event event = new Event(
-//                            obj.getString(Event.FILENAME),
-//                            obj.getString(Event.USER),
-                            obj.getString(Event.TITLE)
-//                            obj.getString(Event.TAGS),
-//                            (java.sql.Date) obj.get(Event.DATE)
+                            obj.getString(Event.FILE),
+                            obj.getString(Event.TITLE),
+                            obj.getString(Event.COMMENT),
+                            obj.getString(Event.DATE)
+//                            obj.getString(Event.TAGS)
                     );
                     eventList.add(event);
                 }

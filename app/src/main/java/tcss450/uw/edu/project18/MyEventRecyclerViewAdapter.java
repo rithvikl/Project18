@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
 import tcss450.uw.edu.project18.EventListFragment.OnListFragmentInteractionListener;
 import tcss450.uw.edu.project18.event.Event;
-
-import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Event} and makes a call to the
@@ -64,14 +64,13 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
+            mIdView = (TextView) view.findViewById(R.id.event_title);
 //            mContentView = (TextView) view.findViewById(R.id.content);
         }
 
         @Override
         public String toString() {
             return super.toString() + " '" + mIdView.getText() + "'";
-//            return super.toString() + " '" + mContentView.getText() + "'";
         }
     }
 }
