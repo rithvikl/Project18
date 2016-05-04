@@ -29,12 +29,13 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, EventListFragment.OnListFragmentInteractionListener {
 
 
+    /**
+     * Holds information about the current user's session.
+     */
     private SharedPreferences mShared;
     //hiding the toolbar and fab
     //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
 
-    //TODO read the user preferences and use them to access flickr
-    //TODO have listeners for the menu items
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+        //TODO the camera should add an event
         if (id == R.id.menu_camera) {
             return true;
         } else if (id == R.id.menu_logout) {
@@ -136,6 +138,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //TODO this will open a new fragment that displays the event details
     @Override
     public void onListFragmentInteraction(Event item) {
 //        CourseDetailFragment courseDetailFragment = new CourseDetailFragment();
