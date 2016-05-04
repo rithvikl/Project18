@@ -1,90 +1,81 @@
 package tcss450.uw.edu.project18.event;
 
-import android.location.Location;
 import android.util.Log;
-
-import com.googlecode.flickrjandroid.photos.Photo;
-import com.googlecode.flickrjandroid.tags.Tag;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Helper class for providing sample content for user interfaces created by
  * Android template wizards.
  * <p/>
- * TODO: Replace all uses of this class before publishing your app.
  */
 public class Event implements Serializable {
 
-    private String mPhotoId;
+    private String mFileName;
+    private String mUser;
     private String mTitle;
-//    private String mDescription;
-//    private String[] mTags;
-//    private Date mDate;
+    private String mTags;
+    private java.sql.Date mDate;
 
-    public static final String PHOTO = "id";
+    public static final String FILENAME = "filename";
+    public static final String USER = "user";
     public static final String TITLE = "title";
-//    public static final String DESCRIPTION = "photo.description";
-//    public static final String TAGS = "photo.tags";
-//    public static final String DATE = "date";
-//    public static final String LOCATION = "location";
+    public static final String TAGS = "tags";
+    public static final String DATE = "date";
 
-    public Event (String photoId, String title) {
-        this.mPhotoId = photoId;
+    public Event (String filename, String user, String title, String tags, java.sql.Date date) {
+        this.mFileName = filename;
+        this.mUser = user;
         this.mTitle = title;
-//        this.mDescription = description;
-//        this.mTags = tags;
-//        this.mDate = date;
+        this.mTags = tags;
+        this.mDate = date;
     }
 
-    public String getPhotoId () {
-        return this.mPhotoId;
+    public String getFileName () {
+        return this.mFileName;
     }
 
     public String getTitle () {
         return this.mTitle;
     }
 
-//    public String getDescription () {
-//        return this.mDescription;
-//    }
+    public String getUser () {
+        return this.mUser;
+    }
 
-//    public String[] getTags () {
-//        return this.mTags;
-//    }
-//
-//    public Date getDate () {
-//        return this.mDate;
-//    }
+    public String getTags () {
+        return this.mTags;
+    }
 
-    public void setPhotoId (String photoId) {
-        this.mPhotoId = photoId;
+    public java.sql.Date getDate () {
+        return this.mDate;
+    }
+
+
+    public void setFilename (String filename) {
+        this.mFileName = filename;
     }
 
     public void setTitle (String title) {
         this.mTitle = title;
     }
 
-//    public void setDescription (String description) {
-//        this.mDescription = description;
-//    }
+    public void setUser (String user) {
+        this.mUser = user;
+    }
 
-//    public void setTags (String[] tags) {
-//        this.mTags = tags;
-//    }
-//
-//    public void setDate (Date date) {
-//        this.mDate = date;
-//    }
+    public void setTags (String tags) {
+        this.mTags = tags;
+    }
+
+    public void setDate (java.sql.Date date) {
+        this.mDate = date;
+    }
 
 
     /**
@@ -99,14 +90,16 @@ public class Event implements Serializable {
             try {
                 JSONObject jsonBody = new JSONObject(eventJSON);
                 JSONObject photosJsonObject = jsonBody.getJSONObject("photos");
-//                JSONArray arr = new JSONArray(eventJSON);
                 JSONArray arr = photosJsonObject.getJSONArray("photo");
 
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject obj = arr.getJSONObject(i);
                     Event event = new Event(
-                            obj.getString(Event.PHOTO),
-                            obj.getString(Event.TITLE)
+                            obj.getString(Event.FILENAME),
+                            obj.getString(Event.USER),
+                            obj.getString(Event.TITLE),
+                            obj.getString(Event.TAGS),
+                            (java.sql.Date) obj.get(Event.DATE)
                     );
                     eventList.add(event);
                 }
