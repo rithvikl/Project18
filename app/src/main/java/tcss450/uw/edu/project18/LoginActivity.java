@@ -208,7 +208,7 @@ public class LoginActivity extends AppCompatActivity
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password, this.getApplicationContext());
+            mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
     }
@@ -317,6 +317,10 @@ public class LoginActivity extends AppCompatActivity
         mLoginFormView.setVisibility(View.GONE);
     }
 
+    /**
+     * Need this for displaying the login screen again
+     * after registering a new account.
+     */
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -334,8 +338,10 @@ public class LoginActivity extends AppCompatActivity
         ept.execute(new String[]{url});
     }
 
-
-
+    /**
+     * An interface used in the login task. Auto-created by
+     * android studio.
+     */
     private interface ProfileQuery {
         String[] PROJECTION = {
                 ContactsContract.CommonDataKinds.Email.ADDRESS,
@@ -371,17 +377,20 @@ public class LoginActivity extends AppCompatActivity
          */
         private final String mPassword;
 
-        private final Context context;
-
         /**
          * The response from the database.
          */
         private String response;
 
-        UserLoginTask(String email, String password, Context c) {
+        /**
+         * Takes the user's email and password to authenticate
+         * it against the database.
+         * @param email is the user's email.
+         * @param password is the user's password.
+         */
+        UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
-            context = c;
         }
 
         @Override
@@ -420,8 +429,7 @@ public class LoginActivity extends AppCompatActivity
                 try {
                     JSONObject jo = new JSONObject(response);
                     String status = (String) jo.get(RESULT);
-                    //TODO need to instatiate the shared preferences
-                    //learn about it in lab...
+                    //Store user data into shared preferences.
                     if (status.equals(SUCCESS)) {
                         mShared.edit().putBoolean(getString(R.string.LOGGEDIN), true).commit();
                         mShared.edit().putString(getString(R.string.USER), (String) jo.get(USER)).commit();
@@ -459,6 +467,9 @@ public class LoginActivity extends AppCompatActivity
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
+    /**
+     * More auto-code.
+     */
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
             return;
@@ -467,6 +478,10 @@ public class LoginActivity extends AppCompatActivity
         getLoaderManager().initLoader(0, null, this);
     }
 
+    /**
+     * This is part of the auto-complete thing for the email field.
+     * @return
+     */
     private boolean mayRequestContacts() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;

@@ -31,7 +31,7 @@ import java.util.IllegalFormatException;
 public class EditProfileFragment extends Fragment {
 
     /**
-     * Not sure what I'm using this for.
+     * Not sure what this is using this for.
      */
     public static final String PROFILE_ITEM = "profile";
     //TODO create these php files
@@ -53,6 +53,9 @@ public class EditProfileFragment extends Fragment {
     private TextView profilePass1;
     private TextView profilePass2;
 
+    /**
+     * The listener object for the submit button.
+     */
     private EditProfileListener mListener;
 
     /**
@@ -71,7 +74,7 @@ public class EditProfileFragment extends Fragment {
      * The constructor.
      */
     public EditProfileFragment() {
-        // Required empty public constructor
+        //holds the user's information
         profileQuery = new String[3];
     }
     @Override
@@ -148,6 +151,7 @@ public class EditProfileFragment extends Fragment {
 
     /**
      * Validates the information in the text boxes.
+     * @view is for sending toasts. Still trying to get this to work.
      * @return true if the information can be used,
      *          false otherwise.
      */
@@ -195,7 +199,7 @@ public class EditProfileFragment extends Fragment {
 
     /**
      * Validates and creates the URL to query the database.
-     * @param view
+     * @param view for making toasts.
      * @return the URL for editing or adding a profile.
      */
     public String buildURL(View view) {
@@ -226,7 +230,6 @@ public class EditProfileFragment extends Fragment {
             sb.append("&");
             sb.append(getString(R.string.GID));
             sb.append("=");
-            //TODO get the id for flickr
             sb.append(URLEncoder.encode("0000", "UTF-8"));
             if(Driver.DEBUG) Log.i("EditProfile:build", sb.toString());
         } catch (IllegalArgumentException e) {
@@ -261,7 +264,19 @@ public class EditProfileFragment extends Fragment {
      * user is logged in.
      */
     public interface EditProfileListener {
+        /**
+         * Triggers the listener to start the edit profile
+         * task that talks to the database.
+         * @param url is the url to use to update or insert a record.
+         */
         void editProfile(String url);
+
+        /**
+         * This lets the calling listener know when the update
+         * task is done.
+         * @param success indicates if the operation was successful.
+         * @param message the message to display to the user.
+         */
         void callback(boolean success, String message);
     }
 }

@@ -27,12 +27,20 @@ import java.util.regex.Pattern;
  */
 public class Driver {
 
+    /**
+     * Debug mode displays far more error messages.
+     */
     public static final boolean DEBUG = true;
 
+    /**
+     * Private constructor.
+     */
     private Driver(){};
 
     /**
      * http://www.regexplanet.com/advanced/java/index.html
+     * This checks if the email string is in a standard format.
+     * It expects the domain to be all letter characters.
      * @param email is the user's email; also used as their username.
      * @return true if the email is in standard format,
      *          false otherwise.
@@ -45,13 +53,12 @@ public class Driver {
     }
 
     /**
-     * http://www.dreamincode.net/forums/topic/14886-date-validation-using-simpledateformat/
      * Checks to see if a date is valid from three Strings.
      * @param day is the day of the month. 1 <= day <= 31
      * @param month is the month in the year. 1 <= month <= 12
      * @param year is the year. year <= 2016 (this year)
-     * @return the date in MM/DD/YYYY format if valid,
-     *          "error" otherwise.
+     * @return the date in MM/DD/YYYY format if valid.
+     * @throws IllegalArgumentException
      */
     public static String isValidDate(String day, String month, String year)
         throws IllegalArgumentException {
@@ -72,6 +79,12 @@ public class Driver {
         return month + "/" + day + "/" + year;
     }
 
+    /**
+     * Determines if the given value is a leap year.
+     * @param y is the year.
+     * @return true if it is a leap year,
+     *          false otherwise.
+     */
     public static boolean isLeapYear(int y) {
         if (y % 4 != 0) return false;
         if (y % 400 == 0) return true;
