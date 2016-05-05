@@ -17,25 +17,49 @@ import tcss450.uw.edu.project18.event.Event;
  */
 public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
 
+    /**
+     * The list of events to be displayed
+     */
     private final List<Event> mValues;
+
+    /**
+     * The listener for the event list fragment
+     */
     private final OnListFragmentInteractionListener mListener;
 
+    /**
+     * Constructor to instanciate the recylcer and initialize the list and listener
+     * @param items the list of user's events
+     * @param listener the fragment interaction listener
+     */
     public MyEventRecyclerViewAdapter(List<Event> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
 
+    /**
+     * Creates a holder for each event itme
+     * @param parent the view to fill with event
+     * @param viewType the type of the view
+     * @return the newly created viewHolder
+     */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_event, parent, false);
         return new ViewHolder(view);
     }
 
+    /**
+     * Bind the event data to the viewholder
+     * @param holder the viewholder to bind event data to
+     * @param position the positions of event in the list
+     */
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getTitle());
-        holder.mContentView.setText(mValues.get(position).getComment());
+        holder.mTitleView.setText(mValues.get(position).getTitle());
+        holder.mCommentView.setText(mValues.get(position).getComment());
+        holder.mDateView.setText(mValues.get(position).getDate());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,27 +73,63 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         });
     }
 
+    /**
+     * The number of events in the list
+     * @return the number of events
+     */
     @Override
     public int getItemCount() {
         return mValues.size();
     }
 
+    /**
+     * Viewholder class to hold each event
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
+        /**
+         * The view to hold an event
+         */
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
+
+        /**
+         * The TextView to hold the event title
+         */
+        public final TextView mTitleView;
+
+        /**
+         * The TextView to hold the event comment
+         */
+        public final TextView mCommentView;
+
+        /**
+         * The TextView to hold the event date
+         */
+        public final TextView mDateView;
+
+        /**
+         * The event itself
+         */
         public Event mItem;
 
+        /**
+         * Constructor for the viewholder
+         * @param view the view containing the elements
+         */
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.event_title);
-            mContentView = (TextView) view.findViewById(R.id.event_date);
+            mTitleView = (TextView) view.findViewById(R.id.event_title);
+            mCommentView = (TextView) view.findViewById(R.id.event_comment);
+            mDateView = (TextView) view.findViewById(R.id.event_date);
         }
 
+        /**
+         * String representation of the viewholder and it's event
+         * @return the title of the event
+         */
         @Override
         public String toString() {
-            return super.toString() + " '" + mIdView.getText() + "'";
+            return super.toString() + " '" + mTitleView.getText() + "'";
         }
     }
 }

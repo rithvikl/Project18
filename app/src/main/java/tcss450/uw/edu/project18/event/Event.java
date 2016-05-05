@@ -10,24 +10,68 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Helper class for providing sample content for user interfaces created by
- * Android template wizards.
- * <p/>
+ * A class representing one event
+ * @author Rithvik Lagisetti
  */
 public class Event implements Serializable {
 
+    /**
+     * The path to the image file for the event
+     */
     private String mFile;
+
+    /**
+     * The title of the event
+     */
     private String mTitle;
+
+    /**
+     * The comment on the event
+     */
     private String mComment;
+
+    /**
+     * The date the event was created
+     */
     private String mDate;
+
+    /**
+     * The tags associated with the event
+     */
     //    private String mTags;
 
+    /**
+     * The name of the file property of each event
+     */
     public static final String FILE = "file";
+
+    /**
+     * The name of the title property of each event
+     */
     public static final String TITLE = "title";
+
+    /**
+     * The name of the coment property of each event
+     */
     public static final String COMMENT = "comment";
+
+    /**
+     * The name of the date property of each event
+     */
     public static final String DATE = "date";
+
+    /**
+     * The name of the tag property of each event
+     */
     //    public static final String TAGS = "tags";
 
+    /**
+     * Contructor for an event
+     * @param filename the path to the image file
+     * @param title the title of the event
+     * @param comment the comment on the event
+     * @param date the date the event was created
+     */
     public Event (String filename, String title, String comment, String date) {
         this.mFile = filename;
         this.mTitle = title;
@@ -36,26 +80,42 @@ public class Event implements Serializable {
         //        this.mTags = tags;
     }
 
+    /**
+     * Getter for the image file path
+     * @return the relative path to the image file
+     */
     public String getFile () {
         return this.mFile;
     }
 
+    /**
+     * Getter for the event title
+     * @return the title of the event
+     */
     public String getTitle () {
         return this.mTitle;
     }
 
+    /**
+     * Getter for the event comment
+     * @return the comment on the event
+     */
     public String getComment() {
         return mComment;
     }
 
-    public void setComment(String comment) {
-        this.mComment = comment;
-    }
-
+    /**
+     * Getter for the event date
+     * @return the date the event was created
+     */
     public String getDate () {
         return this.mDate;
     }
 
+    /**
+     * Getter for the tags associated with an event
+     * @return the tags of the event
+     */
 //    public String getTags () {
 //        return this.mTags;
 //    }
@@ -68,10 +128,26 @@ public class Event implements Serializable {
         this.mTitle = title;
     }
 
+    /**
+     * Setter
+     * @param comment
+     */
+    public void setComment(String comment) {
+        this.mComment = comment;
+    }
+
+    /**
+     * Setter for the event creation date
+     * @param date the date the event was created
+     */
     public void setDate (String date) {
         this.mDate = date;
     }
 
+    /**
+     * Setter for the event tags
+     * @param tags the tags associated with the event
+     */
 //    public void setTags (String tags) {
 //        this.mTags = tags;
 //    }
@@ -79,15 +155,14 @@ public class Event implements Serializable {
 
     /**
      * Parses the json string, returns an error message if unsuccessful.
-     * Returns event list if success.
-     * @param eventJSON
-     * @return reason or null if successful.
+     * Returns event list if successful.
+     * @param eventJSON the stringified event JSON data
+     * @return failure reason or null if successful.
      */
     public static String parseCourseJSON(String eventJSON, List<Event> eventList) {
         String reason = null;
         if (eventJSON != null) {
             try {
-                Log.i("Response", eventJSON);
                 JSONObject jsonBody = new JSONObject(eventJSON);
                 JSONArray arr = jsonBody.getJSONArray("data");
 

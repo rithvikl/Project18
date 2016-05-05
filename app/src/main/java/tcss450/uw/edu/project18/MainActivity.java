@@ -21,18 +21,19 @@ import tcss450.uw.edu.project18.event.Event;
 
 /**
  * The main activity that has a drawer navigation pane for settings and
- * searching for events.
- * @author Melinda Robertson, Rithvik
+ * searching for events. This activity also creates the fragments for the
+ * list of events.
+ * @author Melinda Robertson, Rithvik Lagisetti
  * @version 20160430
  */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, EventListFragment.OnListFragmentInteractionListener {
-
-
+    
     /**
      * Holds information about the current user's session.
      */
     private SharedPreferences mShared;
+
     //hiding the toolbar and fab
     //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
 
@@ -47,12 +48,11 @@ public class MainActivity extends AppCompatActivity
         if (Driver.DEBUG)
             Log.i("Main:create", "Toolbar" + toolbar.getMenu().size());
 
-        //TODO do we want to have this add events?
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Share an event", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -66,12 +66,16 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // Navigate to event list fragment
         if (savedInstanceState == null || getSupportFragmentManager().findFragmentById(R.id.list) == null) {
-            EventListFragment courseListFragment = new EventListFragment();
-            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, courseListFragment).commit();
+            EventListFragment eventListFragment = new EventListFragment();
+            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, eventListFragment).commit();
         }
     }
 
+    /**
+     * Navigate back to previous screen
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -82,13 +86,22 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Inflate the menu; this adds items to the action bar if it is present.
+     * @param menu the menu of the activity
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
+    /**
+     * Reacts to click of camera and logout buttons
+     * in action bar
+     * @param item the button that was clicked
+     * @return true if item selected
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -96,8 +109,8 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        //TODO the camera should add an event
+        // noinspection SimplifiableIfStatement
+        // the camera should add an event
         if (id == R.id.menu_camera) {
             return true;
         } else if (id == R.id.menu_logout) {
@@ -112,7 +125,11 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO do things in the buttons here
+    /**
+     * do things in the buttons here
+     * @param item the navigation item selected
+     * @return true
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -138,7 +155,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    //TODO this will open a new fragment that displays the event details
+    /**
+     * This will open a new fragment that displays the event details
+     * @param item
+     */
     @Override
     public void onListFragmentInteraction(Event item) {
 //        CourseDetailFragment courseDetailFragment = new CourseDetailFragment();

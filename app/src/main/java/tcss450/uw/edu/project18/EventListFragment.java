@@ -27,21 +27,55 @@ import java.util.List;
 import tcss450.uw.edu.project18.event.Event;
 
 /**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
+ * A fragment representing a list of events.
+ * @author Rithvik Lagisetti
+ * @version 20160504
  */
 public class EventListFragment extends Fragment {
 
+    /**
+     * String for the column-count property
+     */
     private static final String ARG_COLUMN_COUNT = "column-count";
-    private static final String GET_EVENTS_URL = "http://cssgate.insttech.washington.edu/~_450atm18/download.php?email=test@test.com";
+
+    /**
+     * The url of the web service to get a list of events
+     */
+    private static final String GET_EVENTS_URL = "http://cssgate.insttech.washington.edu/~_450atm18/download.php?";
+
+    /**
+     * The number of columns of the list
+     */
     private int mColumnCount = 1;
+
+    /**
+     * The listener for the fragment
+     */
     private OnListFragmentInteractionListener mListener;
+
+    /**
+     * The Recylcer to bind the list of events
+     */
     private RecyclerView mRecyclerView;
+
+    /**
+     * The list of the user's events
+     */
     private List<Event> mEventList;
+
+    /**
+     * The shared preferences file used for storing user info
+     */
     private SharedPreferences mShared;
+
+    /**
+     * The username of the currently logged in user
+     */
     private String mUser;
+
+    /**
+     * The instance of the SQLite database
+     */
 //    private CourseDB mCourseDB;
 
     /**
@@ -51,6 +85,11 @@ public class EventListFragment extends Fragment {
     public EventListFragment() {
     }
 
+    /**
+     * Creates an instance of the fragment
+     * @param columnCount the number of columns of the list
+     * @return the list fragment
+     */
     @SuppressWarnings("unused")
     public static EventListFragment newInstance(int columnCount) {
         EventListFragment fragment = new EventListFragment();
@@ -60,6 +99,10 @@ public class EventListFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Sets some member fields when the fragment is created
+     * @param savedInstanceState the saved instance of the app
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +116,13 @@ public class EventListFragment extends Fragment {
         mUser = mShared.getString(getString(R.string.USER), "");
     }
 
+    /**
+     * Creates the list of events when the fragment is created
+     * @param inflater inflates the fragment
+     * @param container the container to hold it
+     * @param savedInstanceState the saved instance of the app
+     * @return the created view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -88,10 +138,6 @@ public class EventListFragment extends Fragment {
                 mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
         }
-
-        // If we can't use menu buttons, will use floating button
-//        FloatingActionButton floatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-//        floatingActionButton.show();
 
         ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -109,12 +155,16 @@ public class EventListFragment extends Fragment {
             // User can't do anything without network connection
             Toast.makeText(view.getContext(),
                     "No network connection available. Please connect to a network to see your events.",
-                    Toast.LENGTH_SHORT) .show();
+                    Toast.LENGTH_LONG) .show();
         }
 
         return view;
     }
 
+    /**
+     * Build the url string for getting the list of events
+     * @return the url string
+     */
     public String buildUrlString () {
         String url = Uri.parse(GET_EVENTS_URL)
                 .buildUpon()
@@ -126,6 +176,10 @@ public class EventListFragment extends Fragment {
     }
 
 
+    /**
+     * Initialize the listener when attached
+     * @param context context of the app
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -137,6 +191,9 @@ public class EventListFragment extends Fragment {
         }
     }
 
+    /**
+     * destroy the listener when detached
+     */
     @Override
     public void onDetach() {
         super.onDetach();
@@ -144,22 +201,25 @@ public class EventListFragment extends Fragment {
     }
 
     /**
-     * This interface must be implemented by activities that contain this
+     * This interface implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(Event item);
     }
 
-    // Get the user's galleryID and use that to get their photos
+    /**
+     * Async task to get the user's list of events
+     */
     private class DownloadEventsTask extends AsyncTask<String, Void, String> {
 
+        /**
+         * The background call
+         * @param urls list of urls to call
+         * @return the JSON response string
+         */
         @Override protected String doInBackground(String... urls) {
             String response = "";
             HttpURLConnection urlConnection = null;
@@ -183,6 +243,10 @@ public class EventListFragment extends Fragment {
             return response;
         }
 
+        /**
+         * Method to create the list from the JSON response
+         * @param result
+         */
         @Override protected void onPostExecute(String result) {
             if (result.startsWith("Unable to")) {
                 Toast.makeText(getActivity().getApplicationContext(), result, Toast.LENGTH_LONG).show();
