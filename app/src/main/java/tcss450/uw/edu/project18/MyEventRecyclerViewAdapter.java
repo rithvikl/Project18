@@ -14,7 +14,6 @@ import tcss450.uw.edu.project18.event.Event;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Event} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
 
@@ -36,7 +35,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).getTitle());
-//        holder.mContentView.setText(mValues.get(position).getDescription());
+        holder.mContentView.setText(mValues.get(position).getComment());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,14 +57,14 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mIdView;
-//        public final TextView mContentView;
+        public final TextView mContentView;
         public Event mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.event_title);
-//            mContentView = (TextView) view.findViewById(R.id.content);
+            mContentView = (TextView) view.findViewById(R.id.event_date);
         }
 
         @Override

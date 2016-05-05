@@ -89,7 +89,6 @@ public class Event implements Serializable {
             try {
                 Log.i("Response", eventJSON);
                 JSONObject jsonBody = new JSONObject(eventJSON);
-//                JSONObject photosJsonObject = jsonBody.getJSONObject("photos");
                 JSONArray arr = jsonBody.getJSONArray("data");
 
                 for (int i = 0; i < arr.length(); i++) {
@@ -104,7 +103,7 @@ public class Event implements Serializable {
                     eventList.add(event);
                 }
             } catch (JSONException e) {
-                reason =  "Unable to parse data, Reason: " + e.getMessage();
+                reason =  "You do not have any events to show! Click the camera above to add a new event.";
                 Log.e("JSON_fail", reason);
             }
 
