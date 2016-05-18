@@ -18,7 +18,7 @@ public class Event implements Serializable {
     /**
      * The path to the image file for the event
      */
-    private String mFile;
+    private String mId;
 
     /**
      * The title of the event
@@ -41,9 +41,9 @@ public class Event implements Serializable {
     //    private String mTags;
 
     /**
-     * The name of the file property of each event
+     * The name of the id property of each event
      */
-    public static final String FILE = "file";
+    public static final String ID = "id";
 
     /**
      * The name of the title property of each event
@@ -67,13 +67,13 @@ public class Event implements Serializable {
 
     /**
      * Contructor for an event
-     * @param filename the path to the image file
+     * @param id the id number of the image
      * @param title the title of the event
      * @param comment the comment on the event
      * @param date the date the event was created
      */
-    public Event (String filename, String title, String comment, String date) {
-        this.mFile = filename;
+    public Event (String id, String title, String comment, String date) {
+        this.mId = id;
         this.mTitle = title;
         this.mComment = comment;
         this.mDate = date;
@@ -81,11 +81,11 @@ public class Event implements Serializable {
     }
 
     /**
-     * Getter for the image file path
-     * @return the relative path to the image file
+     * Getter for the image id
+     * @return the id number of the image
      */
-    public String getFile () {
-        return this.mFile;
+    public String getId () {
+        return this.mId;
     }
 
     /**
@@ -120,8 +120,8 @@ public class Event implements Serializable {
 //        return this.mTags;
 //    }
 
-    public void setFile (String filename) {
-        this.mFile = filename;
+    public void setId (String id) {
+        this.mId = id;
     }
 
     public void setTitle (String title) {
@@ -169,7 +169,7 @@ public class Event implements Serializable {
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject obj = arr.getJSONObject(i);
                     Event event = new Event(
-                            obj.getString(Event.FILE),
+                            obj.getString(Event.ID),
                             obj.getString(Event.TITLE),
                             obj.getString(Event.COMMENT),
                             obj.getString(Event.DATE)

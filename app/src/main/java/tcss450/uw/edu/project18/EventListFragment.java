@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,7 @@ public class EventListFragment extends Fragment {
     /**
      * The url of the web service to get a list of events
      */
-    private static final String GET_EVENTS_URL = "http://cssgate.insttech.washington.edu/~_450atm18/download.php?";
+    private static final String GET_EVENTS_URL = "http://cssgate.insttech.washington.edu/~memre/download.php?";
 
     /**
      * The number of columns of the list
@@ -254,6 +255,7 @@ public class EventListFragment extends Fragment {
             }
 
             mEventList = new ArrayList<Event>();
+            Log.i("RESPONSE", mEventList.toString());
             result = Event.parseCourseJSON(result, mEventList);
             if (result != null) {
                 Toast.makeText(getActivity().getApplicationContext(), result, Toast.LENGTH_LONG).show();

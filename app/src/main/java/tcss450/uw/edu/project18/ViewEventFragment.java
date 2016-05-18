@@ -25,7 +25,7 @@ public class ViewEventFragment extends Fragment {
     private TextView mEventItemTitleTextView;
     private TextView mEventItemDateTextView;
     private TextView mEventItemCommentTextView;
-    private String mEventItemPhotoFile;
+    private String mEventItemPhotoId;
     private Event mEventItem;
 
 
@@ -67,7 +67,7 @@ public class ViewEventFragment extends Fragment {
             mEventItemDateTextView.setText(event.getDate());
             mEventItemCommentTextView.setText(event.getComment());
             // TODO: Get photo and attach to ImageView
-            mEventItemPhotoFile = event.getFile();
+            mEventItemPhotoId = event.getId();
         }
     }
 

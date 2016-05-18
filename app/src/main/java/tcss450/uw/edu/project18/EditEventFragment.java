@@ -23,7 +23,7 @@ public class EditEventFragment extends Fragment {
     private EditText mEventItemTitleEditText;
     private EditText mEventItemDateEditText;
     private EditText mEventItemCommentEditText;
-    private String mEventItemPhotoFile;
+    private String mEventItemPhotoId;
     private Event mEventItem;
 
     public EditEventFragment() {
@@ -64,7 +64,7 @@ public class EditEventFragment extends Fragment {
             mEventItemDateEditText.setText(event.getDate());
             mEventItemCommentEditText.setText(event.getComment());
             // TODO: Get photo and attach to ImageView
-            mEventItemPhotoFile = event.getFile();
+            mEventItemPhotoId = event.getId();
         }
     }
 

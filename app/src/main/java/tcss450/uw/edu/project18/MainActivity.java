@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity
         // noinspection SimplifiableIfStatement
         // the camera should add an event
         if (id == R.id.menu_camera) {
+            this.takePicture();
             return true;
         } else if (id == R.id.menu_logout) {
             mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
@@ -159,9 +160,8 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Start the camera to take a picture
-     * @param view
      */
-    public void takePicture(View view) {
+    public void takePicture() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
