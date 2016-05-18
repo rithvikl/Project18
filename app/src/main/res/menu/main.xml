@@ -8,7 +8,8 @@
         android:icon="@drawable/ic_menu_camera"
         android:orderInCategory="99"
         android:title="@string/toolbar_camera"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        android:onClick="takePicture"/>
     <item
         android:id="@+id/menu_logout"
         android:orderInCategory="100"

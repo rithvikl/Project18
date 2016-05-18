@@ -1,0 +1,97 @@
+package tcss450.uw.edu.project18;
+
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import tcss450.uw.edu.project18.event.Event;
+
+
+/**
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link ViewEventFragment.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ */
+public class ViewEventFragment extends Fragment {
+
+    public static final String EVENT_ITEM_SELECTED = "EventItemSelected";
+
+    private OnFragmentInteractionListener mListener;
+    private TextView mEventItemTitleTextView;
+    private TextView mEventItemDateTextView;
+    private TextView mEventItemCommentTextView;
+    private String mEventItemPhotoFile;
+    private Event mEventItem;
+
+
+    public ViewEventFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view =  inflater.inflate(R.layout.fragment_view_event, container, false);
+        mEventItemTitleTextView = (TextView) view.findViewById(R.id.event_item_title);
+        mEventItemDateTextView = (TextView) view.findViewById(R.id.event_item_date);
+        mEventItemCommentTextView = (TextView) view.findViewById(R.id.event_item_comment);
+
+        return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // During startup, check if there are arguments passed to the fragment.
+        // onStart is a good place to do this because the layout has already been
+        // applied to the fragment at this point so we can safely call the method
+        // below that sets the article text.
+        Bundle args = getArguments();
+        if (args != null) {
+            // Set article based on argument passed in
+            updateView((Event) args.getSerializable(EVENT_ITEM_SELECTED));
+        }
+    }
+
+    public void updateView(Event event) {
+        if (event != null) {
+            mEventItem = event;
+            mEventItemTitleTextView.setText(event.getTitle());
+            mEventItemDateTextView.setText(event.getDate());
+            mEventItemCommentTextView.setText(event.getComment());
+            // TODO: Get photo and attach to ImageView
+            mEventItemPhotoFile = event.getFile();
+        }
+    }
+
+    public void editEvent(View view) {
+        if (view.getId() == R.id.edit_event_button) {
+            EditEventFragment editEventFragment = new EditEventFragment();
+            Bundle args = new Bundle();
+            args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, mEventItem);
+            editEventFragment.setArguments(args);
+            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, editEventFragment).addToBackStack(null).commit();
+        }
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
+}

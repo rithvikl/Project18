@@ -28,6 +28,8 @@ import tcss450.uw.edu.project18.event.Event;
  */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, EventListFragment.OnListFragmentInteractionListener {
+
+    private static final int CAMERA_REQUEST = 1888;
     
     /**
      * Holds information about the current user's session.
@@ -156,15 +158,38 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * Start the camera to take a picture
+     * @param view
+     */
+    public void takePicture(View view) {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+    }
+
+    /**
+     * Handle the photo taken with the camera
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO: Get the photo and nav to CreateEventFragment
+//        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+//            Bitmap photo = (Bitmap) data.getExtras().get("data");
+//            imageView.setImageBitmap(photo);
+//        }
+    }
+
+    /**
      * This will open a new fragment that displays the event details
      * @param item
      */
     @Override
     public void onListFragmentInteraction(Event item) {
-//        CourseDetailFragment courseDetailFragment = new CourseDetailFragment();
-//        Bundle args = new Bundle();
-//        args.putSerializable(CourseDetailFragment.COURSE_ITEM_SELECTED, item);
-//        courseDetailFragment.setArguments(args);
-//        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, courseDetailFragment).addToBackStack(null).commit();
+        ViewEventFragment viewEventFragment = new ViewEventFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, item);
+        viewEventFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, viewEventFragment).addToBackStack(null).commit();
     }
 }
