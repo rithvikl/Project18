@@ -94,26 +94,33 @@ public class EditProfileFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        final SharedPreferences shared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS),
+                Context.MODE_PRIVATE);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         profileEmail = (TextView) view.findViewById(R.id.profile_email);
-        //TODO set these to a button...
-        /*profileBDay = (TextView) view.findViewById(R.id.profile_day);
-        profileBMonth = (TextView) view.findViewById(R.id.profile_month);
-        profileBYear = (TextView) view.findViewById(R.id.profile_year);*/
         profileDate = (TextView) view.findViewById(R.id.profile_date);
         Button date = (Button) view.findViewById(R.id.date_button);
         final EditProfileFragment that = this;
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Driver.DEBUG) Log.i("EditProfile:date", "Creating Bundle...");
                 Bundle b = new Bundle();
                 b.putSerializable(DatePickingFragment.LISTEN, that);
-                Calendar c = Calendar.getInstance();
-                b.putInt(DatePickingFragment.YEAR, c.get(Calendar.YEAR));
-                b.putInt(DatePickingFragment.MONTH, c.get(Calendar.MONTH));
-                b.putInt(DatePickingFragment.DAY, c.get(Calendar.DAY_OF_MONTH));
+                try {
+                    int[] vals = Driver.getValueOfDate(shared.getString(
+                            getString(R.string.BDAY), "00000000"));
+                    b.putInt(DatePickingFragment.YEAR, vals[0]);
+                    b.putInt(DatePickingFragment.MONTH, vals[1]);
+                    b.putInt(DatePickingFragment.YEAR, vals[2]);
+                } catch (ParseException e) {
+                    Calendar c = Calendar.getInstance();
+                    Log.i("EditProfile:date", "Incorrect format for date. Using default.");
+                    b.putInt(DatePickingFragment.YEAR, c.get(Calendar.YEAR));
+                    b.putInt(DatePickingFragment.MONTH, c.get(Calendar.MONTH));
+                    b.putInt(DatePickingFragment.DAY, c.get(Calendar.DAY_OF_MONTH));
+                }
                 if (Driver.DEBUG) {
                     Log.i("EditProfile:date", "Created Bundle, attempting to create fragment.");
                 }
@@ -141,13 +148,8 @@ public class EditProfileFragment extends Fragment
                 mListener.editProfile(query);
             }
         });
-        if (Driver.DEBUG) {
-            profileEmail.setText("memre911@gmail.com");
-//            profileBDay.setText("17");
-//            profileBMonth.setText("6");
-//            profileBYear.setText("1987");
-            profilePass1.setText("Qaz123");
-            profilePass2.setText("Qaz123");
+        if (shared != null && shared.getString(getString(R.string.USER), null) != null) {
+
         }
         return view;
     }
@@ -156,21 +158,20 @@ public class EditProfileFragment extends Fragment
      * Updates the text boxes with the user's information.
      */
     public void updateProfile() {
-        SharedPreferences sp = getActivity().getSharedPreferences(
+        SharedPreferences shared = getActivity().getSharedPreferences(
                 getString(R.string.LOGIN_PREFS),
                 Context.MODE_PRIVATE);
-        loggedin = sp.getBoolean(getString(R.string.LOGGEDIN), false);
+        loggedin = shared.getBoolean(getString(R.string.LOGGEDIN), false);
         if (loggedin) {
-            profileEmail.setText(sp.getString(getString(R.string.USER),""));
+            profileEmail.setText(shared.getString(getString(R.string.USER),""));
             try {
-                String[] date = Driver.parseDate(sp.getString(getString(R.string.BDAY),""));
-                profileBDay.setText(date[0]);
-                profileBMonth.setText(date[1]);
-                profileBYear.setText(date[2]);
+                profileEmail.setText(shared.getString(getString(
+                        R.string.USER), ""));
+                profileDate.setText(Driver.parseDateForDisplay(shared.getString(
+                        getString(R.string.BDAY), "00000000")));
             } catch (ParseException e) {
                 Toast.makeText(getActivity(), "Unable to get profile information.",
                         Toast.LENGTH_LONG).show();
-                return;
             }
         }
     }
@@ -286,10 +287,13 @@ public class EditProfileFragment extends Fragment
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        String m = monthOfYear < 10 ? "0" + monthOfYear : String.valueOf(monthOfYear);
-        String d = dayOfMonth < 10 ? "0" + dayOfMonth : String.valueOf(dayOfMonth);
-        profileQuery[1] = year + m + d;
-        profileDate.setText(profileQuery[1]);
+        try {
+            profileQuery[1] = Driver.parseDateForDB(year, monthOfYear + 1, dayOfMonth);
+            profileDate.setText(Driver.parseDateForDisplay(profileQuery[1]));
+        } catch (ParseException e) {
+            Log.i("EditProfile:dateset", "Unusable date.");
+            profileQuery[1] = "00000000";
+        }
     }
 
     /**

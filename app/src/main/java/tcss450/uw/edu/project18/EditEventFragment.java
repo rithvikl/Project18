@@ -1,11 +1,13 @@
 package tcss450.uw.edu.project18;
 
+import android.app.DatePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.EditText;
 
 import tcss450.uw.edu.project18.event.Event;
@@ -17,7 +19,8 @@ import tcss450.uw.edu.project18.event.Event;
  * {@link EditEventFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class EditEventFragment extends Fragment {
+public class EditEventFragment extends Fragment
+    implements DatePickerDialog.OnDateSetListener {
 
     private OnFragmentInteractionListener mListener;
     private EditText mEventItemTitleEditText;
@@ -36,6 +39,7 @@ public class EditEventFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_view_event, container, false);
         mEventItemTitleEditText = (EditText) view.findViewById(R.id.event_item_title_edit);
+        //TODO change this to use the DatePickingFragment, use a button to open
         mEventItemDateEditText = (EditText) view.findViewById(R.id.event_item_date_edit);
         mEventItemCommentEditText = (EditText) view.findViewById(R.id.event_item_comment_edit);
 
@@ -66,6 +70,12 @@ public class EditEventFragment extends Fragment {
             // TODO: Get photo and attach to ImageView
             mEventItemPhotoId = event.getId();
         }
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        //TODO use this to set the date of the fragment; format YYYYMMDD; use the driver
+
     }
 
     /**
