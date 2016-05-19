@@ -1,6 +1,7 @@
 package tcss450.uw.edu.project18;
 
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,10 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+import android.widget.DatePicker;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Date;
@@ -28,7 +29,8 @@ import java.util.IllegalFormatException;
  * @author Melinda Robertson
  * @version 20160429
  */
-public class EditProfileFragment extends Fragment {
+public class EditProfileFragment extends Fragment
+    implements java.io.Serializable, android.app.DatePickerDialog.OnDateSetListener {
 
     /**
      * Not sure what this is using this for.
@@ -50,6 +52,7 @@ public class EditProfileFragment extends Fragment {
     private TextView profileBDay;
     private TextView profileBMonth;
     private TextView profileBYear;
+    private TextView profileDate;
     private TextView profilePass1;
     private TextView profilePass2;
 
@@ -94,9 +97,32 @@ public class EditProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         profileEmail = (TextView) view.findViewById(R.id.profile_email);
-        profileBDay = (TextView) view.findViewById(R.id.profile_day);
+        //TODO set these to a button...
+        /*profileBDay = (TextView) view.findViewById(R.id.profile_day);
         profileBMonth = (TextView) view.findViewById(R.id.profile_month);
-        profileBYear = (TextView) view.findViewById(R.id.profile_year);
+        profileBYear = (TextView) view.findViewById(R.id.profile_year);*/
+        profileDate = (TextView) view.findViewById(R.id.profile_date);
+        Button date = (Button) view.findViewById(R.id.date_button);
+        final EditProfileFragment that = this;
+        date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Driver.DEBUG) Log.i("EditProfile:date", "Creating Bundle...");
+                Bundle b = new Bundle();
+                b.putSerializable(DatePickingFragment.LISTEN, that);
+                Calendar c = Calendar.getInstance();
+                b.putInt(DatePickingFragment.YEAR, c.get(Calendar.YEAR));
+                b.putInt(DatePickingFragment.MONTH, c.get(Calendar.MONTH));
+                b.putInt(DatePickingFragment.DAY, c.get(Calendar.DAY_OF_MONTH));
+                if (Driver.DEBUG) {
+                    Log.i("EditProfile:date", "Created Bundle, attempting to create fragment.");
+                }
+                DatePickingFragment fragment = new DatePickingFragment();
+                fragment.setArguments(b);
+                if (Driver.DEBUG) Log.i("EditProfile:date", "Created fragment, showing...");
+                fragment.show(getActivity().getSupportFragmentManager(), "launch");
+            }
+        });
         profilePass1 = (TextView) view.findViewById(R.id.profile_password);
         profilePass2 = (TextView) view.findViewById(R.id.profile_confirm);
         Button btn = (Button) view.findViewById(R.id.profile_submit);
@@ -117,9 +143,9 @@ public class EditProfileFragment extends Fragment {
         });
         if (Driver.DEBUG) {
             profileEmail.setText("memre911@gmail.com");
-            profileBDay.setText("17");
-            profileBMonth.setText("6");
-            profileBYear.setText("1987");
+//            profileBDay.setText("17");
+//            profileBMonth.setText("6");
+//            profileBYear.setText("1987");
             profilePass1.setText("Qaz123");
             profilePass2.setText("Qaz123");
         }
@@ -163,24 +189,24 @@ public class EditProfileFragment extends Fragment {
         String pass1 = profilePass1.getText().toString();
         String pass2 = profilePass2.getText().toString();
         if (!Driver.isValidEmail(email)){
-            Toast.makeText(v.getContext(), "Invalid email.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Invalid email.", Toast.LENGTH_LONG).show();
             profileEmail.requestFocus();
             return false;
         }
         String result = Driver.isValidPassword(LoginActivity.PROFILE_NEW, pass1, pass2);
         if (!result.contains("success")) {
-            Toast.makeText(v.getContext(), result, Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
             profilePass1.requestFocus();
             return false;
         }
-        try {
+        /*try {
             result = Driver.isValidDate(day, month, year);
         } catch (IllegalArgumentException e){
             if(Driver.DEBUG) Log.i("EPF:date", e.getMessage());
-            Toast.makeText(v.getContext(), "Invalid date.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Invalid date.", Toast.LENGTH_LONG).show();
             profileBDay.requestFocus();
             return false;
-        }
+        }*/
         if (Driver.DEBUG) {
             String print = "{email:" + email + ", day:" + day
                     + ", month:" + month + ", year:" + year
@@ -188,7 +214,7 @@ public class EditProfileFragment extends Fragment {
             Log.i("EditProfile:valid4", print);
         }
         profileQuery[0] = email;
-        profileQuery[1] = result;
+        //profileQuery[1] = result;
         profileQuery[2] = pass1;
         if(Driver.DEBUG)
             Log.i("EditProfile:text1", "{0:" + profileQuery[0] +
@@ -256,6 +282,14 @@ public class EditProfileFragment extends Fragment {
             updateProfile();
         } else
             loggedin = false;
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        String m = monthOfYear < 10 ? "0" + monthOfYear : String.valueOf(monthOfYear);
+        String d = dayOfMonth < 10 ? "0" + dayOfMonth : String.valueOf(dayOfMonth);
+        profileQuery[1] = year + m + d;
+        profileDate.setText(profileQuery[1]);
     }
 
     /**

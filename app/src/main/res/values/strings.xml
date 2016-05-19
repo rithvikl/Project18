@@ -31,6 +31,7 @@
     <string name="profile_day">Day</string>
     <string name="profile_month">Month</string>
     <string name="profile_year">Year</string>
+    <string name="profile_date">Choose your birthday</string>
     <string name="profile_password">Enter Password</string>
     <string name="profile_rules">"Must be longer than 6 characters, contain at least one number and one capital letter."</string>
     <string name="profile_confirm">Confirm Password</string>
