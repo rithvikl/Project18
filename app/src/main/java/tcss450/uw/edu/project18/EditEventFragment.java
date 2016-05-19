@@ -1,14 +1,17 @@
 package tcss450.uw.edu.project18;
 
 import android.app.DatePickerDialog;
+import java.text.ParseException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import tcss450.uw.edu.project18.event.Event;
 
@@ -16,15 +19,16 @@ import tcss450.uw.edu.project18.event.Event;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link EditEventFragment.OnFragmentInteractionListener} interface
+ * {@link EditEventFragment.OnEditEventInteractionListener} interface
  * to handle interaction events.
  */
 public class EditEventFragment extends Fragment
     implements DatePickerDialog.OnDateSetListener {
 
-    private OnFragmentInteractionListener mListener;
+    private OnEditEventInteractionListener mListener;
     private EditText mEventItemTitleEditText;
-    private EditText mEventItemDateEditText;
+    //private EditText mEventItemDateEditText;
+    private TextView mEventEditDate;
     private EditText mEventItemCommentEditText;
     private String mEventItemPhotoId;
     private Event mEventItem;
@@ -40,9 +44,9 @@ public class EditEventFragment extends Fragment
         View view =  inflater.inflate(R.layout.fragment_view_event, container, false);
         mEventItemTitleEditText = (EditText) view.findViewById(R.id.event_item_title_edit);
         //TODO change this to use the DatePickingFragment, use a button to open
-        mEventItemDateEditText = (EditText) view.findViewById(R.id.event_item_date_edit);
+        //mEventItemDateEditText = (EditText) view.findViewById(R.id.event_item_date_edit);
+        mEventEditDate = (TextView) view.findViewById(R.id.event_edit_date_display);
         mEventItemCommentEditText = (EditText) view.findViewById(R.id.event_item_comment_edit);
-
         return view;
     }
 
@@ -65,7 +69,13 @@ public class EditEventFragment extends Fragment
         if (event != null) {
             mEventItem = event;
             mEventItemTitleEditText.setText(event.getTitle());
-            mEventItemDateEditText.setText(event.getDate());
+            //mEventItemDateEditText.setText(event.getDate());
+            try {
+                mEventEditDate.setText(Driver.parseDateForDisplay(
+                        event.getDate()));
+            } catch (ParseException e) {
+                Log.i("EditEvent:start", "Could not retrieve date.");
+            }
             mEventItemCommentEditText.setText(event.getComment());
             // TODO: Get photo and attach to ImageView
             mEventItemPhotoId = event.getId();
@@ -75,7 +85,13 @@ public class EditEventFragment extends Fragment
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         //TODO use this to set the date of the fragment; format YYYYMMDD; use the driver
-
+        try {
+            mEventItem.setDate(Driver.parseDateForDB(year,monthOfYear+1,dayOfMonth));
+            mEventEditDate.setText(Driver.parseDateForDisplay(
+                    mEventItem.getDate()));
+        } catch (ParseException e) {
+            Log.i("EditEvent:set", "Could not set date.");
+        }
     }
 
     /**
@@ -88,7 +104,8 @@ public class EditEventFragment extends Fragment
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+    public interface OnEditEventInteractionListener {
+        void onEditEventInteraction(String url);
+        void callback(boolean result, String message);
     }
 }

@@ -203,4 +203,7 @@ public class Driver {
         return vals;
     }
 
+    public static String parseDateForDisplay(int year, int month, int day) throws ParseException{
+        return parseDateForDisplay(parseDateForDB(year,month,day));
+    }
 }

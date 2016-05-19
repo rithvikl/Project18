@@ -3,6 +3,7 @@ package tcss450.uw.edu.project18;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -27,7 +28,9 @@ import tcss450.uw.edu.project18.event.Event;
  * @version 20160430
  */
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, EventListFragment.OnListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        EventListFragment.OnListFragmentInteractionListener,
+        EditEventFragment.OnEditEventInteractionListener{
 
     private static final int CAMERA_REQUEST = 1888;
     
@@ -191,5 +194,14 @@ public class MainActivity extends AppCompatActivity
         args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, item);
         viewEventFragment.setArguments(args);
         getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, viewEventFragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void onEditEventInteraction(String url) {
+
+    }
+
+    public void callback(boolean result, String message) {
+
     }
 }
