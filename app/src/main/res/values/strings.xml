@@ -37,6 +37,11 @@
     <string name="profile_confirm">Confirm Password</string>
     <string name="profile_submit">Submit</string>
 
+    <!-- Edit Event fragment. -->
+    <string name="edit_event_date_button">Edit Date</string>
+    <string name="edit_event_cancel_button">Cancel</string>
+    <string name="edit_event_submit_button">Save</string>
+
 
     <string name="title_activity_main">Gather</string>
     <string name="nav_subtext">Welcome!</string>
@@ -45,4 +50,5 @@
 
     <!-- Toolbar menu items. -->
     <string name="toolbar_camera">Take a picture!</string>
+
 </resources>

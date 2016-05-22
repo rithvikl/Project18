@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import tcss450.uw.edu.project18.event.Event;
 
@@ -198,10 +199,17 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onEditEventInteraction(String url) {
-
+        EditEventTask eet = new EditEventTask(this);
+        eet.execute(url);
     }
 
-    public void callback(boolean result, String message) {
-
+    public void editEventCallback(boolean result, String message) {
+        if (Driver.DEBUG)
+            Toast.makeText(getApplicationContext(), message,
+                Toast.LENGTH_LONG).show();
+        if (result) {
+            getSupportFragmentManager().popBackStackImmediate();
+            //TODO set list to visible
+        }
     }
 }

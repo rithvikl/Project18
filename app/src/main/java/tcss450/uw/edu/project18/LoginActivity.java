@@ -122,25 +122,6 @@ public class LoginActivity extends AppCompatActivity
     }
 
     /**
-     * This is the callback function for the edit profile task
-     * that lets the calling object know if it was successful.
-     * If it is, it returns to the previous fragment which in this
-     * case should be the login form.
-     * @param success is true if the task successfully inserted a new record,
-     *                false otherwise.
-     * @param message is a message to display to the user about the task.
-     */
-    @Override
-    public void callback(boolean success, String message) {
-        Toast.makeText(getApplicationContext(), message,
-                Toast.LENGTH_LONG).show();
-        if (success) {
-            getSupportFragmentManager().popBackStackImmediate();
-            mLoginFormView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    /**
      * Begins the main activity for the bulk of the app.
      * This will initialize to the event list if the user
      * successfully logs in.
@@ -336,6 +317,25 @@ public class LoginActivity extends AppCompatActivity
     public void editProfile(String url) {
         EditProfileTask ept = new EditProfileTask(this);
         ept.execute(new String[]{url});
+    }
+
+    /**
+     * This is the callback function for the edit profile task
+     * that lets the calling object know if it was successful.
+     * If it is, it returns to the previous fragment which in this
+     * case should be the login form.
+     * @param success is true if the task successfully inserted a new record,
+     *                false otherwise.
+     * @param message is a message to display to the user about the task.
+     */
+    @Override
+    public void callback(boolean success, String message) {
+        Toast.makeText(getApplicationContext(), message,
+                Toast.LENGTH_LONG).show();
+        if (success) {
+            getSupportFragmentManager().popBackStackImmediate();
+            mLoginFormView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**

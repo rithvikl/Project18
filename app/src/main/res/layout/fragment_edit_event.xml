@@ -23,6 +23,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/edit_event_date_button"
         android:id="@+id/event_edit_date_button"/>
 
     <TextView
@@ -35,5 +36,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/event_item_comment_edit"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/edit_event_cancel_button"
+            android:id="@+id/edit_event_cancel_button"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/edit_event_submit_button"
+            android:id="@+id/event_edit_submit_button"/>
+    </LinearLayout>
 
 </LinearLayout>

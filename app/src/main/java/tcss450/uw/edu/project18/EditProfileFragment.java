@@ -42,16 +42,13 @@ public class EditProfileFragment extends Fragment
      * profile. I might consolidate this.
      */
     public static final String PROFILE_ADD_URL =
-            "http://cssgate.insttech.washington.edu/~memre/addprofile.php?";
+            "http://cssgate.insttech.washington.edu/~_450atm18/addprofile.php?";
     public static final String PROFILE_EDIT_URL =
-            "http://cssgate.insttech.washington.edu/~memre/editprofile.php?";
+            "http://cssgate.insttech.washington.edu/~_450atm18/editprofile.php?";
     /**
      * Text boxes that hold the information from the user.
      */
     private TextView profileEmail;
-    private TextView profileBDay;
-    private TextView profileBMonth;
-    private TextView profileBYear;
     private TextView profileDate;
     private TextView profilePass1;
     private TextView profilePass2;
@@ -184,14 +181,16 @@ public class EditProfileFragment extends Fragment
      */
     private boolean validate(View v) {
         String email = profileEmail.getText().toString();
-        String day = profileBDay.getText().toString();
-        String month = profileBMonth.getText().toString();
-        String year = profileBYear.getText().toString();
+        String date = profileDate.getText().toString();
         String pass1 = profilePass1.getText().toString();
         String pass2 = profilePass2.getText().toString();
         if (!Driver.isValidEmail(email)){
             Toast.makeText(getActivity(), "Invalid email.", Toast.LENGTH_LONG).show();
             profileEmail.requestFocus();
+            return false;
+        }
+        if (date.isEmpty() || profileQuery[1] == null) {
+            Toast.makeText(getActivity(), "Enter or confirm the date.", Toast.LENGTH_LONG).show();
             return false;
         }
         String result = Driver.isValidPassword(LoginActivity.PROFILE_NEW, pass1, pass2);
@@ -200,17 +199,8 @@ public class EditProfileFragment extends Fragment
             profilePass1.requestFocus();
             return false;
         }
-        /*try {
-            result = Driver.isValidDate(day, month, year);
-        } catch (IllegalArgumentException e){
-            if(Driver.DEBUG) Log.i("EPF:date", e.getMessage());
-            Toast.makeText(getActivity(), "Invalid date.", Toast.LENGTH_LONG).show();
-            profileBDay.requestFocus();
-            return false;
-        }*/
         if (Driver.DEBUG) {
-            String print = "{email:" + email + ", day:" + day
-                    + ", month:" + month + ", year:" + year
+            String print = "{email:" + email + ", "
                     + ", pass1:" + pass1 + ", pass2:" + pass2;
             Log.i("EditProfile:valid4", print);
         }

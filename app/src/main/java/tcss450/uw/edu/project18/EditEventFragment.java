@@ -1,7 +1,15 @@
 package tcss450.uw.edu.project18;
 
 import android.app.DatePickerDialog;
+
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
+import java.util.Calendar;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,9 +17,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import tcss450.uw.edu.project18.event.Event;
 
@@ -23,18 +33,30 @@ import tcss450.uw.edu.project18.event.Event;
  * to handle interaction events.
  */
 public class EditEventFragment extends Fragment
-    implements DatePickerDialog.OnDateSetListener {
+    implements DatePickerDialog.OnDateSetListener, Serializable {
+
+    public static final String EDIT_EVENT_URL =
+            "http://cssgate.insttech.washington.edu/~_450atm18/editevent.php?";
 
     private OnEditEventInteractionListener mListener;
     private EditText mEventItemTitleEditText;
-    //private EditText mEventItemDateEditText;
     private TextView mEventEditDate;
     private EditText mEventItemCommentEditText;
-    private String mEventItemPhotoId;
+    //private String mEventItemPhotoId;
     private Event mEventItem;
 
     public EditEventFragment() {
         // Required empty public constructor
+    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnEditEventInteractionListener) {
+            mListener = (OnEditEventInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnEditEventInteractionListener");
+        }
     }
 
     @Override
@@ -43,10 +65,53 @@ public class EditEventFragment extends Fragment
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_view_event, container, false);
         mEventItemTitleEditText = (EditText) view.findViewById(R.id.event_item_title_edit);
-        //TODO change this to use the DatePickingFragment, use a button to open
-        //mEventItemDateEditText = (EditText) view.findViewById(R.id.event_item_date_edit);
         mEventEditDate = (TextView) view.findViewById(R.id.event_edit_date_display);
         mEventItemCommentEditText = (EditText) view.findViewById(R.id.event_item_comment_edit);
+        final SharedPreferences shared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS),
+                Context.MODE_PRIVATE);
+        final EditEventFragment that = this;
+        Button datebtn = (Button) view.findViewById(R.id.event_edit_date_button);
+        datebtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putSerializable(DatePickingFragment.LISTEN, that);
+                try {
+                    int[] vals = Driver.getValueOfDate(shared.getString(
+                            getString(R.string.BDAY), "00000000"));
+                    b.putInt(DatePickingFragment.YEAR, vals[0]);
+                    b.putInt(DatePickingFragment.MONTH, vals[1]);
+                    b.putInt(DatePickingFragment.YEAR, vals[2]);
+                } catch (ParseException e) {
+                    Calendar c = Calendar.getInstance();
+                    Log.i("EditProfile:date", "Incorrect format for date. Using default.");
+                    b.putInt(DatePickingFragment.YEAR, c.get(Calendar.YEAR));
+                    b.putInt(DatePickingFragment.MONTH, c.get(Calendar.MONTH));
+                    b.putInt(DatePickingFragment.DAY, c.get(Calendar.DAY_OF_MONTH));
+                }
+                if (Driver.DEBUG) {
+                    Log.i("EditEvent:date", "Created Bundle, attempting to create fragment.");
+                }
+                DatePickingFragment fragment = new DatePickingFragment();
+                fragment.setArguments(b);
+                if (Driver.DEBUG) Log.i("EditProfile:date", "Created fragment, showing...");
+                fragment.show(getActivity().getSupportFragmentManager(), "launch");
+            }
+        });
+        Button cancelbtn = (Button) view.findViewById(R.id.event_edit_date_button);
+        cancelbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().popBackStackImmediate();
+            }
+        });
+        Button submitbtn = (Button) view.findViewById(R.id.event_edit_submit_button);
+        submitbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onEditEventInteraction(buildURL(v));
+            }
+        });
         return view;
     }
 
@@ -78,13 +143,12 @@ public class EditEventFragment extends Fragment
             }
             mEventItemCommentEditText.setText(event.getComment());
             // TODO: Get photo and attach to ImageView
-            mEventItemPhotoId = event.getId();
+            //mEventItemPhotoId = event.getId();
         }
     }
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        //TODO use this to set the date of the fragment; format YYYYMMDD; use the driver
         try {
             mEventItem.setDate(Driver.parseDateForDB(year,monthOfYear+1,dayOfMonth));
             mEventEditDate.setText(Driver.parseDateForDisplay(
@@ -92,6 +156,29 @@ public class EditEventFragment extends Fragment
         } catch (ParseException e) {
             Log.i("EditEvent:set", "Could not set date.");
         }
+    }
+
+    public String buildURL(View view) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            SharedPreferences sp = getActivity().getSharedPreferences(getString(
+                    R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
+            sb.append(EDIT_EVENT_URL);
+            sb.append("email=");
+            sb.append(URLEncoder.encode(sp.getString(getString(R.string.USER),null), "UTF-8"));
+            sb.append("&id=");
+            sb.append(URLEncoder.encode(mEventItem.getId(), "UTF-8"));
+            sb.append("&title=");
+            sb.append(URLEncoder.encode(mEventItem.getTitle(), "UTF-8"));
+            sb.append("&date=");
+            sb.append(URLEncoder.encode(mEventItem.getDate(), "UTF-8"));
+            sb.append("&comment=");
+            sb.append(URLEncoder.encode(mEventItem.getComment(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            if (Driver.DEBUG) Toast.makeText(getActivity(), "Illegal something.",
+                    Toast.LENGTH_LONG).show();
+        }
+        return sb.toString();
     }
 
     /**
@@ -106,6 +193,6 @@ public class EditEventFragment extends Fragment
      */
     public interface OnEditEventInteractionListener {
         void onEditEventInteraction(String url);
-        void callback(boolean result, String message);
+        void editEventCallback(boolean result, String message);
     }
 }
