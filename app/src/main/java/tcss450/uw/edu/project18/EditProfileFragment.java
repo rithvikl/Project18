@@ -1,6 +1,7 @@
 package tcss450.uw.edu.project18;
 
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,16 +10,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+import android.widget.DatePicker;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Date;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.IllegalFormatException;
+
+import tcss450.uw.edu.project18.event.Event;
 
 
 /**
@@ -28,7 +31,8 @@ import java.util.IllegalFormatException;
  * @author Melinda Robertson
  * @version 20160429
  */
-public class EditProfileFragment extends Fragment {
+public class EditProfileFragment extends Fragment
+    implements java.io.Serializable, android.app.DatePickerDialog.OnDateSetListener {
 
     /**
      * Not sure what this is using this for.
@@ -40,16 +44,14 @@ public class EditProfileFragment extends Fragment {
      * profile. I might consolidate this.
      */
     public static final String PROFILE_ADD_URL =
-            "http://cssgate.insttech.washington.edu/~memre/addprofile.php?";
+            "http://cssgate.insttech.washington.edu/~_450atm18/addprofile.php?";
     public static final String PROFILE_EDIT_URL =
-            "http://cssgate.insttech.washington.edu/~memre/editprofile.php?";
+            "http://cssgate.insttech.washington.edu/~_450atm18/editprofile.php?";
     /**
      * Text boxes that hold the information from the user.
      */
     private TextView profileEmail;
-    private TextView profileBDay;
-    private TextView profileBMonth;
-    private TextView profileBYear;
+    private TextView profileDate;
     private TextView profilePass1;
     private TextView profilePass2;
 
@@ -69,6 +71,8 @@ public class EditProfileFragment extends Fragment {
      * or editing a profile.
      */
     private boolean loggedin;
+
+    private SharedPreferences mShared;
 
     /**
      * The constructor.
@@ -91,12 +95,42 @@ public class EditProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        mShared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS),
+                Context.MODE_PRIVATE);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         profileEmail = (TextView) view.findViewById(R.id.profile_email);
-        profileBDay = (TextView) view.findViewById(R.id.profile_day);
-        profileBMonth = (TextView) view.findViewById(R.id.profile_month);
-        profileBYear = (TextView) view.findViewById(R.id.profile_year);
+        profileDate = (TextView) view.findViewById(R.id.profile_date);
+        Button date = (Button) view.findViewById(R.id.date_button);
+        final EditProfileFragment that = this;
+        date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putSerializable(DatePickingFragment.LISTEN, that);
+                try {
+                    int[] vals = Driver.getValueOfDate(mShared.getString(
+                            getString(R.string.BDAY), "00000000"));
+                    b.putInt(DatePickingFragment.YEAR, vals[0]);
+                    b.putInt(DatePickingFragment.MONTH, vals[1]);
+                    b.putInt(DatePickingFragment.YEAR, vals[2]);
+                } catch (ParseException e) {
+                    Calendar c = Calendar.getInstance();
+                    Log.i("EditProfile:date", "Incorrect format for date. Using default.");
+                    b.putInt(DatePickingFragment.YEAR, c.get(Calendar.YEAR));
+                    b.putInt(DatePickingFragment.MONTH, c.get(Calendar.MONTH));
+                    b.putInt(DatePickingFragment.DAY, c.get(Calendar.DAY_OF_MONTH));
+                }
+                if (Driver.DEBUG) {
+                    Log.i("EditProfile:date", "Created Bundle, attempting to create fragment.");
+                }
+                DatePickingFragment fragment = new DatePickingFragment();
+                fragment.setArguments(b);
+                if (Driver.DEBUG) Log.i("EditProfile:date", "Created fragment, showing...");
+                fragment.show(getActivity().getSupportFragmentManager(), "launch");
+            }
+        });
         profilePass1 = (TextView) view.findViewById(R.id.profile_password);
         profilePass2 = (TextView) view.findViewById(R.id.profile_confirm);
         Button btn = (Button) view.findViewById(R.id.profile_submit);
@@ -115,14 +149,6 @@ public class EditProfileFragment extends Fragment {
                 mListener.editProfile(query);
             }
         });
-        if (Driver.DEBUG) {
-            profileEmail.setText("memre911@gmail.com");
-            profileBDay.setText("17");
-            profileBMonth.setText("6");
-            profileBYear.setText("1987");
-            profilePass1.setText("Qaz123");
-            profilePass2.setText("Qaz123");
-        }
         return view;
     }
 
@@ -130,21 +156,15 @@ public class EditProfileFragment extends Fragment {
      * Updates the text boxes with the user's information.
      */
     public void updateProfile() {
-        SharedPreferences sp = getActivity().getSharedPreferences(
-                getString(R.string.LOGIN_PREFS),
-                Context.MODE_PRIVATE);
-        loggedin = sp.getBoolean(getString(R.string.LOGGEDIN), false);
+        loggedin = mShared.getBoolean(getString(R.string.LOGGEDIN), false);
         if (loggedin) {
-            profileEmail.setText(sp.getString(getString(R.string.USER),""));
+            profileEmail.setText(mShared.getString(getString(R.string.USER),""));
             try {
-                String[] date = Driver.parseDate(sp.getString(getString(R.string.BDAY),""));
-                profileBDay.setText(date[0]);
-                profileBMonth.setText(date[1]);
-                profileBYear.setText(date[2]);
+                profileDate.setText(Driver.parseDateForDisplay(mShared.getString(
+                        getString(R.string.BDAY), "00000000")));
             } catch (ParseException e) {
                 Toast.makeText(getActivity(), "Unable to get profile information.",
                         Toast.LENGTH_LONG).show();
-                return;
             }
         }
     }
@@ -157,38 +177,34 @@ public class EditProfileFragment extends Fragment {
      */
     private boolean validate(View v) {
         String email = profileEmail.getText().toString();
-        String day = profileBDay.getText().toString();
-        String month = profileBMonth.getText().toString();
-        String year = profileBYear.getText().toString();
+        String date = profileDate.getText().toString();
         String pass1 = profilePass1.getText().toString();
         String pass2 = profilePass2.getText().toString();
         if (!Driver.isValidEmail(email)){
-            Toast.makeText(v.getContext(), "Invalid email.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Invalid email.", Toast.LENGTH_LONG).show();
             profileEmail.requestFocus();
+            return false;
+        }
+        if (date.isEmpty() || profileQuery[1] == null) {
+            Toast.makeText(getActivity(), "Enter or confirm the date.", Toast.LENGTH_LONG).show();
             return false;
         }
         String result = Driver.isValidPassword(LoginActivity.PROFILE_NEW, pass1, pass2);
         if (!result.contains("success")) {
-            Toast.makeText(v.getContext(), result, Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
             profilePass1.requestFocus();
             return false;
         }
-        try {
-            result = Driver.isValidDate(day, month, year);
-        } catch (IllegalArgumentException e){
-            if(Driver.DEBUG) Log.i("EPF:date", e.getMessage());
-            Toast.makeText(v.getContext(), "Invalid date.", Toast.LENGTH_LONG).show();
-            profileBDay.requestFocus();
-            return false;
+        if (loggedin) {
+            //TODO check if the password equals old...naw too hard...
         }
         if (Driver.DEBUG) {
-            String print = "{email:" + email + ", day:" + day
-                    + ", month:" + month + ", year:" + year
+            String print = "{email:" + email + ", "
                     + ", pass1:" + pass1 + ", pass2:" + pass2;
             Log.i("EditProfile:valid4", print);
         }
         profileQuery[0] = email;
-        profileQuery[1] = result;
+        //profileQuery[1] = result;
         profileQuery[2] = pass1;
         if(Driver.DEBUG)
             Log.i("EditProfile:text1", "{0:" + profileQuery[0] +
@@ -205,7 +221,13 @@ public class EditProfileFragment extends Fragment {
     public String buildURL(View view) {
         StringBuilder sb = new StringBuilder();
         try {
-            if (loggedin) sb.append(PROFILE_EDIT_URL);
+            if (loggedin) {
+                sb.append(PROFILE_EDIT_URL);
+                sb.append("uid=");
+                sb.append(URLEncoder.encode(mShared.getString(
+                        getString(R.string.UID), "-1"),"UTF-8"));
+                sb.append("&");
+            }
             else sb.append(PROFILE_ADD_URL);
             boolean arg = validate(view);
             if(Driver.DEBUG)
@@ -215,7 +237,6 @@ public class EditProfileFragment extends Fragment {
             if (!arg) {
                 throw new IllegalArgumentException();
             }
-
             sb.append(getString(R.string.USER));
             sb.append("=");
             sb.append(URLEncoder.encode(profileQuery[0], "UTF-8"));
@@ -227,10 +248,6 @@ public class EditProfileFragment extends Fragment {
             sb.append(getString(R.string.PWD));
             sb.append("=");
             sb.append(URLEncoder.encode(profileQuery[2], "UTF-8"));
-            sb.append("&");
-            sb.append(getString(R.string.GID));
-            sb.append("=");
-            sb.append(URLEncoder.encode("0000", "UTF-8"));
             if(Driver.DEBUG) Log.i("EditProfile:build", sb.toString());
         } catch (IllegalArgumentException e) {
             //Toast.makeText(view.getContext(), "Arguments: We were unable to update your profile.",
@@ -256,6 +273,17 @@ public class EditProfileFragment extends Fragment {
             updateProfile();
         } else
             loggedin = false;
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        try {
+            profileQuery[1] = Driver.parseDateForDB(year, monthOfYear + 1, dayOfMonth);
+            profileDate.setText(Driver.parseDateForDisplay(profileQuery[1]));
+        } catch (ParseException e) {
+            Log.i("EditProfile:dateset", "Unusable date.");
+            profileQuery[1] = "00000000";
+        }
     }
 
     /**

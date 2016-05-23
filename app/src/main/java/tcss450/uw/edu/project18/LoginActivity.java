@@ -122,25 +122,6 @@ public class LoginActivity extends AppCompatActivity
     }
 
     /**
-     * This is the callback function for the edit profile task
-     * that lets the calling object know if it was successful.
-     * If it is, it returns to the previous fragment which in this
-     * case should be the login form.
-     * @param success is true if the task successfully inserted a new record,
-     *                false otherwise.
-     * @param message is a message to display to the user about the task.
-     */
-    @Override
-    public void callback(boolean success, String message) {
-        Toast.makeText(getApplicationContext(), message,
-                Toast.LENGTH_LONG).show();
-        if (success) {
-            getSupportFragmentManager().popBackStackImmediate();
-            mLoginFormView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    /**
      * Begins the main activity for the bulk of the app.
      * This will initialize to the event list if the user
      * successfully logs in.
@@ -339,6 +320,25 @@ public class LoginActivity extends AppCompatActivity
     }
 
     /**
+     * This is the callback function for the edit profile task
+     * that lets the calling object know if it was successful.
+     * If it is, it returns to the previous fragment which in this
+     * case should be the login form.
+     * @param success is true if the task successfully inserted a new record,
+     *                false otherwise.
+     * @param message is a message to display to the user about the task.
+     */
+    @Override
+    public void callback(boolean success, String message) {
+        Toast.makeText(getApplicationContext(), message,
+                Toast.LENGTH_LONG).show();
+        if (success) {
+            getSupportFragmentManager().popBackStackImmediate();
+            mLoginFormView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
      * An interface used in the login task. Auto-created by
      * android studio.
      */
@@ -367,7 +367,7 @@ public class LoginActivity extends AppCompatActivity
          * The strings for the table attributes; also found in string.xml
          */
         public final static String RESULT = "result", USER = "email", PSWD = "pwd",
-            FAIL = "fail", SUCCESS = "success", BDAY = "bday", GID = "gallid";
+            FAIL = "fail", SUCCESS = "success", BDAY = "bday", UID = "uid";
         /**
          * The email to send to the database.
          */
@@ -434,7 +434,7 @@ public class LoginActivity extends AppCompatActivity
                         mShared.edit().putBoolean(getString(R.string.LOGGEDIN), true).commit();
                         mShared.edit().putString(getString(R.string.USER), (String) jo.get(USER)).commit();
                         mShared.edit().putString(getString(R.string.BDAY), (String) jo.get(BDAY)).commit();
-                        mShared.edit().putString(getString(R.string.GID), (String) jo.get(GID)).commit();
+                        mShared.edit().putString(getString(R.string.UID), (String) jo.get(UID)).commit();
                         startMain();
                     } else if (Driver.DEBUG) {
                         Log.i("Login:post", "Status:" + status);

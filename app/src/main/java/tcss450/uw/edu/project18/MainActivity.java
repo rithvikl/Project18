@@ -3,6 +3,7 @@ package tcss450.uw.edu.project18;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import tcss450.uw.edu.project18.event.Event;
 
@@ -27,7 +29,10 @@ import tcss450.uw.edu.project18.event.Event;
  * @version 20160430
  */
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, EventListFragment.OnListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        EventListFragment.OnListFragmentInteractionListener,
+        EditEventFragment.OnEditEventInteractionListener,
+        EditProfileFragment.EditProfileListener{
 
     private static final int CAMERA_REQUEST = 1888;
     
@@ -145,17 +150,20 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
+            takePicture();
+        }  else if (id == R.id.nav_manage) {
+            //open profile editor
+            EditProfileFragment epf = new EditProfileFragment();
+            Bundle args = new Bundle(); //these are useless
+            epf.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main_fragment_container, epf)
+                    .addToBackStack(null)
+                    .commit();
         } else if (id == R.id.nav_share) {
-
+            //share via social media
         } else if (id == R.id.nav_send) {
-
+            //send via email
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -200,5 +208,30 @@ public class MainActivity extends AppCompatActivity
 
     public void editEvent(View view) {
         mViewEventFragment.editEvent(view);
+    }
+
+    @Override
+    public void onEditEventInteraction(String url) {
+        EditEventTask eet = new EditEventTask(this);
+        eet.execute(url);
+    }
+
+    public void editEventCallback(boolean result, String message) {
+        if (Driver.DEBUG)
+            Toast.makeText(getApplicationContext(), message,
+                Toast.LENGTH_LONG).show();
+        if (result) {
+            getSupportFragmentManager().popBackStackImmediate();
+        }
+    }
+
+    @Override
+    public void editProfile(String url) {
+
+    }
+
+    @Override
+    public void callback(boolean success, String message) {
+
     }
 }

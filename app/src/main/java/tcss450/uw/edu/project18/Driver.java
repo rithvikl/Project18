@@ -63,6 +63,14 @@ public class Driver {
         return month + "/" + day + "/" + year;
     }
 
+    public static boolean isValidDate(String date) throws IllegalArgumentException {
+        String year = date.substring(0,4);
+        String month = date.substring(4,6);
+        String day = date.substring(6);
+        if (isValidDate(day,month,year).contains("/")) return true;
+        else return false;
+    }
+
     /**
      * Determines if the given value is a leap year.
      * @param y is the year.
@@ -145,4 +153,57 @@ public class Driver {
         return ret;
     }
 
+    public static String parseDateForDB(int year, int month, int day) {
+        String str = "";
+        str += String.valueOf(year);
+        str += month < 10 ? "0" + month : String.valueOf(month);
+        str += day < 10 ? "0" + day : String.valueOf(day);
+        return str;
+    }
+
+    /**
+     * Formats a date string in format YYYYMMDD to a legible date in format
+     * Month Day, Year
+     * @param date is the String date in format YYYYMMDD
+     * @return a String that is a more legible date.
+     * @throws ParseException if the date is in the wrong format.
+     */
+    public static String parseDateForDisplay(String date) throws ParseException{
+        String[] months = {"January", "February", "March", "April",
+            "May", "June", "July", "August", "September", "October",
+            "November", "December"};
+        try {
+            isValidDate(date);
+            //get 4 chars for year
+            String year = date.substring(0, 4);
+            String month = months[Integer.parseInt(date.substring(4, 6))];
+            String day = date.substring(6);
+            return month + " " + day + ", " + year;
+        } catch (Exception e) {
+            throw new ParseException("Could not reformat date string.", 0);
+        }
+    }
+
+    /**
+     * Verifies and returns a date in YYYYMMDD format in an integer array.
+     * @param date is the date string to convert.
+     * @return an integer array representing 0: year; 1: month, 2: day
+     * @throws ParseException if in the wrong format.
+     */
+    public static int[] getValueOfDate(String date) throws ParseException {
+        int[] vals = new int[3];
+        try {
+            isValidDate(date);
+            vals[0] = Integer.valueOf(date.substring(0, 4));
+            vals[1] = Integer.valueOf(date.substring(4, 6));
+            vals[3] = Integer.valueOf(date.substring(6));
+        } catch (Exception e) {
+            throw new ParseException("Could not convert date string.", 0);
+        }
+        return vals;
+    }
+
+    public static String parseDateForDisplay(int year, int month, int day) throws ParseException{
+        return parseDateForDisplay(parseDateForDB(year,month,day));
+    }
 }
