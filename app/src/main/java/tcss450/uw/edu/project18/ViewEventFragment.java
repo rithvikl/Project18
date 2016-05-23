@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import tcss450.uw.edu.project18.event.Event;
@@ -14,14 +15,14 @@ import tcss450.uw.edu.project18.event.Event;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ViewEventFragment.OnFragmentInteractionListener} interface
+ * {@link ViewEventFragment.OnViewEventInteractionListener} interface
  * to handle interaction events.
  */
 public class ViewEventFragment extends Fragment {
 
     public static final String EVENT_ITEM_SELECTED = "EventItemSelected";
 
-    private OnFragmentInteractionListener mListener;
+    private OnViewEventInteractionListener mListener;
     private TextView mEventItemTitleTextView;
     private TextView mEventItemDateTextView;
     private TextView mEventItemCommentTextView;
@@ -41,7 +42,13 @@ public class ViewEventFragment extends Fragment {
         mEventItemTitleTextView = (TextView) view.findViewById(R.id.event_item_title);
         mEventItemDateTextView = (TextView) view.findViewById(R.id.event_item_date);
         mEventItemCommentTextView = (TextView) view.findViewById(R.id.event_item_comment);
-
+        Button editbtn = (Button) view.findViewById(R.id.event_item_button);
+        editbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editEvent(v);
+            }
+        });
         return view;
     }
 
@@ -71,8 +78,12 @@ public class ViewEventFragment extends Fragment {
         }
     }
 
+    /**
+     * Opens a fragment to edit an Event.
+     * @param view is the button that triggered calling this function.
+     */
     public void editEvent(View view) {
-        if (view.getId() == R.id.edit_event_button) {
+        if (view.getId() == R.id.event_item_button) {
             EditEventFragment editEventFragment = new EditEventFragment();
             Bundle args = new Bundle();
             args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, mEventItem);
@@ -91,7 +102,7 @@ public class ViewEventFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+    public interface OnViewEventInteractionListener {
+        void onViewEventInteraction(Uri uri);
     }
 }

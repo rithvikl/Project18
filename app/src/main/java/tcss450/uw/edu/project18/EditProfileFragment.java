@@ -21,6 +21,8 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.IllegalFormatException;
 
+import tcss450.uw.edu.project18.event.Event;
+
 
 /**
  * Allows the user to create or edit their profile.
@@ -70,6 +72,8 @@ public class EditProfileFragment extends Fragment
      */
     private boolean loggedin;
 
+    private SharedPreferences mShared;
+
     /**
      * The constructor.
      */
@@ -92,7 +96,7 @@ public class EditProfileFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final SharedPreferences shared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS),
+        mShared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS),
                 Context.MODE_PRIVATE);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
@@ -106,7 +110,7 @@ public class EditProfileFragment extends Fragment
                 Bundle b = new Bundle();
                 b.putSerializable(DatePickingFragment.LISTEN, that);
                 try {
-                    int[] vals = Driver.getValueOfDate(shared.getString(
+                    int[] vals = Driver.getValueOfDate(mShared.getString(
                             getString(R.string.BDAY), "00000000"));
                     b.putInt(DatePickingFragment.YEAR, vals[0]);
                     b.putInt(DatePickingFragment.MONTH, vals[1]);
@@ -145,9 +149,6 @@ public class EditProfileFragment extends Fragment
                 mListener.editProfile(query);
             }
         });
-        if (shared != null && shared.getString(getString(R.string.USER), null) != null) {
-
-        }
         return view;
     }
 
@@ -155,16 +156,11 @@ public class EditProfileFragment extends Fragment
      * Updates the text boxes with the user's information.
      */
     public void updateProfile() {
-        SharedPreferences shared = getActivity().getSharedPreferences(
-                getString(R.string.LOGIN_PREFS),
-                Context.MODE_PRIVATE);
-        loggedin = shared.getBoolean(getString(R.string.LOGGEDIN), false);
+        loggedin = mShared.getBoolean(getString(R.string.LOGGEDIN), false);
         if (loggedin) {
-            profileEmail.setText(shared.getString(getString(R.string.USER),""));
+            profileEmail.setText(mShared.getString(getString(R.string.USER),""));
             try {
-                profileEmail.setText(shared.getString(getString(
-                        R.string.USER), ""));
-                profileDate.setText(Driver.parseDateForDisplay(shared.getString(
+                profileDate.setText(Driver.parseDateForDisplay(mShared.getString(
                         getString(R.string.BDAY), "00000000")));
             } catch (ParseException e) {
                 Toast.makeText(getActivity(), "Unable to get profile information.",
@@ -199,6 +195,9 @@ public class EditProfileFragment extends Fragment
             profilePass1.requestFocus();
             return false;
         }
+        if (loggedin) {
+            //TODO check if the password equals old...naw too hard...
+        }
         if (Driver.DEBUG) {
             String print = "{email:" + email + ", "
                     + ", pass1:" + pass1 + ", pass2:" + pass2;
@@ -222,7 +221,13 @@ public class EditProfileFragment extends Fragment
     public String buildURL(View view) {
         StringBuilder sb = new StringBuilder();
         try {
-            if (loggedin) sb.append(PROFILE_EDIT_URL);
+            if (loggedin) {
+                sb.append(PROFILE_EDIT_URL);
+                sb.append("uid=");
+                sb.append(URLEncoder.encode(mShared.getString(
+                        getString(R.string.UID), "-1"),"UTF-8"));
+                sb.append("&");
+            }
             else sb.append(PROFILE_ADD_URL);
             boolean arg = validate(view);
             if(Driver.DEBUG)
@@ -232,7 +237,6 @@ public class EditProfileFragment extends Fragment
             if (!arg) {
                 throw new IllegalArgumentException();
             }
-
             sb.append(getString(R.string.USER));
             sb.append("=");
             sb.append(URLEncoder.encode(profileQuery[0], "UTF-8"));
@@ -244,10 +248,6 @@ public class EditProfileFragment extends Fragment
             sb.append(getString(R.string.PWD));
             sb.append("=");
             sb.append(URLEncoder.encode(profileQuery[2], "UTF-8"));
-            sb.append("&");
-            sb.append(getString(R.string.GID));
-            sb.append("=");
-            sb.append(URLEncoder.encode("0000", "UTF-8"));
             if(Driver.DEBUG) Log.i("EditProfile:build", sb.toString());
         } catch (IllegalArgumentException e) {
             //Toast.makeText(view.getContext(), "Arguments: We were unable to update your profile.",

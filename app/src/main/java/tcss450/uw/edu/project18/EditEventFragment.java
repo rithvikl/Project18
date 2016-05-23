@@ -42,7 +42,7 @@ public class EditEventFragment extends Fragment
     private EditText mEventItemTitleEditText;
     private TextView mEventEditDate;
     private EditText mEventItemCommentEditText;
-    //private String mEventItemPhotoId;
+    private String mEventItemPhotoId;
     private Event mEventItem;
 
     public EditEventFragment() {
@@ -109,7 +109,7 @@ public class EditEventFragment extends Fragment
         submitbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onEditEventInteraction(buildURL(v));
+                mListener.onEditEventInteraction(buildURL());
             }
         });
         return view;
@@ -118,7 +118,6 @@ public class EditEventFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-
         // During startup, check if there are arguments passed to the fragment.
         // onStart is a good place to do this because the layout has already been
         // applied to the fragment at this point so we can safely call the method
@@ -130,6 +129,10 @@ public class EditEventFragment extends Fragment
         }
     }
 
+    /**
+     * Update the fragment with an Event's information.
+     * @param event is the Event to update with.
+     */
     public void updateView(Event event) {
         if (event != null) {
             mEventItem = event;
@@ -143,7 +146,7 @@ public class EditEventFragment extends Fragment
             }
             mEventItemCommentEditText.setText(event.getComment());
             // TODO: Get photo and attach to ImageView
-            //mEventItemPhotoId = event.getId();
+            mEventItemPhotoId = event.getId();
         }
     }
 
@@ -158,7 +161,11 @@ public class EditEventFragment extends Fragment
         }
     }
 
-    public String buildURL(View view) {
+    /**
+     * Create the URL for updating an Event.
+     * @return a String URL.
+     */
+    public String buildURL() {
         StringBuilder sb = new StringBuilder();
         try {
             SharedPreferences sp = getActivity().getSharedPreferences(getString(

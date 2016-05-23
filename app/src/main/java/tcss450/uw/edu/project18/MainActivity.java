@@ -31,7 +31,8 @@ import tcss450.uw.edu.project18.event.Event;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         EventListFragment.OnListFragmentInteractionListener,
-        EditEventFragment.OnEditEventInteractionListener{
+        EditEventFragment.OnEditEventInteractionListener,
+        EditProfileFragment.EditProfileListener{
 
     private static final int CAMERA_REQUEST = 1888;
     
@@ -144,17 +145,20 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
+            takePicture();
+        }  else if (id == R.id.nav_manage) {
+            //open profile editor
+            EditProfileFragment epf = new EditProfileFragment();
+            Bundle args = new Bundle(); //these are useless
+            epf.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main_fragment_container, epf)
+                    .addToBackStack(null)
+                    .commit();
         } else if (id == R.id.nav_share) {
-
+            //share via social media
         } else if (id == R.id.nav_send) {
-
+            //send via email
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -209,7 +213,16 @@ public class MainActivity extends AppCompatActivity
                 Toast.LENGTH_LONG).show();
         if (result) {
             getSupportFragmentManager().popBackStackImmediate();
-            //TODO set list to visible
         }
+    }
+
+    @Override
+    public void editProfile(String url) {
+
+    }
+
+    @Override
+    public void callback(boolean success, String message) {
+
     }
 }

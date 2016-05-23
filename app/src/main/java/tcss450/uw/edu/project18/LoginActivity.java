@@ -367,7 +367,7 @@ public class LoginActivity extends AppCompatActivity
          * The strings for the table attributes; also found in string.xml
          */
         public final static String RESULT = "result", USER = "email", PSWD = "pwd",
-            FAIL = "fail", SUCCESS = "success", BDAY = "bday", GID = "gallid";
+            FAIL = "fail", SUCCESS = "success", BDAY = "bday", UID = "uid";
         /**
          * The email to send to the database.
          */
@@ -434,7 +434,7 @@ public class LoginActivity extends AppCompatActivity
                         mShared.edit().putBoolean(getString(R.string.LOGGEDIN), true).commit();
                         mShared.edit().putString(getString(R.string.USER), (String) jo.get(USER)).commit();
                         mShared.edit().putString(getString(R.string.BDAY), (String) jo.get(BDAY)).commit();
-                        mShared.edit().putString(getString(R.string.GID), (String) jo.get(GID)).commit();
+                        mShared.edit().putString(getString(R.string.UID), (String) jo.get(UID)).commit();
                         startMain();
                     } else if (Driver.DEBUG) {
                         Log.i("Login:post", "Status:" + status);
