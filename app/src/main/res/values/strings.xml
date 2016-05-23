@@ -44,4 +44,7 @@
 
     <!-- Toolbar menu items. -->
     <string name="toolbar_camera">Take a picture!</string>
+
+    <!-- String for view event -->
+    <string name="edit_event_button">Edit Event</string>
 </resources>

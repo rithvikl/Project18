@@ -36,6 +36,11 @@ public class MainActivity extends AppCompatActivity
      */
     private SharedPreferences mShared;
 
+    /**
+     * Instance of viewEventFragment
+     */
+    private ViewEventFragment mViewEventFragment;
+
     //hiding the toolbar and fab
     //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
 
@@ -186,10 +191,14 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onListFragmentInteraction(Event item) {
-        ViewEventFragment viewEventFragment = new ViewEventFragment();
+        mViewEventFragment = new ViewEventFragment();
         Bundle args = new Bundle();
         args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, item);
-        viewEventFragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, viewEventFragment).addToBackStack(null).commit();
+        mViewEventFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mViewEventFragment).addToBackStack(null).commit();
+    }
+
+    public void editEvent(View view) {
+        mViewEventFragment.editEvent(view);
     }
 }
