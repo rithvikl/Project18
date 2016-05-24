@@ -42,9 +42,6 @@
     <string name="edit_event_cancel_button">Cancel</string>
     <string name="edit_event_submit_button">Save</string>
 
-    <!-- View Event fragment. -->
-    <string name="event_item_button">Edit</string>
-
     <string name="title_activity_main">Gather</string>
     <string name="nav_subtext">Welcome!</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -52,14 +49,11 @@
 
     <!-- Toolbar menu items. -->
     <string name="toolbar_camera">Take a picture!</string>
-<<<<<<< HEAD
 
     <!-- String for view event -->
     <string name="edit_event_button">Edit Event</string>
-=======
     <string name="sidebar_camera">Create Event</string>
     <string name="sidebar_share">Share an Event</string>
     <string name="sidebar_profile">Edit Profile</string>
 
->>>>>>> f66a65ffb24859fdca8cf1fcf31ac0f81646b150
 </resources>

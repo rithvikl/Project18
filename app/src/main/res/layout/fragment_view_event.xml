@@ -28,13 +28,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-<<<<<<< HEAD
         android:id="@+id/edit_event_button"
-        android:text="@string/edit_event_button"
-        android:onClick="editEvent"/>
-=======
-        android:text="@string/event_item_button"
-        android:id="@+id/event_item_button" />
->>>>>>> f66a65ffb24859fdca8cf1fcf31ac0f81646b150
+        android:text="@string/edit_event_button" />
 
 </LinearLayout>

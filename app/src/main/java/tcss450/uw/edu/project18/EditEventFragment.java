@@ -1,13 +1,6 @@
 package tcss450.uw.edu.project18;
 
 import android.app.DatePickerDialog;
-
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.ParseException;
-import java.util.Calendar;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -23,6 +16,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.ParseException;
+import java.util.Calendar;
+
 import tcss450.uw.edu.project18.event.Event;
 
 
@@ -35,8 +34,18 @@ import tcss450.uw.edu.project18.event.Event;
 public class EditEventFragment extends Fragment
     implements DatePickerDialog.OnDateSetListener, Serializable {
 
+    /**
+     * The shared preferences file used for storing user info
+     */
+    private SharedPreferences mShared;
+
+    private String mUser;
+
     public static final String EDIT_EVENT_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/editevent.php?";
+
+    public static final String GET_PHOTO_URL =
+            "http://cssgate.insttech.washington.edu/~_450atm18/loadpicture.php?";
 
     private OnEditEventInteractionListener mListener;
     private EditText mEventItemTitleEditText;
@@ -60,10 +69,18 @@ public class EditEventFragment extends Fragment
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Get the user's username from shared preferences
+        mShared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
+        mUser = mShared.getString(getString(R.string.USER), "");
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_view_event, container, false);
+        View view =  inflater.inflate(R.layout.fragment_edit_event, container, false);
         mEventItemTitleEditText = (EditText) view.findViewById(R.id.event_item_title_edit);
         mEventEditDate = (TextView) view.findViewById(R.id.event_edit_date_display);
         mEventItemCommentEditText = (EditText) view.findViewById(R.id.event_item_comment_edit);
@@ -145,8 +162,15 @@ public class EditEventFragment extends Fragment
                 Log.i("EditEvent:start", "Could not retrieve date.");
             }
             mEventItemCommentEditText.setText(event.getComment());
-            // TODO: Get photo and attach to ImageView
             mEventItemPhotoId = event.getId();
+            String get_photo_url = Uri.parse(GET_PHOTO_URL)
+                    .buildUpon()
+                    .appendQueryParameter("email", mUser)
+                    .appendQueryParameter("id", mEventItemPhotoId)
+                    .build()
+                    .toString();
+            GetPhotoUrlTask task = new GetPhotoUrlTask(getActivity());
+            task.execute(new String[]{get_photo_url, "edit"});
         }
     }
 

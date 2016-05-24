@@ -3,7 +3,7 @@ package tcss450.uw.edu.project18;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -45,6 +45,11 @@ public class MainActivity extends AppCompatActivity
      * Instance of viewEventFragment
      */
     private ViewEventFragment mViewEventFragment;
+
+    /**
+     * Instance of createEventFragment
+     */
+    private CreateEventFragment mCreateEventFragment;
 
     //hiding the toolbar and fab
     //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
@@ -186,11 +191,13 @@ public class MainActivity extends AppCompatActivity
      * @param data
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // TODO: Get the photo and nav to CreateEventFragment
-//        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-//            Bitmap photo = (Bitmap) data.getExtras().get("data");
-//            imageView.setImageBitmap(photo);
-//        }
+        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            if (photo != null) {
+                mCreateEventFragment = new CreateEventFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mCreateEventFragment).addToBackStack(null).commit();
+            }
+        }
     }
 
     /**
@@ -199,16 +206,19 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onListFragmentInteraction(Event item) {
-        mViewEventFragment = new ViewEventFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, item);
-        mViewEventFragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mViewEventFragment).addToBackStack(null).commit();
+        if (item != null) {
+            mViewEventFragment = new ViewEventFragment();
+            Bundle args = new Bundle();
+            args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, item);
+            mViewEventFragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mViewEventFragment).addToBackStack(null).commit();
+        }
     }
 
-    public void editEvent(View view) {
-        mViewEventFragment.editEvent(view);
-    }
+//    public void editEvent(View view) {
+//        Log.i("DEBUG", "edit - Main");
+//        mViewEventFragment.editEvent(view);
+//    }
 
     @Override
     public void onEditEventInteraction(String url) {
