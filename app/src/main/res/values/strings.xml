@@ -38,9 +38,12 @@
     <string name="profile_submit">Submit</string>
 
     <!-- Edit Event fragment. -->
+    <string name="edit_event_hint_title">Enter a title</string>
+    <string name="edit_event_hint_comment">Say something about your picture.</string>
     <string name="edit_event_date_button">Edit Date</string>
     <string name="edit_event_cancel_button">Cancel</string>
     <string name="edit_event_submit_button">Save</string>
+    <string name="edit_event_hint_tags">Tag your picture! Put commas, between, tags</string>
 
     <string name="title_activity_main">Gather</string>
     <string name="nav_subtext">Welcome!</string>

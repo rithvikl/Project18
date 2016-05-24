@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void callback(boolean success, String message) {
+    public void editProfileCallback(boolean success, String message) {
 
     }
 }

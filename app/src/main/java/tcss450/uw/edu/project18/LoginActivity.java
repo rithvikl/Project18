@@ -320,7 +320,7 @@ public class LoginActivity extends AppCompatActivity
     }
 
     /**
-     * This is the callback function for the edit profile task
+     * This is the editProfileCallback function for the edit profile task
      * that lets the calling object know if it was successful.
      * If it is, it returns to the previous fragment which in this
      * case should be the login form.
@@ -329,7 +329,7 @@ public class LoginActivity extends AppCompatActivity
      * @param message is a message to display to the user about the task.
      */
     @Override
-    public void callback(boolean success, String message) {
+    public void editProfileCallback(boolean success, String message) {
         Toast.makeText(getApplicationContext(), message,
                 Toast.LENGTH_LONG).show();
         if (success) {

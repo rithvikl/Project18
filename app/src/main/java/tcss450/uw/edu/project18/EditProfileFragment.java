@@ -305,6 +305,6 @@ public class EditProfileFragment extends Fragment
          * @param success indicates if the operation was successful.
          * @param message the message to display to the user.
          */
-        void callback(boolean success, String message);
+        void editProfileCallback(boolean success, String message);
     }
 }
