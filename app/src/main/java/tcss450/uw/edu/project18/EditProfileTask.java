@@ -2,7 +2,6 @@ package tcss450.uw.edu.project18;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +28,7 @@ public class EditProfileTask extends AsyncTask<String, Void, String> {
      * The calling class with be a listener. This is a chain
      * where the listener is getting responses from the
      * edit profile fragment then sending that to this task
-     * along with itself so that it can get a callback
+     * along with itself so that it can get a editProfileCallback
      * when the task finishes.
      */
     private EditProfileFragment.EditProfileListener epl;
@@ -77,11 +76,11 @@ public class EditProfileTask extends AsyncTask<String, Void, String> {
             JSONObject jo = new JSONObject(result);
             String status = (String) jo.get("result");
             if (status.equals("success"))
-                epl.callback(true, "Successfully edited user profile.");
-            else epl.callback(false, "There was an error editing your profile.");
+                epl.editProfileCallback(true, "Successfully edited user profile.");
+            else epl.editProfileCallback(false, "There was an error editing your profile.");
         } catch (JSONException e) {
             Log.d("EditProfile:post", "Could not parse JSON response.");
-            epl.callback(false, "There was a format error in your data.");
+            epl.editProfileCallback(false, "There was a format error in your data.");
         }
     }
 }

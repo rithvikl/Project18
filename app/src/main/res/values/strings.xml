@@ -38,9 +38,12 @@
     <string name="profile_submit">Submit</string>
 
     <!-- Edit Event fragment. -->
+    <string name="edit_event_hint_title">Enter a title</string>
+    <string name="edit_event_hint_comment">Say something about your picture.</string>
     <string name="edit_event_date_button">Edit Date</string>
     <string name="edit_event_cancel_button">Cancel</string>
     <string name="edit_event_submit_button">Save</string>
+    <string name="edit_event_hint_tags">Tag your picture! Put commas, between, tags</string>
 
     <!-- View Event fragment. -->
     <string name="event_item_button">Edit</string>
@@ -52,14 +55,11 @@
 
     <!-- Toolbar menu items. -->
     <string name="toolbar_camera">Take a picture!</string>
-<<<<<<< HEAD
-
-    <!-- String for view event -->
-    <string name="edit_event_button">Edit Event</string>
-=======
     <string name="sidebar_camera">Create Event</string>
     <string name="sidebar_share">Share an Event</string>
     <string name="sidebar_profile">Edit Profile</string>
 
->>>>>>> f66a65ffb24859fdca8cf1fcf31ac0f81646b150
+    <!-- String for view event -->
+    <string name="edit_event_button">Edit Event</string>
+
 </resources>

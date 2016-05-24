@@ -256,7 +256,7 @@ public class EventListFragment extends Fragment {
 
             mEventList = new ArrayList<Event>();
             Log.i("RESPONSE", mEventList.toString());
-            result = Event.parseCourseJSON(result, mEventList);
+            result = Event.parseEventJSON(result, mEventList);
             if (result != null) {
                 Toast.makeText(getActivity().getApplicationContext(), result, Toast.LENGTH_LONG).show();
                 return;

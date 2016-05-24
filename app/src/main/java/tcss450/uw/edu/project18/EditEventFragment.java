@@ -10,7 +10,9 @@ import java.util.Calendar;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -42,6 +44,7 @@ public class EditEventFragment extends Fragment
     private EditText mEventItemTitleEditText;
     private TextView mEventEditDate;
     private EditText mEventItemCommentEditText;
+    private EditText mEventTags;
     private String mEventItemPhotoId;
     private Event mEventItem;
 
@@ -67,6 +70,7 @@ public class EditEventFragment extends Fragment
         mEventItemTitleEditText = (EditText) view.findViewById(R.id.event_item_title_edit);
         mEventEditDate = (TextView) view.findViewById(R.id.event_edit_date_display);
         mEventItemCommentEditText = (EditText) view.findViewById(R.id.event_item_comment_edit);
+        mEventTags = (EditText) view.findViewById(R.id.event_edit_tags);
         final SharedPreferences shared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS),
                 Context.MODE_PRIVATE);
         final EditEventFragment that = this;
@@ -125,6 +129,7 @@ public class EditEventFragment extends Fragment
         Bundle args = getArguments();
         if (args != null) {
             // Set article based on argument passed in
+            //can be used for creating an event as well
             updateView((Event) args.getSerializable(ViewEventFragment.EVENT_ITEM_SELECTED));
         }
     }
@@ -181,6 +186,8 @@ public class EditEventFragment extends Fragment
             sb.append(URLEncoder.encode(mEventItem.getDate(), "UTF-8"));
             sb.append("&comment=");
             sb.append(URLEncoder.encode(mEventItem.getComment(), "UTF-8"));
+            sb.append("&tags=");
+            sb.append(URLEncoder.encode(mEventItem.getTags(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             if (Driver.DEBUG) Toast.makeText(getActivity(), "Illegal something.",
                     Toast.LENGTH_LONG).show();

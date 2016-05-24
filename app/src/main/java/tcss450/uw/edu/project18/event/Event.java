@@ -38,7 +38,7 @@ public class Event implements Serializable {
     /**
      * The tags associated with the event
      */
-    //    private String mTags;
+        private String mTags;
 
     /**
      * The name of the id property of each event
@@ -63,7 +63,7 @@ public class Event implements Serializable {
     /**
      * The name of the tag property of each event
      */
-    //    public static final String TAGS = "tags";
+        public static final String TAGS = "tags";
 
     /**
      * Contructor for an event
@@ -72,12 +72,12 @@ public class Event implements Serializable {
      * @param comment the comment on the event
      * @param date the date the event was created
      */
-    public Event (String id, String title, String comment, String date) {
+    public Event (String id, String title, String comment, String date, String tags) {
         this.mId = id;
         this.mTitle = title;
         this.mComment = comment;
         this.mDate = date;
-        //        this.mTags = tags;
+        this.mTags = tags;
     }
 
     /**
@@ -116,9 +116,13 @@ public class Event implements Serializable {
      * Getter for the tags associated with an event
      * @return the tags of the event
      */
-//    public String getTags () {
-//        return this.mTags;
-//    }
+    public String getTags () {
+        return this.mTags;
+    }
+
+    public String[] getTagsAsArray() {
+        return mTags.split(",");
+    }
 
     public void setId (String id) {
         this.mId = id;
@@ -148,9 +152,21 @@ public class Event implements Serializable {
      * Setter for the event tags
      * @param tags the tags associated with the event
      */
-//    public void setTags (String tags) {
-//        this.mTags = tags;
-//    }
+    public void setTags (String tags) {
+        this.mTags = tags;
+    }
+
+    public void addTag(String tag) {
+        this.mTags += "," + tag.trim();
+    }
+
+    public boolean containsTag(String tag) {
+        return this.mTags.contains(tag);
+    }
+
+    public void removeTag(String tag) {
+        mTags.replace(tag + ",","");
+    }
 
 
     /**
@@ -159,7 +175,7 @@ public class Event implements Serializable {
      * @param eventJSON the stringified event JSON data
      * @return failure reason or null if successful.
      */
-    public static String parseCourseJSON(String eventJSON, List<Event> eventList) {
+    public static String parseEventJSON(String eventJSON, List<Event> eventList) {
         String reason = null;
         if (eventJSON != null) {
             try {
@@ -172,8 +188,8 @@ public class Event implements Serializable {
                             obj.getString(Event.ID),
                             obj.getString(Event.TITLE),
                             obj.getString(Event.COMMENT),
-                            obj.getString(Event.DATE)
-//                            obj.getString(Event.TAGS)
+                            obj.getString(Event.DATE),
+                            obj.getString(Event.TAGS)
                     );
                     eventList.add(event);
                 }
