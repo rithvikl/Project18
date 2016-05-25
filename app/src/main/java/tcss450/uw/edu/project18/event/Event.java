@@ -179,9 +179,9 @@ public class Event implements Serializable {
         String reason = null;
         if (eventJSON != null) {
             try {
+                Log.i("EVENTJSON AFTER", eventJSON);
                 JSONObject jsonBody = new JSONObject(eventJSON);
                 JSONArray arr = jsonBody.getJSONArray("data");
-
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject obj = arr.getJSONObject(i);
                     Event event = new Event(

@@ -3,9 +3,7 @@ package tcss450.uw.edu.project18;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -55,11 +53,13 @@ public class EditEventFragment extends Fragment
     private EditText mEventItemCommentEditText;
     private EditText mEventTags;
     private String mEventItemPhotoId;
+    private String mEventItemPhotoFilePath;
     private Event mEventItem;
 
     public EditEventFragment() {
         // Required empty public constructor
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -168,6 +168,7 @@ public class EditEventFragment extends Fragment
             }
             mEventItemCommentEditText.setText(event.getComment());
             mEventItemPhotoId = event.getId();
+
             String get_photo_url = Uri.parse(GET_PHOTO_URL)
                     .buildUpon()
                     .appendQueryParameter("email", mUser)

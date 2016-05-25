@@ -42,7 +42,7 @@ public class EventListFragment extends Fragment {
     /**
      * The url of the web service to get a list of events
      */
-    private static final String GET_EVENTS_URL = "http://cssgate.insttech.washington.edu/~memre/download.php?";
+    private static final String GET_EVENTS_URL = "http://cssgate.insttech.washington.edu/~_450atm18/download.php?";
 
     /**
      * The number of columns of the list

@@ -3,7 +3,6 @@ package tcss450.uw.edu.project18;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,6 +22,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import tcss450.uw.edu.project18.event.Event;
@@ -187,8 +187,12 @@ public class MainActivity extends AppCompatActivity
             File photoFile = null;
             try {
                 photoFile = saveImageFile();
+                Log.i("PHOTOFILE", photoFile.getAbsolutePath());
+                Log.i("PHOTOFILE", mPhotoPath);
+
             } catch (IOException ex) {
                 // Error occurred while creating the File
+                Log.e("PHOTOFILE", "FAILED TO MAKE PHOTO PATH");
             }
 
             if (photoFile != null) {
@@ -206,11 +210,14 @@ public class MainActivity extends AppCompatActivity
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            if (photo != null) {
-//                mEditEventFragment = new EditEventFragment();
-//                getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mEditEventFragment).addToBackStack(null).commit();
-            }
+            Calendar curDate = Calendar.getInstance();
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
+            String formattedDate = dateFormatter.format(curDate.getTime());
+            Log.i("CREATE EVENT", formattedDate);
+//            Event createdEvent = new Event("-1", "", "", , "");
+            // Photo was saved to path in mPhotoPath
+//        mEditEventFragment = new EditEventFragment();
+//        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mEditEventFragment).addToBackStack(null).commit();
         }
     }
 
@@ -227,7 +234,7 @@ public class MainActivity extends AppCompatActivity
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mPhotoPath = "file:" + image.getAbsolutePath();
+        mPhotoPath = image.getAbsolutePath();
         return image;
     }
 
