@@ -17,3 +17,5 @@ Gather is a mobile electronic scrapbook designed to allow users to carry their m
 ## Development Notes
 
 The app is not currently complete. Do not use.
+
+1. Registering in the first iteration was difficult because we used text fields to enter the user's birthdate. We changed it to use a date picker dialog.
