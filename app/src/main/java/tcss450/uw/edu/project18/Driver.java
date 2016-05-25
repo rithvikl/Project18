@@ -14,7 +14,7 @@ public class Driver {
     /**
      * Debug mode displays far more error messages.
      */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     /**
      * Private constructor.

@@ -4,10 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,6 +19,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import tcss450.uw.edu.project18.event.Event;
 
@@ -34,7 +40,11 @@ public class MainActivity extends AppCompatActivity
         EditEventFragment.OnEditEventInteractionListener,
         EditProfileFragment.EditProfileListener{
 
-    private static final int CAMERA_REQUEST = 1888;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    private static final int REQUEST_TAKE_PHOTO = 1;
+
+    String mPhotoPath;
     
     /**
      * Holds information about the current user's session.
@@ -49,7 +59,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Instance of createEventFragment
      */
-    private CreateEventFragment mCreateEventFragment;
+    private EditEventFragment mEditEventFragment;
 
     //hiding the toolbar and fab
     //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
@@ -76,6 +86,7 @@ public class MainActivity extends AppCompatActivity
 
         // Navigate to event list fragment
         if (savedInstanceState == null || getSupportFragmentManager().findFragmentById(R.id.list) == null) {
+            Log.i("MAIN_ACTIVITY", "On Create");
             EventListFragment eventListFragment = new EventListFragment();
             getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, eventListFragment).commit();
         }
@@ -171,8 +182,20 @@ public class MainActivity extends AppCompatActivity
      * Start the camera to take a picture
      */
     public void takePicture() {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = saveImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+
+            if (photoFile != null) {
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                startActivityForResult(cameraIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
     }
 
     /**
@@ -182,13 +205,30 @@ public class MainActivity extends AppCompatActivity
      * @param data
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             if (photo != null) {
-                mCreateEventFragment = new CreateEventFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mCreateEventFragment).addToBackStack(null).commit();
+//                mEditEventFragment = new EditEventFragment();
+//                getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mEditEventFragment).addToBackStack(null).commit();
             }
         }
+    }
+
+    private File saveImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
     }
 
     /**

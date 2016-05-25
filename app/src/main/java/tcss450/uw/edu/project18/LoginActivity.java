@@ -362,7 +362,7 @@ public class LoginActivity extends AppCompatActivity
         /**
          * The URL for the database query.
          */
-        public static final String url = "http://cssgate.insttech.washington.edu/~memre/login.php";
+        public static final String url = "http://cssgate.insttech.washington.edu/~_450atm18/login.php";
         /**
          * The strings for the table attributes; also found in string.xml
          */
