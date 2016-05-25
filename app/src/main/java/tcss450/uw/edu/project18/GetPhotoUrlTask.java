@@ -2,7 +2,6 @@ package tcss450.uw.edu.project18;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,10 +70,10 @@ public class GetPhotoUrlTask extends AsyncTask<String, Void, String> {
             String status = (String) jsonObject.get("result");
             if (status.equals("success")) {
                 String photo_url = "http://" + jsonObject.get("url");
-                Log.i("DEBUG", photo_url);
+//                Log.i("DEBUG", photo_url);
 //                Log.i("DEBUG", result);
                 DownloadPhotoTask downloadPhotoTask = new DownloadPhotoTask(mWeakActivity.get());
-                downloadPhotoTask.execute(new String[]{photo_url, "view"});
+                downloadPhotoTask.execute(new String[]{photo_url, mImageHolderFragment});
             } else {
 //                Toast.makeText(getApplicationContext(), "Failed to add: " + jsonObject.get("error"), Toast.LENGTH_LONG).show();
             }

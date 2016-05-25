@@ -27,6 +27,7 @@ import java.util.Date;
 
 import tcss450.uw.edu.project18.event.Event;
 
+
 /**
  * The main activity that has a drawer navigation pane for settings and
  * searching for events. This activity also creates the fragments for the
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         EventListFragment.OnListFragmentInteractionListener,
         EditEventFragment.OnEditEventInteractionListener,
-        EditProfileFragment.EditProfileListener{
+        EditProfileFragment.EditProfileListener {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -60,6 +61,8 @@ public class MainActivity extends AppCompatActivity
      * Instance of createEventFragment
      */
     private EditEventFragment mEditEventFragment;
+
+    private EventListFragment mEventListFragment;
 
     //hiding the toolbar and fab
     //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
@@ -87,8 +90,9 @@ public class MainActivity extends AppCompatActivity
         // Navigate to event list fragment
         if (savedInstanceState == null || getSupportFragmentManager().findFragmentById(R.id.list) == null) {
             Log.i("MAIN_ACTIVITY", "On Create");
-            EventListFragment eventListFragment = new EventListFragment();
-            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, eventListFragment).commit();
+            mEventListFragment = new EventListFragment();
+            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, mEventListFragment, "EVENT_LIST_FRAG").addToBackStack("EVENT_LIST_FRAG").commit();
+            getFragmentManager().executePendingTransactions();
         }
     }
 
@@ -112,6 +116,20 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+
+//        Fragment myFragment = getFragmentManager().findFragmentByTag("EVENT_LIST_FRAG");
+//        if (myFragment != null && myFragment.isVisible()) {
+//            MenuItem item = menu.findItem(R.id.action_search);
+//            item.setVisible(true);
+//            final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+//            searchView.setOnQueryTextListener(mEventListFragment.mQueryTextListener);
+//        }
+//        if (myFragment == null) {
+//            Log.e("FILTER", "Fragment null");
+//        } else if (!myFragment.isVisible()) {
+//            Log.e("FILTER", "Fragment invisible");
+//        }
+
         return true;
     }
 
@@ -140,6 +158,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(i);
             finish();
             return true;
+        } else if (id == R.id.action_search) {
+            Log.i("FILTER", "Search selected");
         }
 
         return super.onOptionsItemSelected(item);
@@ -213,11 +233,20 @@ public class MainActivity extends AppCompatActivity
             Calendar curDate = Calendar.getInstance();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
             String formattedDate = dateFormatter.format(curDate.getTime());
-            Log.i("CREATE EVENT", formattedDate);
-//            Event createdEvent = new Event("-1", "", "", , "");
+            Log.i("CREATE", formattedDate);
+            Event createdEvent = new Event("-1", "", "", formattedDate, "");
+            Log.i("CREATE", "Created Event: " + createdEvent.toString());
             // Photo was saved to path in mPhotoPath
-//        mEditEventFragment = new EditEventFragment();
-//        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mEditEventFragment).addToBackStack(null).commit();
+//            mEditEventFragment = new EditEventFragment();
+//            Bundle args = new Bundle();
+//            args.putSerializable(EditEventFragment.PHOTO_FILE_PATH, mPhotoPath);
+//            args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, createdEvent);
+//            mEditEventFragment.setArguments(args);
+//            getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mEditEventFragment).addToBackStack(null).commit();
+        } else {
+            Log.e("CREATE", "failed to deliver image");
+            Log.i("CREATE", "Result Code: " + resultCode);
+            Log.i("CREATE", "Request Code: " + requestCode);
         }
     }
 

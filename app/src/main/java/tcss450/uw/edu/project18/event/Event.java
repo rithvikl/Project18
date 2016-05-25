@@ -202,6 +202,11 @@ public class Event implements Serializable {
         return reason;
     }
 
+    @Override
+    public String toString() {
+        return "{id: " + mId + ", title: " + mTitle + ", comment: " + mComment + ", date: " + mDate + ", tags: " + mTags + "}";
+    }
+
 //
 //    /**
 //     * An array of sample (event) items.

@@ -7,12 +7,15 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.text.ParseException;
 
 import tcss450.uw.edu.project18.event.Event;
 
@@ -107,7 +110,14 @@ public class ViewEventFragment extends Fragment {
         if (event != null) {
             mEventItem = event;
             mEventItemTitleTextView.setText(event.getTitle());
-            mEventItemDateTextView.setText(event.getDate());
+
+            try {
+                mEventItemDateTextView.setText(Driver.parseDateForDisplay(
+                        event.getDate()));
+            } catch (ParseException e) {
+                Log.i("ViewEvent:start", "Could not retrieve date.");
+            }
+
             mEventItemCommentTextView.setText(event.getComment());
             mEventItemPhotoId = event.getId();
             String get_photo_url = Uri.parse(GET_PHOTO_URL)
@@ -131,7 +141,7 @@ public class ViewEventFragment extends Fragment {
             Bundle args = new Bundle();
             args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, mEventItem);
             editEventFragment.setArguments(args);
-            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, editEventFragment).addToBackStack(null).commit();
+            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, editEventFragment).addToBackStack(null).commit();
     }
 
     /**

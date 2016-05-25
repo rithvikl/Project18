@@ -3,6 +3,8 @@ package tcss450.uw.edu.project18;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,9 +15,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -47,14 +51,18 @@ public class EditEventFragment extends Fragment
     public static final String GET_PHOTO_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/loadpicture.php?";
 
+    public static final String PHOTO_FILE_PATH = "photo_file_path";
+
     private OnEditEventInteractionListener mListener;
     private EditText mEventItemTitleEditText;
     private TextView mEventEditDate;
     private EditText mEventItemCommentEditText;
-    private EditText mEventTags;
+    private EditText mEventTagsEditText;
+    private ImageView mEventImageView;
     private String mEventItemPhotoId;
     private String mEventItemPhotoFilePath;
     private Event mEventItem;
+    private String mEventItemNewDate;
 
     public EditEventFragment() {
         // Required empty public constructor
@@ -87,7 +95,8 @@ public class EditEventFragment extends Fragment
         mEventItemTitleEditText = (EditText) view.findViewById(R.id.event_item_title_edit);
         mEventEditDate = (TextView) view.findViewById(R.id.event_edit_date_display);
         mEventItemCommentEditText = (EditText) view.findViewById(R.id.event_item_comment_edit);
-        mEventTags = (EditText) view.findViewById(R.id.event_edit_tags);
+        mEventTagsEditText = (EditText) view.findViewById(R.id.event_edit_tags);
+        mEventImageView = (ImageView) view.findViewById(R.id.event_item_photo_edit);
         final SharedPreferences shared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS),
                 Context.MODE_PRIVATE);
         final EditEventFragment that = this;
@@ -119,7 +128,7 @@ public class EditEventFragment extends Fragment
                 fragment.show(getActivity().getSupportFragmentManager(), "launch");
             }
         });
-        Button cancelbtn = (Button) view.findViewById(R.id.event_edit_date_button);
+        Button cancelbtn = (Button) view.findViewById(R.id.edit_event_cancel_button);
         cancelbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,6 +157,7 @@ public class EditEventFragment extends Fragment
             // Set article based on argument passed in
             //can be used for creating an event as well
             updateView((Event) args.getSerializable(ViewEventFragment.EVENT_ITEM_SELECTED));
+            mEventItemPhotoFilePath = (String) args.getSerializable(PHOTO_FILE_PATH);
         }
     }
 
@@ -167,25 +177,34 @@ public class EditEventFragment extends Fragment
                 Log.i("EditEvent:start", "Could not retrieve date.");
             }
             mEventItemCommentEditText.setText(event.getComment());
-            mEventItemPhotoId = event.getId();
+            mEventTagsEditText.setText(event.getTags());
 
-            String get_photo_url = Uri.parse(GET_PHOTO_URL)
-                    .buildUpon()
-                    .appendQueryParameter("email", mUser)
-                    .appendQueryParameter("id", mEventItemPhotoId)
-                    .build()
-                    .toString();
-            GetPhotoUrlTask task = new GetPhotoUrlTask(getActivity());
-            task.execute(new String[]{get_photo_url, "edit"});
+            mEventItemPhotoId = event.getId();
+            if (mEventItemPhotoId != "-1") {
+                String get_photo_url = Uri.parse(GET_PHOTO_URL)
+                        .buildUpon()
+                        .appendQueryParameter("email", mUser)
+                        .appendQueryParameter("id", mEventItemPhotoId)
+                        .build()
+                        .toString();
+                GetPhotoUrlTask task = new GetPhotoUrlTask(getActivity());
+                task.execute(new String[]{get_photo_url, "edit"});
+            } else {
+                File imgFile = new  File(mEventItemPhotoFilePath);
+                if(imgFile.exists()){
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    mEventImageView.setImageBitmap(myBitmap);
+                }
+            }
         }
     }
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        // TODO: set date to member variable instead of setting date to event
         try {
-            mEventItem.setDate(Driver.parseDateForDB(year,monthOfYear+1,dayOfMonth));
-            mEventEditDate.setText(Driver.parseDateForDisplay(
-                    mEventItem.getDate()));
+            mEventItemNewDate = Driver.parseDateForDB(year,monthOfYear+1,dayOfMonth);
+            mEventEditDate.setText(Driver.parseDateForDisplay(mEventItemNewDate));
         } catch (ParseException e) {
             Log.i("EditEvent:set", "Could not set date.");
         }
@@ -206,17 +225,18 @@ public class EditEventFragment extends Fragment
             sb.append("&id=");
             sb.append(URLEncoder.encode(mEventItem.getId(), "UTF-8"));
             sb.append("&title=");
-            sb.append(URLEncoder.encode(mEventItem.getTitle(), "UTF-8"));
+            sb.append(URLEncoder.encode(mEventItemTitleEditText.getText().toString(), "UTF-8"));
             sb.append("&date=");
-            sb.append(URLEncoder.encode(mEventItem.getDate(), "UTF-8"));
+            sb.append(URLEncoder.encode(mEventItemNewDate, "UTF-8"));
             sb.append("&comment=");
-            sb.append(URLEncoder.encode(mEventItem.getComment(), "UTF-8"));
+            sb.append(URLEncoder.encode(mEventItemCommentEditText.getText().toString(), "UTF-8"));
             sb.append("&tags=");
-            sb.append(URLEncoder.encode(mEventItem.getTags(), "UTF-8"));
+            sb.append(URLEncoder.encode(mEventTagsEditText.getText().toString(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             if (Driver.DEBUG) Toast.makeText(getActivity(), "Illegal something.",
                     Toast.LENGTH_LONG).show();
         }
+        Log.i("EDIT", "Edit URL: " + sb.toString());
         return sb.toString();
     }
 

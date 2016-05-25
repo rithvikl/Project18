@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.support.v7.widget.SearchView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -32,7 +33,7 @@ import tcss450.uw.edu.project18.event.Event;
  * @author Rithvik Lagisetti
  * @version 20160504
  */
-public class EventListFragment extends Fragment {
+public class EventListFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     /**
      * String for the column-count property
@@ -53,6 +54,8 @@ public class EventListFragment extends Fragment {
      * The listener for the fragment
      */
     private OnListFragmentInteractionListener mListener;
+
+    public SearchView.OnQueryTextListener mQueryTextListener;
 
     /**
      * The Recylcer to bind the list of events
@@ -199,6 +202,22 @@ public class EventListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+//        final List<Event> filteredEventList = filter(mEventList, query);
+//        mAdapter.animateTo(filteredModelList);
+//        mRecyclerView.scrollToPosition(0);
+//        return true;
+        Log.i("FILTER", "Query: " + query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Log.i("FILTER", "Query: " + query);
+        return false;
     }
 
     /**

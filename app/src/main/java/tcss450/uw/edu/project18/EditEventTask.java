@@ -41,11 +41,11 @@ public class EditEventTask extends AsyncTask<String, Void, String> {
                     response += s;
                 }
                 if(Driver.DEBUG)
-                    Log.i("EditEventTask", response);
+                    Log.i("EditEventTask:do", response);
             } catch (MalformedURLException e) {
-                Log.d("EditProfile:do", "MalformedURL; cannot update event data.");
+                Log.d("EditEventTask:do", "MalformedURL; cannot update event data.");
             } catch (IOException e) {
-                Log.d("EditProfile:do", "IOException; could not open URL.");
+                Log.d("EditEventTask:do", "IOException; could not open URL.");
             } finally {
                 if (con != null)
                     con.disconnect();

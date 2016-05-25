@@ -1,11 +1,13 @@
 package tcss450.uw.edu.project18;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.ParseException;
 import java.util.List;
 
 import tcss450.uw.edu.project18.EventListFragment.OnListFragmentInteractionListener;
@@ -59,7 +61,13 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         holder.mItem = mValues.get(position);
         holder.mTitleView.setText(mValues.get(position).getTitle());
         holder.mCommentView.setText(mValues.get(position).getComment());
-        holder.mDateView.setText(mValues.get(position).getDate());
+
+        try {
+            holder.mDateView.setText(Driver.parseDateForDisplay(
+                    mValues.get(position).getDate()));
+        } catch (ParseException e) {
+            Log.i("EditEvent:start", "Could not retrieve date.");
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +80,57 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
             }
         });
     }
+
+//    public Event removeItem(int position) {
+//        final Event event = mValues.remove(position);
+//        notifyItemRemoved(position);
+//        return event;
+//    }
+//
+//    public void addItem(int position, Event event) {
+//        mValues.add(position, event);
+//        notifyItemInserted(position);
+//    }
+//
+//    public void moveItem(int fromPosition, int toPosition) {
+//        final Event event = mValues.remove(fromPosition);
+//        mValues.add(toPosition, event);
+//        notifyItemMoved(fromPosition, toPosition);
+//    }
+//
+//    public void animateTo(List<Event> events) {
+//        applyAndAnimateRemovals(events);
+//        applyAndAnimateAdditions(events);
+//        applyAndAnimateMovedItems(events);
+//    }
+//
+//    private void applyAndAnimateRemovals(List<Event> newEvents) {
+//        for (int i = mValues.size() - 1; i >= 0; i--) {
+//            final Event event = mValues.get(i);
+//            if (!newEvents.contains(event)) {
+//                removeItem(i);
+//            }
+//        }
+//    }
+//
+//    private void applyAndAnimateAdditions(List<Event> newEvents) {
+//        for (int i = 0, count = newEvents.size(); i < count; i++) {
+//            final Event event = newEvents.get(i);
+//            if (!mValues.contains(event)) {
+//                addItem(i, event);
+//            }
+//        }
+//    }
+//
+//    private void applyAndAnimateMovedItems(List<Event> newEvents) {
+//        for (int toPosition = newEvents.size() - 1; toPosition >= 0; toPosition--) {
+//            final Event event = newEvents.get(toPosition);
+//            final int fromPosition = mValues.indexOf(event);
+//            if (fromPosition >= 0 && fromPosition != toPosition) {
+//                moveItem(fromPosition, toPosition);
+//            }
+//        }
+//    }
 
     /**
      * The number of events in the list

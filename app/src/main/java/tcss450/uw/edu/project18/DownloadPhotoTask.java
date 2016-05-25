@@ -68,7 +68,7 @@ public class DownloadPhotoTask extends AsyncTask<String, Void, Bitmap>{
                 ImageView imageView = null;
                 if (mImageHolderFragment == "view") {
                     imageView = (ImageView) activity.findViewById(R.id.event_item_photo);
-                } else if (mImageHolderFragment == "edit") {
+                } else {
                     imageView = (ImageView) activity.findViewById(R.id.event_item_photo_edit);
                 }
                 imageView.setImageBitmap(bitmap);
