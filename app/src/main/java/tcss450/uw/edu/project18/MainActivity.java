@@ -65,15 +65,6 @@ public class MainActivity extends AppCompatActivity
         if (Driver.DEBUG)
             Log.i("Main:create", "Toolbar" + toolbar.getMenu().size());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Share an event", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -206,13 +197,19 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onListFragmentInteraction(Event item) {
-        if (item != null) {
-            mViewEventFragment = new ViewEventFragment();
-            Bundle args = new Bundle();
-            args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, item);
-            mViewEventFragment.setArguments(args);
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mViewEventFragment).addToBackStack(null).commit();
-        }
+        mViewEventFragment = new ViewEventFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, item);
+        mViewEventFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_fragment_container, mViewEventFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void editEvent(View view) {
+        if (mViewEventFragment != null)
+            mViewEventFragment.editEvent(view);
     }
 
 //    public void editEvent(View view) {
@@ -237,11 +234,16 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void editProfile(String url) {
-
+        EditProfileTask ept = new EditProfileTask(this);
+        ept.execute(url);
     }
 
     @Override
     public void editProfileCallback(boolean success, String message) {
-
+        if (Driver.DEBUG)
+            Toast.makeText(getApplicationContext(), message,
+                Toast.LENGTH_LONG).show();
+        if (success)
+            getSupportFragmentManager().popBackStackImmediate();
     }
 }

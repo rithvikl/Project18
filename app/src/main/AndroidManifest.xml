@@ -12,6 +12,8 @@
     <!-- To use the web service -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- To use external storage. -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <!-- To access the camera -->
     <uses-feature android:name="android.hardware.camera"></uses-feature>

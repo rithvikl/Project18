@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +33,7 @@ public class ViewEventFragment extends Fragment {
     private String mUser;
 
     public static final String EVENT_ITEM_SELECTED = "EventItemSelected";
+    public static final String EVENT_IMAGE_SELECTED = "EventImageSelected";
 
     public static final String GET_PHOTO_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/loadpicture.php?";
@@ -65,11 +68,21 @@ public class ViewEventFragment extends Fragment {
         mEventItemDateTextView = (TextView) view.findViewById(R.id.event_item_date);
         mEventItemCommentTextView = (TextView) view.findViewById(R.id.event_item_comment);
         mEventItemPhotoView = (ImageView) view.findViewById(R.id.event_item_photo);
-        Button editbtn = (Button) view.findViewById(R.id.edit_event_button);
+        Button editbtn = (Button) view.findViewById(R.id.event_item_button);
         editbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 editEvent(v);
+            }
+        });
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Share an event", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                //TODO create an dialog that lets them choose between email or messaging
             }
         });
         return view;
@@ -110,16 +123,15 @@ public class ViewEventFragment extends Fragment {
 
     /**
      * Opens a fragment to edit an Event.
-     * @param view is the button that triggered calling this function.
+     * @param view is the button that triggered calling this function,
+     *             but it doesn't matter.
      */
     public void editEvent(View view) {
-        if (view.getId() == R.id.edit_event_button) {
             EditEventFragment editEventFragment = new EditEventFragment();
             Bundle args = new Bundle();
             args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, mEventItem);
             editEventFragment.setArguments(args);
-            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, editEventFragment).addToBackStack(null).commit();
-        }
+            getActivity().getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, editEventFragment).addToBackStack(null).commit();
     }
 
     /**
@@ -135,5 +147,4 @@ public class ViewEventFragment extends Fragment {
     public interface OnViewEventInteractionListener {
         void onViewEventInteraction(Uri uri);
     }
-
 }
