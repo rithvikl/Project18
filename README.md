@@ -1,19 +1,18 @@
-# Project18
-Android mobile application for college course.
+# Gather
 
-For the menu drawer we can use this:
-http://developer.android.com/training/implementing-navigation/nav-drawer.html
+## About Us
+Rithvik Lagisetti
+Melinda Robertson
 
-It also shows how to switch fragments.
+We are a team of two Computer Science students working on our Bachelor's. This project is for a mobile applications class and is our first attempt at a mobile app.
 
-<FrameLayout
-        android:id="@+id/content_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-        
-Fragment fragment = new Fragment2();
-// Insert the fragment by replacing any existing fragment
-FragmentManager fragmentManager = getFragmentManager();
-fragmentManager.beginTransaction()
-               .replace(R.id.content_frame, fragment)
-               .commit();
+[Team Journal](https://docs.google.com/document/d/18NY9tPLbTxDZxDIRLnaimti-xDLj1KG39Kap7Xw8rKE/edit?usp=sharing)
+[Project Proposal and Summary](https://docs.google.com/document/d/1gxBmpmG7IWXES7jd5yVbO8Ojqg-bZDBxOBDmKTWqzUs/edit?usp=sharing)
+
+## About the App
+
+Gather is a mobile electronic scrapbook designed to allow users to carry their most precious memories in their pocket. Gather allows users to have a perpetuating record of events by taking pictures, adding comments and sharing them with loved ones.
+
+## Development Notes
+
+The app is not currently complete. Do not use.
