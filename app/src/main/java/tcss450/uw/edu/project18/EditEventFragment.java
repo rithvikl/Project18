@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -48,10 +51,15 @@ public class EditEventFragment extends Fragment
     public static final String EDIT_EVENT_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/editevent.php?";
 
+    public static final String CREATE_EVENT_URL =
+            "http://cssgate.insttech.washington.edu/~_450atm18/upload.php?";
+
     public static final String GET_PHOTO_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/loadpicture.php?";
 
     public static final String PHOTO_FILE_PATH = "photo_file_path";
+
+    private static final float ROTATE_90 = 90;
 
     private OnEditEventInteractionListener mListener;
     private EditText mEventItemTitleEditText;
@@ -139,7 +147,11 @@ public class EditEventFragment extends Fragment
         submitbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onEditEventInteraction(buildURL());
+                if (mEventItemPhotoId != "-1") {
+                    mListener.onEditEventInteraction(buildEditURL());
+                } else {
+                    mListener.onCreateEventInteraction(buildCreateURL());
+                }
             }
         });
         return view;
@@ -156,8 +168,8 @@ public class EditEventFragment extends Fragment
         if (args != null) {
             // Set article based on argument passed in
             //can be used for creating an event as well
+            mEventItemPhotoFilePath = args.getString(PHOTO_FILE_PATH, "");
             updateView((Event) args.getSerializable(ViewEventFragment.EVENT_ITEM_SELECTED));
-            mEventItemPhotoFilePath = (String) args.getSerializable(PHOTO_FILE_PATH);
         }
     }
 
@@ -170,6 +182,7 @@ public class EditEventFragment extends Fragment
             mEventItem = event;
             mEventItemTitleEditText.setText(event.getTitle());
             //mEventItemDateEditText.setText(event.getDate());
+            mEventItemNewDate = event.getDate();
             try {
                 mEventEditDate.setText(Driver.parseDateForDisplay(
                         event.getDate()));
@@ -190,10 +203,24 @@ public class EditEventFragment extends Fragment
                 GetPhotoUrlTask task = new GetPhotoUrlTask(getActivity());
                 task.execute(new String[]{get_photo_url, "edit"});
             } else {
+//                Log.i("CREATE", "Passed mEventItemPhotoFilePath: " + mEventItemPhotoFilePath);
                 File imgFile = new  File(mEventItemPhotoFilePath);
                 if(imgFile.exists()){
+
                     Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                    mEventImageView.setImageBitmap(myBitmap);
+                    try {
+                        ExifInterface exif = new ExifInterface(imgFile.getAbsolutePath());
+                        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+//                        Log.i("CREATE", "Orientation: " + orientation);
+
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(ROTATE_90);
+                        Bitmap rotatedBitmap = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
+                        mEventImageView.setImageBitmap(rotatedBitmap);
+                    } catch (IOException e) {
+                        Log.e("CREATE", "Unable to find file: " + e.getMessage());
+
+                    }
                 }
             }
         }
@@ -201,7 +228,6 @@ public class EditEventFragment extends Fragment
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        // TODO: set date to member variable instead of setting date to event
         try {
             mEventItemNewDate = Driver.parseDateForDB(year,monthOfYear+1,dayOfMonth);
             mEventEditDate.setText(Driver.parseDateForDisplay(mEventItemNewDate));
@@ -214,7 +240,7 @@ public class EditEventFragment extends Fragment
      * Create the URL for updating an Event.
      * @return a String URL.
      */
-    public String buildURL() {
+    public String buildEditURL() {
         StringBuilder sb = new StringBuilder();
         try {
             SharedPreferences sp = getActivity().getSharedPreferences(getString(
@@ -241,6 +267,36 @@ public class EditEventFragment extends Fragment
     }
 
     /**
+     * Create the URL for creating an Event.
+     * @return a String URL.
+     */
+    public String buildCreateURL() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            SharedPreferences sp = getActivity().getSharedPreferences(getString(
+                    R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
+            sb.append(CREATE_EVENT_URL);
+            sb.append("file=");
+            sb.append(URLEncoder.encode(mEventItemPhotoFilePath, "UTF-8"));
+            sb.append("&email=");
+            sb.append(URLEncoder.encode(sp.getString(getString(R.string.USER),null), "UTF-8"));
+            sb.append("&title=");
+            sb.append(URLEncoder.encode(mEventItemTitleEditText.getText().toString(), "UTF-8"));
+            sb.append("&date=");
+            sb.append(URLEncoder.encode(mEventItemNewDate, "UTF-8"));
+            sb.append("&comment=");
+            sb.append(URLEncoder.encode(mEventItemCommentEditText.getText().toString(), "UTF-8"));
+            sb.append("&tags=");
+            sb.append(URLEncoder.encode(mEventTagsEditText.getText().toString(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            if (Driver.DEBUG) Toast.makeText(getActivity(), "Illegal something.",
+                    Toast.LENGTH_LONG).show();
+        }
+        Log.i("CREATE", "Create URL: " + sb.toString());
+        return sb.toString();
+    }
+
+    /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
@@ -253,5 +309,6 @@ public class EditEventFragment extends Fragment
     public interface OnEditEventInteractionListener {
         void onEditEventInteraction(String url);
         void editEventCallback(boolean result, String message);
+        void onCreateEventInteraction(String url);
     }
 }

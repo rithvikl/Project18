@@ -229,6 +229,7 @@ public class MainActivity extends AppCompatActivity
      * @param data
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Calendar curDate = Calendar.getInstance();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
@@ -237,12 +238,14 @@ public class MainActivity extends AppCompatActivity
             Event createdEvent = new Event("-1", "", "", formattedDate, "");
             Log.i("CREATE", "Created Event: " + createdEvent.toString());
             // Photo was saved to path in mPhotoPath
-//            mEditEventFragment = new EditEventFragment();
-//            Bundle args = new Bundle();
-//            args.putSerializable(EditEventFragment.PHOTO_FILE_PATH, mPhotoPath);
-//            args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, createdEvent);
-//            mEditEventFragment.setArguments(args);
-//            getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mEditEventFragment).addToBackStack(null).commit();
+            mEditEventFragment = new EditEventFragment();
+            Bundle args = new Bundle();
+            Log.i("CREATE", "Photo path to be passed: " + mPhotoPath);
+            args.putString(EditEventFragment.PHOTO_FILE_PATH, mPhotoPath);
+//            args.putExtra(EditEventFragment.PHOTO_FILE_PATH, mPhotoPath);
+            args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, createdEvent);
+            mEditEventFragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mEditEventFragment).addToBackStack(null).commit();
         } else {
             Log.e("CREATE", "failed to deliver image");
             Log.i("CREATE", "Result Code: " + resultCode);
@@ -299,6 +302,12 @@ public class MainActivity extends AppCompatActivity
         eet.execute(url);
     }
 
+    @Override
+    public void onCreateEventInteraction(String url) {
+        EditEventTask eet = new EditEventTask(this);
+        eet.execute(url);
+    }
+
     public void editEventCallback(boolean result, String message) {
         if (Driver.DEBUG)
             Toast.makeText(getApplicationContext(), message,
@@ -306,6 +315,7 @@ public class MainActivity extends AppCompatActivity
         if (result) {
             getSupportFragmentManager().popBackStackImmediate();
         }
+        // TODO: update ViewEventFragment with new event data
     }
 
     @Override

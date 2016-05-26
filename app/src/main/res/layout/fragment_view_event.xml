@@ -10,15 +10,16 @@
         android:layout_height="wrap_content"
         android:id="@+id/event_item_title"/>
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.40"
+        android:id="@+id/event_item_photo"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/event_item_date"/>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/event_item_photo"/>
 
     <TextView
         android:layout_width="match_parent"
