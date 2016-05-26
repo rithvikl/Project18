@@ -1,5 +1,6 @@
 package tcss450.uw.edu.project18;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -152,17 +153,24 @@ public class MainActivity extends AppCompatActivity
             this.takePicture();
             return true;
         } else if (id == R.id.menu_logout) {
-            mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
-            mShared.edit().clear();
-            Intent i = new Intent(this, LoginActivity.class);
-            startActivity(i);
-            finish();
+            DialogFragment fragment = new ConfirmDialogFragment();
+            fragment.show(getFragmentManager(), "onOptionsItemSelected");
             return true;
         } else if (id == R.id.action_search) {
             Log.i("FILTER", "Search selected");
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void logout(boolean confirm) {
+        if (confirm) {
+            mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
+            mShared.edit().clear();
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+            finish();
+        }
     }
 
     /**

@@ -2,6 +2,9 @@ package tcss450.uw.edu.project18;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +18,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 import java.text.ParseException;
 
 import tcss450.uw.edu.project18.event.Event;
@@ -26,7 +31,8 @@ import tcss450.uw.edu.project18.event.Event;
  * {@link ViewEventFragment.OnViewEventInteractionListener} interface
  * to handle interaction events.
  */
-public class ViewEventFragment extends Fragment {
+public class ViewEventFragment extends Fragment
+    implements Serializable {
 
     /**
      * The shared preferences file used for storing user info
@@ -78,7 +84,7 @@ public class ViewEventFragment extends Fragment {
                 editEvent(v);
             }
         });
-
+        final ViewEventFragment that = this;
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +92,11 @@ public class ViewEventFragment extends Fragment {
                 Snackbar.make(view, "Share an event", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 //TODO create an dialog that lets them choose between email or messaging
+                Bundle args = new Bundle();
+                args.putSerializable(ShareDialogFragment.SHARE_VIEW_FRAGMENT, that);
+                ShareDialogFragment share = new ShareDialogFragment();
+                share.setArguments(args);
+                share.show(getActivity().getFragmentManager(), "onCreateView");
             }
         });
         return view;
@@ -142,6 +153,14 @@ public class ViewEventFragment extends Fragment {
             args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, mEventItem);
             editEventFragment.setArguments(args);
             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, editEventFragment).addToBackStack(null).commit();
+    }
+
+    public Bitmap getImage() {
+        return ((BitmapDrawable)mEventItemPhotoView.getBackground()).getBitmap();
+    }
+
+    public Event getEvent() {
+        return mEventItem;
     }
 
     /**

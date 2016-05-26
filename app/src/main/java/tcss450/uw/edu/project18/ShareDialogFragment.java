@@ -7,6 +7,8 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,9 +18,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import tcss450.uw.edu.project18.event.Event;
 
@@ -31,9 +37,13 @@ public class ShareDialogFragment extends DialogFragment {
 
     //TODO there is a way to have icons but that may just be too much
     public static final String[] SHARE_LIST = {"Email", "Text"};
+    public static final String SHARE_VIEW_FRAGMENT = "shareViewFragment";
 
+    public static final boolean LIST = false;
+
+    ViewEventFragment fragment;
     Event mEvent;
-    Image mImage;
+    Bitmap mImage;
 
     public ShareDialogFragment() {
         // Required empty public constructor
@@ -44,22 +54,21 @@ public class ShareDialogFragment extends DialogFragment {
         super.onStart();
         Bundle args = getArguments();
         if (args != null) {
-            mEvent = (Event) args.getSerializable(
-                    ViewEventFragment.EVENT_ITEM_SELECTED);
-            mImage = (Image) args.getSerializable(
-                    ViewEventFragment.EVENT_IMAGE_SELECTED);
+            fragment = (ViewEventFragment) args.getSerializable(SHARE_VIEW_FRAGMENT);
+            mImage = fragment.getImage();
+            mEvent = fragment.getEvent();
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        onCreateDialog().show();
-        return inflater.inflate(R.layout.fragment_share_dialog, container, false);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (LIST) return createList();
+        else {
+            sendEmail();
+            return new AlertDialog.Builder(getActivity()).create();
+        }
     }
 
-    public Dialog onCreateDialog() {
+    public Dialog createList() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         if (mEvent != null) {
             builder.setTitle("Share...");
@@ -88,7 +97,7 @@ public class ShareDialogFragment extends DialogFragment {
             File file = saveToTemp();
             if (file == null) throw new Exception();
             if (file.getFreeSpace() < (long)(file.getTotalSpace()*.9)) {
-                return;
+                throw new Exception();
             }
             Intent email = new Intent(Intent.ACTION_SEND);
             email.putExtra(Intent.EXTRA_STREAM, file);
@@ -106,12 +115,17 @@ public class ShareDialogFragment extends DialogFragment {
     }
 
     public File saveToTemp() throws IOException{
+        if(!isExternWritable()) throw new IOException();
         File file = new File(getActivity()
                 .getExternalFilesDir(Environment.DIRECTORY_PICTURES), "temp");
         if (!file.createNewFile()) {
             Log.i("Share:file", "File not created.");
         }
-
+        //save image to file
+        OutputStream fout = new FileOutputStream(file);
+        mImage.compress(Bitmap.CompressFormat.JPEG, 85, fout);
+        fout.flush();
+        fout.close();
         return file;
     }
 }
