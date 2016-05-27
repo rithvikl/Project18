@@ -45,7 +45,7 @@ public class EditEventTask extends AsyncTask<String, Void, String> {
             } catch (MalformedURLException e) {
                 Log.d("EditEventTask:do", "MalformedURL; cannot update event data.");
             } catch (IOException e) {
-                Log.d("EditEventTask:do", "IOException; could not open URL.");
+                Log.d("EditEventTask:do", "IOException; could not open URL. " + e.getMessage());
             } finally {
                 if (con != null)
                     con.disconnect();
@@ -58,12 +58,13 @@ public class EditEventTask extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String result) {
         try {
             JSONObject jo = new JSONObject(result);
+            Log.d("EditEventTask:post", "Result: " + result);
             String status = (String) jo.get("result");
             if (status.equals("success"))
                 mListener.editEventCallback(true, "Successfully edited event.");
             else mListener.editEventCallback(false, "There was an error editing your event.");
         } catch (JSONException e) {
-            Log.d("EditEventTask:post", "Could not parse JSON response.");
+            Log.d("EditEventTask:post", "Could not parse JSON response. " + e.getMessage());
             mListener.editEventCallback(false, "There was a format error in your data.");
         }
     }

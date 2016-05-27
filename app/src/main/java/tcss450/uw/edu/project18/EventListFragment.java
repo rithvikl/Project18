@@ -57,6 +57,8 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
 
     public SearchView.OnQueryTextListener mQueryTextListener;
 
+    public EventDB mEventDB;
+
     /**
      * The Recylcer to bind the list of events
      */
@@ -158,8 +160,16 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
 
             // User can't do anything without network connection
             Toast.makeText(view.getContext(),
-                    "No network connection available. Please connect to a network to see your events.",
+                    "No network connection available. Please connect to a network to edit or create your events.",
                     Toast.LENGTH_LONG) .show();
+
+            if (mEventDB == null) {
+                mEventDB = new EventDB(getActivity());
+            }
+            if (mEventList == null) {
+                mEventList = mEventDB.getEvents();
+            }
+            mRecyclerView.setAdapter(new MyEventRecyclerViewAdapter(mEventList, mListener));
         }
 
         return view;
@@ -283,22 +293,24 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
             if (!mEventList.isEmpty()) {
                 mRecyclerView.setAdapter(new MyEventRecyclerViewAdapter(mEventList, mListener));
 
-//                if (mCourseDB == null) {
-//                    mCourseDB = new CourseDB(getActivity());
-//                }
-//
-//                // Delete old data so that you can refresh the local
-//                // database with the network data.
-//                mCourseDB.deleteCourses();
-//
-//                // Also, add to the local database
-//                for (int i=0; i < mCourseList.size(); i++) {
-//                    Course course = mCourseList.get(i);
-//                    mCourseDB.insertCourse(course.getCourseId(),
-//                            course.getShortDescription(),
-//                            course.getLongDescription(),
-//                            course.getPrereqs());
-//                }
+                if (mEventDB == null) {
+                    mEventDB = new EventDB(getActivity());
+                }
+
+                // Delete old data so that you can refresh the local
+                // database with the network data.
+                mEventDB.deleteEvents();
+
+                // Also, add to the local database
+                for (int i=0; i < mEventList.size(); i++) {
+                    Log.d("EventList", i + " " + mEventList.get(i).toString());
+                    Event event = mEventList.get(i);
+                    mEventDB.insertEvent(event.getId(),
+                            event.getTitle(),
+                            event.getComment(),
+                            event.getDate(),
+                            event.getTags());
+                }
             }
         }
     }

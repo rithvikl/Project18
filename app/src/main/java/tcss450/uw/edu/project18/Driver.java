@@ -1,5 +1,11 @@
 package tcss450.uw.edu.project18;
 
+import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.widget.Toast;
+
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.regex.Pattern;
@@ -205,5 +211,17 @@ public class Driver {
 
     public static String parseDateForDisplay(int year, int month, int day) throws ParseException{
         return parseDateForDisplay(parseDateForDB(year,month,day));
+    }
+
+    public static boolean networkConnectionExists(Context context, Activity activity) {
+        ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        else {
+            Toast.makeText(context, "No network connection available. Cannot authenticate user", Toast.LENGTH_SHORT) .show();
+            return false;
+        }
     }
 }

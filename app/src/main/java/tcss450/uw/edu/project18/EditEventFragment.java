@@ -277,6 +277,7 @@ public class EditEventFragment extends Fragment
                     R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
             sb.append(CREATE_EVENT_URL);
             sb.append("file=");
+//            String trimmedUrl = mEventItemPhotoFilePath.substring(0, mEventItemPhotoFilePath.length()-4);
             sb.append(URLEncoder.encode(mEventItemPhotoFilePath, "UTF-8"));
             sb.append("&email=");
             sb.append(URLEncoder.encode(sp.getString(getString(R.string.USER),null), "UTF-8"));
