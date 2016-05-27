@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity
         if (savedInstanceState == null || getSupportFragmentManager().findFragmentById(R.id.list) == null) {
             Log.i("MAIN_ACTIVITY", "On Create");
             mEventListFragment = new EventListFragment();
-            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, mEventListFragment, "EVENT_LIST_FRAG").addToBackStack("EVENT_LIST_FRAG").commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment_container, mEventListFragment, "EVENT_LIST_FRAG").commit();
             getFragmentManager().executePendingTransactions();
         }
     }
