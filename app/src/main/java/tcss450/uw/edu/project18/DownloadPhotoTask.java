@@ -66,7 +66,7 @@ public class DownloadPhotoTask extends AsyncTask<String, Void, Bitmap>{
             Activity activity = mWeakActivity.get();
             if (activity != null) {
                 ImageView imageView = null;
-                if (mImageHolderFragment == "view") {
+                if (mImageHolderFragment.equals("view")) {
                     imageView = (ImageView) activity.findViewById(R.id.event_item_photo);
                 } else {
                     imageView = (ImageView) activity.findViewById(R.id.event_item_photo_edit);
