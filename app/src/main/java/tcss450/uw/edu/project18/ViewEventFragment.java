@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,9 +16,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 
 import tcss450.uw.edu.project18.event.Event;
@@ -42,10 +43,12 @@ public class ViewEventFragment extends Fragment
     private String mUser;
 
     public static final String EVENT_ITEM_SELECTED = "EventItemSelected";
-    public static final String EVENT_IMAGE_SELECTED = "EventImageSelected";
 
     public static final String GET_PHOTO_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/loadpicture.php?";
+
+    public static final String DELETE_EVENT_URL =
+            "http://cssgate.insttech.washington.edu/~_450atm18/deleteevent.php?";
 
     private OnViewEventInteractionListener mListener;
     private TextView mEventItemTitleTextView;
@@ -69,6 +72,17 @@ public class ViewEventFragment extends Fragment
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnViewEventInteractionListener) {
+            mListener = (OnViewEventInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnViewEventInteractionListener");
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -82,6 +96,13 @@ public class ViewEventFragment extends Fragment
             @Override
             public void onClick(View v) {
                 editEvent(v);
+            }
+        });
+        Button deleteBtn = (Button) view.findViewById(R.id.event_item_delete);
+        editbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onViewEventInteraction(buildDeleteURL(), mEventItem);
             }
         });
         final ViewEventFragment that = this;
@@ -142,6 +163,24 @@ public class ViewEventFragment extends Fragment
         }
     }
 
+    public String buildDeleteURL() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            SharedPreferences sp = getActivity().getSharedPreferences(getString(
+                    R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
+            sb.append(DELETE_EVENT_URL);
+            sb.append("email=");
+            sb.append(URLEncoder.encode(sp.getString(getString(R.string.USER),null), "UTF-8"));
+            sb.append("&id=");
+            sb.append(URLEncoder.encode(mEventItem.getId(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            if (Driver.DEBUG) Toast.makeText(getActivity(), "Illegal something.",
+                    Toast.LENGTH_LONG).show();
+        }
+        Log.i("DELETE", "DELETE URL: " + sb.toString());
+        return sb.toString();
+    }
+
     /**
      * Opens a fragment to edit an Event.
      * @param view is the button that triggered calling this function,
@@ -174,6 +213,7 @@ public class ViewEventFragment extends Fragment
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnViewEventInteractionListener {
-        void onViewEventInteraction(Uri uri);
+        void onViewEventInteraction(String url, Event event);
+        void deleteEventCallback(boolean result, String message, Event event);
     }
 }

@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         EventListFragment.OnListFragmentInteractionListener,
         EditEventFragment.OnEditEventInteractionListener,
-        EditProfileFragment.EditProfileListener {
+        EditProfileFragment.EditProfileListener,
+        ViewEventFragment.OnViewEventInteractionListener {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -339,5 +340,22 @@ public class MainActivity extends AppCompatActivity
                 Toast.LENGTH_LONG).show();
         if (success)
             getSupportFragmentManager().popBackStackImmediate();
+    }
+
+    @Override
+    public void onViewEventInteraction(String url, Event event) {
+        DeleteEventTask deleteEventTask = new DeleteEventTask(this, event);
+        deleteEventTask.execute(url);
+    }
+
+    public void deleteEventCallback(boolean result, String message, Event event) {
+        if (result) {
+            // Delete event from Sqlite
+            EventDB eventDB = mEventListFragment.getEventDB();
+            eventDB.deleteEvent(event);
+            getSupportFragmentManager().popBackStackImmediate();
+        } else {
+            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+        }
     }
 }

@@ -240,6 +240,10 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
         void onListFragmentInteraction(Event item);
     }
 
+    public EventDB getEventDB() {
+        return mEventDB;
+    }
+
     /**
      * Async task to get the user's list of events
      */
@@ -303,7 +307,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
 
                 // Also, add to the local database
                 for (int i=0; i < mEventList.size(); i++) {
-                    Log.d("EventList", i + " " + mEventList.get(i).toString());
+//                    Log.d("EventList", i + " " + mEventList.get(i).toString());
                     Event event = mEventList.get(i);
                     mEventDB.insertEvent(event.getId(),
                             event.getTitle(),

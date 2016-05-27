@@ -93,6 +93,11 @@ public class EventDB {
         mSQLiteDatabase.delete(EVENT_TABLE, null, null);
     }
 
+    public void deleteEvent(Event event) {
+        String whereClause = "id= '" + event.getId() + "'";
+        mSQLiteDatabase.delete(EVENT_TABLE, whereClause, null);
+    }
+
 
     public void closeDB() {
         mSQLiteDatabase.close();

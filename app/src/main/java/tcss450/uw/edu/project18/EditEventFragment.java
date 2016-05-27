@@ -52,7 +52,7 @@ public class EditEventFragment extends Fragment
             "http://cssgate.insttech.washington.edu/~_450atm18/editevent.php?";
 
     public static final String CREATE_EVENT_URL =
-            "http://cssgate.insttech.washington.edu/~_450atm18/upload.php?";
+            "http://cssgate.insttech.washington.edu/~_450atm18/upload3.php?";
 
     public static final String GET_PHOTO_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/loadpicture.php?";
@@ -213,10 +213,14 @@ public class EditEventFragment extends Fragment
                         int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
 //                        Log.i("CREATE", "Orientation: " + orientation);
 
-                        Matrix matrix = new Matrix();
-                        matrix.postRotate(ROTATE_90);
-                        Bitmap rotatedBitmap = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
-                        mEventImageView.setImageBitmap(rotatedBitmap);
+                        if (orientation == 6) {
+                            Matrix matrix = new Matrix();
+                            matrix.postRotate(ROTATE_90);
+                            Bitmap rotatedBitmap = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
+                            mEventImageView.setImageBitmap(rotatedBitmap);
+                        } else {
+                            mEventImageView.setImageBitmap(myBitmap);
+                        }
                     } catch (IOException e) {
                         Log.e("CREATE", "Unable to find file: " + e.getMessage());
 
