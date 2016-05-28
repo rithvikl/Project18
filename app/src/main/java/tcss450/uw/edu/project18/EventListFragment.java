@@ -59,8 +59,10 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
 
     public EventDB mEventDB;
 
+    public MyEventRecyclerViewAdapter mAdapter;
+
     /**
-     * The Recylcer to bind the list of events
+     * The Recycler to bind the list of events
      */
     private RecyclerView mRecyclerView;
 
@@ -68,6 +70,8 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
      * The list of the user's events
      */
     private List<Event> mEventList;
+
+    private List<Event> mFullEventList;
 
     /**
      * The shared preferences file used for storing user info
@@ -78,11 +82,6 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
      * The username of the currently logged in user
      */
     private String mUser;
-
-    /**
-     * The instance of the SQLite database
-     */
-//    private CourseDB mCourseDB;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -169,7 +168,8 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
             if (mEventList == null) {
                 mEventList = mEventDB.getEvents();
             }
-            mRecyclerView.setAdapter(new MyEventRecyclerViewAdapter(mEventList, mListener));
+            mAdapter = new MyEventRecyclerViewAdapter(mEventList, mListener);
+            mRecyclerView.setAdapter(mAdapter);
         }
 
         return view;
@@ -199,6 +199,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
         super.onAttach(context);
         if (context instanceof OnListFragmentInteractionListener) {
             mListener = (OnListFragmentInteractionListener) context;
+            mQueryTextListener = this;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
@@ -212,14 +213,11 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        mQueryTextListener = null;
     }
 
     @Override
     public boolean onQueryTextChange(String query) {
-//        final List<Event> filteredEventList = filter(mEventList, query);
-//        mAdapter.animateTo(filteredModelList);
-//        mRecyclerView.scrollToPosition(0);
-//        return true;
         Log.i("FILTER", "Query: " + query);
         return false;
     }
@@ -227,7 +225,38 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
     @Override
     public boolean onQueryTextSubmit(String query) {
         Log.i("FILTER", "Query: " + query);
-        return false;
+        if (query != "") {
+            Log.i("FILTER", "Pre filter full list:" + mEventList.toString());
+
+            List<Event> tempList = new ArrayList<Event>();
+            tempList.addAll(mFullEventList);
+            final List<Event> filteredEventList = filter(tempList, query);
+            mAdapter.animateTo(filteredEventList);
+            mRecyclerView.scrollToPosition(0);
+
+            Log.i("FILTER", "Post filter full list:" + mEventList.toString());
+            Log.i("FILTER", "Post filter filtered list:" + filteredEventList);
+            return true;
+        } else {
+            Log.i("FILTER", "Empty query list:" + mFullEventList.toString());
+            mAdapter.animateTo(mFullEventList);
+            mRecyclerView.scrollToPosition(0);
+            return true;
+        }
+    }
+
+
+    private List<Event> filter(List<Event> events, String query) {
+        query = query.toLowerCase();
+
+        final List<Event> filteredEventList = new ArrayList<>();
+        for (Event event : events) {
+            final String text = event.getTags().toLowerCase();
+            if (text.contains(query)) {
+                filteredEventList.add(event);
+            }
+        }
+        return filteredEventList;
     }
 
     /**
@@ -263,7 +292,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
                     urlConnection = (HttpURLConnection) urlObject.openConnection();
                     InputStream content = urlConnection.getInputStream();
                     BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
-                    String s = "";
+                    String s;
                     while ((s = buffer.readLine()) != null) {
                         response += s;
                     }
@@ -279,7 +308,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
 
         /**
          * Method to create the list from the JSON response
-         * @param result
+         * @param result the result
          */
         @Override protected void onPostExecute(String result) {
             if (result.startsWith("Unable to")) {
@@ -295,22 +324,23 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
                 return;
             }
             if (!mEventList.isEmpty()) {
-                mRecyclerView.setAdapter(new MyEventRecyclerViewAdapter(mEventList, mListener));
+                mFullEventList = new ArrayList<Event>();
+                mFullEventList.addAll(mEventList);
 
                 if (mEventDB == null) {
                     mEventDB = new EventDB(getActivity());
                 }
 
-                // Delete old data so that you can refresh the local
-                // database with the network data.
+                // Delete old data so that you can refresh the local database with the network data.
                 mEventDB.deleteEvents();
 
                 // Also, add to the local database
                 for (int i=0; i < mEventList.size(); i++) {
-//                    Log.d("EventList", i + " " + mEventList.get(i).toString());
                     Event event = mEventList.get(i);
                     mEventDB.insertEvent(event);
                 }
+                mAdapter = new MyEventRecyclerViewAdapter(mEventList, mListener);
+                mRecyclerView.setAdapter(mAdapter);
             }
         }
     }

@@ -11,13 +11,17 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -72,6 +76,10 @@ public class MainActivity extends AppCompatActivity
     private Event mDeletedEvent;
 
     private String mDeleteUrl;
+
+    private SearchView mSearchView;
+
+    private MenuItem mSearchMenu;
 
     //hiding the toolbar and fab
     //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
@@ -128,10 +136,33 @@ public class MainActivity extends AppCompatActivity
 
 //        Fragment myFragment = getFragmentManager().findFragmentByTag("EVENT_LIST_FRAG");
 //        if (myFragment != null && myFragment.isVisible()) {
-//            MenuItem item = menu.findItem(R.id.action_search);
+            mSearchMenu = menu.findItem(R.id.action_search);
 //            item.setVisible(true);
-//            final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
-//            searchView.setOnQueryTextListener(mEventListFragment.mQueryTextListener);
+            mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenu);
+            mSearchView.setOnQueryTextListener(mEventListFragment.mQueryTextListener);
+
+            // Get the search close button image view
+            ImageView closeButton = (ImageView) mSearchView.findViewById(R.id.search_close_btn);
+
+            // Set on click listener
+            closeButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+
+                    Log.d("FILTER", "Search close button clicked");
+
+                    //Clear query
+                    mSearchView.setQuery("", false);
+
+                    mEventListFragment.onQueryTextSubmit("");
+                    //Collapse the action view
+                    mSearchView.onActionViewCollapsed();
+                    //Collapse the search widget
+                    mSearchMenu.collapseActionView();
+                }
+            });
+
 //        }
 //        if (myFragment == null) {
 //            Log.e("FILTER", "Fragment null");

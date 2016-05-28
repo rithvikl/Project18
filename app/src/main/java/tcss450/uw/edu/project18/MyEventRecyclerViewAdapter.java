@@ -22,7 +22,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     /**
      * The list of events to be displayed
      */
-    private final List<Event> mValues;
+    private List<Event> mValues;
 
     /**
      * The listener for the event list fragment
@@ -81,57 +81,6 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         });
     }
 
-//    public Event removeItem(int position) {
-//        final Event event = mValues.remove(position);
-//        notifyItemRemoved(position);
-//        return event;
-//    }
-//
-//    public void addItem(int position, Event event) {
-//        mValues.add(position, event);
-//        notifyItemInserted(position);
-//    }
-//
-//    public void moveItem(int fromPosition, int toPosition) {
-//        final Event event = mValues.remove(fromPosition);
-//        mValues.add(toPosition, event);
-//        notifyItemMoved(fromPosition, toPosition);
-//    }
-//
-//    public void animateTo(List<Event> events) {
-//        applyAndAnimateRemovals(events);
-//        applyAndAnimateAdditions(events);
-//        applyAndAnimateMovedItems(events);
-//    }
-//
-//    private void applyAndAnimateRemovals(List<Event> newEvents) {
-//        for (int i = mValues.size() - 1; i >= 0; i--) {
-//            final Event event = mValues.get(i);
-//            if (!newEvents.contains(event)) {
-//                removeItem(i);
-//            }
-//        }
-//    }
-//
-//    private void applyAndAnimateAdditions(List<Event> newEvents) {
-//        for (int i = 0, count = newEvents.size(); i < count; i++) {
-//            final Event event = newEvents.get(i);
-//            if (!mValues.contains(event)) {
-//                addItem(i, event);
-//            }
-//        }
-//    }
-//
-//    private void applyAndAnimateMovedItems(List<Event> newEvents) {
-//        for (int toPosition = newEvents.size() - 1; toPosition >= 0; toPosition--) {
-//            final Event event = newEvents.get(toPosition);
-//            final int fromPosition = mValues.indexOf(event);
-//            if (fromPosition >= 0 && fromPosition != toPosition) {
-//                moveItem(fromPosition, toPosition);
-//            }
-//        }
-//    }
-
     /**
      * The number of events in the list
      * @return the number of events
@@ -139,6 +88,61 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     @Override
     public int getItemCount() {
         return mValues.size();
+    }
+
+    public void setValues(List<Event> values) {
+        mValues = values;
+    }
+
+    public Event removeItem(int position) {
+        final Event event = mValues.remove(position);
+        notifyItemRemoved(position);
+        return event;
+    }
+
+    public void addItem(int position, Event event) {
+        mValues.add(position, event);
+        notifyItemInserted(position);
+    }
+
+    public void moveItem(int fromPosition, int toPosition) {
+        final Event event = mValues.remove(fromPosition);
+        mValues.add(toPosition, event);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    public void animateTo(List<Event> events) {
+        applyAndAnimateRemovals(events);
+        applyAndAnimateAdditions(events);
+        applyAndAnimateMovedItems(events);
+    }
+
+    private void applyAndAnimateRemovals(List<Event> newEvents) {
+        for (int i = mValues.size() - 1; i >= 0; i--) {
+            final Event event = mValues.get(i);
+            if (!newEvents.contains(event)) {
+                removeItem(i);
+            }
+        }
+    }
+
+    private void applyAndAnimateAdditions(List<Event> newEvents) {
+        for (int i = 0, count = newEvents.size(); i < count; i++) {
+            final Event event = newEvents.get(i);
+            if (!mValues.contains(event)) {
+                addItem(i, event);
+            }
+        }
+    }
+
+    private void applyAndAnimateMovedItems(List<Event> newEvents) {
+        for (int toPosition = newEvents.size() - 1; toPosition >= 0; toPosition--) {
+            final Event event = newEvents.get(toPosition);
+            final int fromPosition = mValues.indexOf(event);
+            if (fromPosition >= 0 && fromPosition != toPosition) {
+                moveItem(fromPosition, toPosition);
+            }
+        }
     }
 
     /**
