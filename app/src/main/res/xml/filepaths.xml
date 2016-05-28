@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <paths>
+        <external-path path="project18/" name="images"></external-path>
+    </paths>
+
+</PreferenceScreen>

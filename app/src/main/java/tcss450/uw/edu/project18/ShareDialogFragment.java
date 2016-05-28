@@ -55,8 +55,10 @@ public class ShareDialogFragment extends DialogFragment {
         Bundle args = getArguments();
         if (args != null) {
             fragment = (ViewEventFragment) args.getSerializable(SHARE_VIEW_FRAGMENT);
-            mImage = fragment.getImage();
-            mEvent = fragment.getEvent();
+            if (fragment != null) {
+                mImage = fragment.getImage();
+                mEvent = fragment.getEvent();
+            }
         }
     }
 
@@ -95,16 +97,16 @@ public class ShareDialogFragment extends DialogFragment {
     public void sendEmail() {
         try {
             File file = saveToTemp();
-            if (file == null) throw new Exception();
-            if (file.getFreeSpace() < (long)(file.getTotalSpace()*.9)) {
-                throw new Exception();
-            }
+            if (file == null) throw new Exception("File is null.");
+            /*if (file.getFreeSpace() < (long)(file.getTotalSpace()*.9)) {
+                throw new Exception("Not enough room.");
+            }*/
             Intent email = new Intent(Intent.ACTION_SEND);
             email.putExtra(Intent.EXTRA_STREAM, file);
             email.setType("image/jpeg");
             getActivity().startActivity(Intent.createChooser(email,"Use..."));
         } catch (Exception e) {
-            Log.i("Share:email","There was an error sending the email.");
+            Log.i("Share:email",e.getMessage());
         }
     }
 
@@ -122,10 +124,12 @@ public class ShareDialogFragment extends DialogFragment {
             Log.i("Share:file", "File not created.");
         }
         //save image to file
-        OutputStream fout = new FileOutputStream(file);
-        mImage.compress(Bitmap.CompressFormat.JPEG, 85, fout);
-        fout.flush();
-        fout.close();
+        if (mImage != null) {
+            OutputStream fout = new FileOutputStream(file);
+            mImage.compress(Bitmap.CompressFormat.JPEG, 85, fout);
+            fout.flush();
+            fout.close();
+        }
         return file;
     }
 }

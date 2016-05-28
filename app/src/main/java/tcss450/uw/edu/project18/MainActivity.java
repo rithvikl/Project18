@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,7 +44,9 @@ public class MainActivity extends AppCompatActivity
         EventListFragment.OnListFragmentInteractionListener,
         EditEventFragment.OnEditEventInteractionListener,
         EditProfileFragment.EditProfileListener,
-        ViewEventFragment.OnDeleteEventInteractionListener {
+        ViewEventFragment.OnDeleteEventInteractionListener,
+        ConfirmDialogFragment.onConfirmInteraction,
+        Serializable {
 
     private static final int REQUEST_TAKE_PHOTO = 100;
 
@@ -151,7 +154,6 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         // noinspection SimplifiableIfStatement
         // the camera should add an event
         if (id == R.id.menu_camera) {
@@ -159,6 +161,10 @@ public class MainActivity extends AppCompatActivity
             return true;
         } else if (id == R.id.menu_logout) {
             DialogFragment fragment = new ConfirmDialogFragment();
+            Bundle args = new Bundle();
+            args.putString(ConfirmDialogFragment.CONFIRM_MESSAGE, "Logout?");
+            args.putSerializable(ConfirmDialogFragment.CONFIRM_LISTEN, this);
+            fragment.setArguments(args);
             fragment.show(getFragmentManager(), "onOptionsItemSelected");
             return true;
         } else if (id == R.id.action_search) {
@@ -170,12 +176,17 @@ public class MainActivity extends AppCompatActivity
 
     public void logout(boolean confirm) {
         if (confirm) {
-            mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
             mShared.edit().clear();
+            mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
             finish();
         }
+    }
+
+    @Override
+    public void onConfirm(boolean confirm) {
+        if (confirm) logout(true);
     }
 
     /**
@@ -424,4 +435,5 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
         }
     }
+
 }

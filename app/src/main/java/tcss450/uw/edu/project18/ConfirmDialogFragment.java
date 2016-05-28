@@ -1,5 +1,6 @@
 package tcss450.uw.edu.project18;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -14,15 +15,32 @@ import android.view.ViewGroup;
  */
 public class ConfirmDialogFragment extends DialogFragment {
 
+    public final static String CONFIRM_MESSAGE = "confirm_message";
+    public final static String CONFIRM_LISTEN = "confirm_listen";
+
+    private String message;
+    private onConfirmInteraction listen;
+
     public ConfirmDialogFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        Bundle args = getArguments();
+        if(args != null) {
+            message = args.getString(CONFIRM_MESSAGE);
+            listen = (onConfirmInteraction) args.getSerializable(CONFIRM_LISTEN);
+        } else
+            message = "Confirm action?";
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final MainActivity main = (MainActivity) getActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(main);
-        builder.setMessage("Confirm logout?");
+        builder.setMessage(message);
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -37,5 +55,9 @@ public class ConfirmDialogFragment extends DialogFragment {
             }
         });
         return builder.create();
+    }
+
+    interface onConfirmInteraction {
+        public void onConfirm(boolean confirm);
     }
 }

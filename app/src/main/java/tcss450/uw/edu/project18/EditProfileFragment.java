@@ -50,7 +50,7 @@ public class EditProfileFragment extends Fragment
     /**
      * Text boxes that hold the information from the user.
      */
-    private TextView profileEmail;
+    private EditText profileEmail;
     private TextView profileDate;
     private TextView profilePass1;
     private TextView profilePass2;
@@ -100,7 +100,7 @@ public class EditProfileFragment extends Fragment
                 Context.MODE_PRIVATE);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
-        profileEmail = (TextView) view.findViewById(R.id.profile_email);
+        profileEmail = (EditText) view.findViewById(R.id.profile_email);
         profileDate = (TextView) view.findViewById(R.id.profile_date);
         Button date = (Button) view.findViewById(R.id.date_button);
         final EditProfileFragment that = this;
@@ -159,6 +159,7 @@ public class EditProfileFragment extends Fragment
         loggedin = mShared.getBoolean(getString(R.string.LOGGEDIN), false);
         if (loggedin) {
             profileEmail.setText(mShared.getString(getString(R.string.USER),""));
+            profileEmail.setEnabled(false);
             try {
                 profileDate.setText(Driver.parseDateForDisplay(mShared.getString(
                         getString(R.string.BDAY), "00000000")));
