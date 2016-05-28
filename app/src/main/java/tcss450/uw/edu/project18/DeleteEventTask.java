@@ -21,11 +21,11 @@ import tcss450.uw.edu.project18.event.Event;
  */
 public class DeleteEventTask extends AsyncTask<String, Void, String> {
 
-    public ViewEventFragment.OnViewEventInteractionListener mListener;
+    public ViewEventFragment.OnDeleteEventInteractionListener mListener;
 
     public Event mEvent;
 
-    public DeleteEventTask (ViewEventFragment.OnViewEventInteractionListener listener, Event event) {
+    public DeleteEventTask (ViewEventFragment.OnDeleteEventInteractionListener listener, Event event) {
         super();
         mListener = listener;
         mEvent = event;
@@ -65,10 +65,11 @@ public class DeleteEventTask extends AsyncTask<String, Void, String> {
             if (status.equals("success")) {
                 mListener.deleteEventCallback(true, "Successfully deleted event", mEvent);
             } else {
-                mListener.deleteEventCallback(false, "There was an error editing your event.", null);
+                Log.d("DeleteEventTask:fail", result);
+                mListener.deleteEventCallback(false, "Unable to delete your event.", null);
             }
         } catch (JSONException e) {
-            Log.d("EditEventTask:post", "Could not parse JSON response. " + e.getMessage());
+            Log.d("DeleteEventTask:post", "Could not parse JSON response. " + e.getMessage());
             mListener.deleteEventCallback(false, "There was a format error in your data.", null);
         }
     }

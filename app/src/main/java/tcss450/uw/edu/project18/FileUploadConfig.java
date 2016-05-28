@@ -9,5 +9,5 @@ public class FileUploadConfig {
     public static final String FILE_UPLOAD_URL = "http://cssgate.insttech.washington.edu/~_450atm18/upload.php?";
 
     // Directory name to store captured images and videos
-    public static final String IMAGE_DIRECTORY_NAME = "Android File Upload";
+    public static final String IMAGE_DIRECTORY_NAME = "GatherFileUpload";
 }

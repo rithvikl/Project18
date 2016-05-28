@@ -29,7 +29,7 @@ import tcss450.uw.edu.project18.event.Event;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ViewEventFragment.OnViewEventInteractionListener} interface
+ * {@link OnDeleteEventInteractionListener} interface
  * to handle interaction events.
  */
 public class ViewEventFragment extends Fragment
@@ -50,7 +50,7 @@ public class ViewEventFragment extends Fragment
     public static final String DELETE_EVENT_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/deleteevent.php?";
 
-    private OnViewEventInteractionListener mListener;
+    private OnDeleteEventInteractionListener mListener;
     private TextView mEventItemTitleTextView;
     private TextView mEventItemDateTextView;
     private TextView mEventItemCommentTextView;
@@ -74,11 +74,11 @@ public class ViewEventFragment extends Fragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnViewEventInteractionListener) {
-            mListener = (OnViewEventInteractionListener) context;
+        if (context instanceof OnDeleteEventInteractionListener) {
+            mListener = (OnDeleteEventInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnViewEventInteractionListener");
+                    + " must implement OnDeleteEventInteractionListener");
         }
     }
 
@@ -99,10 +99,10 @@ public class ViewEventFragment extends Fragment
             }
         });
         Button deleteBtn = (Button) view.findViewById(R.id.event_item_delete);
-        editbtn.setOnClickListener(new View.OnClickListener() {
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onViewEventInteraction(buildDeleteURL(), mEventItem);
+                mListener.onDeleteEventInteraction(buildDeleteURL(), mEventItem);
             }
         });
         final ViewEventFragment that = this;
@@ -212,8 +212,8 @@ public class ViewEventFragment extends Fragment
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnViewEventInteractionListener {
-        void onViewEventInteraction(String url, Event event);
+    public interface OnDeleteEventInteractionListener {
+        void onDeleteEventInteraction(String url, Event event);
         void deleteEventCallback(boolean result, String message, Event event);
     }
 }

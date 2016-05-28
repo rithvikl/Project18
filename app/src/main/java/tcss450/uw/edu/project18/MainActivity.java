@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,7 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import tcss450.uw.edu.project18.event.Event;
 
@@ -41,11 +43,9 @@ public class MainActivity extends AppCompatActivity
         EventListFragment.OnListFragmentInteractionListener,
         EditEventFragment.OnEditEventInteractionListener,
         EditProfileFragment.EditProfileListener,
-        ViewEventFragment.OnViewEventInteractionListener {
+        ViewEventFragment.OnDeleteEventInteractionListener {
 
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-
-    private static final int REQUEST_TAKE_PHOTO = 1;
+    private static final int REQUEST_TAKE_PHOTO = 100;
 
     String mPhotoPath;
     
@@ -65,6 +65,10 @@ public class MainActivity extends AppCompatActivity
     private EditEventFragment mEditEventFragment;
 
     private EventListFragment mEventListFragment;
+
+    private Event mDeletedEvent;
+
+    private String mDeleteUrl;
 
     //hiding the toolbar and fab
     //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
@@ -208,26 +212,43 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * Checking device has camera hardware or not
+     * */
+    private boolean supportsCamera() {
+        if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+            // this device has a camera
+            return true;
+        } else {
+            // no camera on this device
+            return false;
+        }
+    }
+
+    /**
      * Start the camera to take a picture
      */
     public void takePicture() {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = saveImageFile();
-                Log.i("PHOTOFILE", photoFile.getAbsolutePath());
-                Log.i("PHOTOFILE", mPhotoPath);
+        if (supportsCamera()) {
+            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+                File photoFile = null;
+                try {
+                    photoFile = saveImageFile();
+                    Log.i("PHOTOFILE", photoFile.getAbsolutePath());
+                    Log.i("PHOTOFILE", mPhotoPath);
 
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-                Log.e("PHOTOFILE", "FAILED TO MAKE PHOTO PATH");
-            }
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+                    Log.e("PHOTOFILE", "FAILED TO MAKE PHOTO PATH");
+                }
 
-            if (photoFile != null) {
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                startActivityForResult(cameraIntent, REQUEST_TAKE_PHOTO);
+                if (photoFile != null) {
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                    startActivityForResult(cameraIntent, REQUEST_TAKE_PHOTO);
+                }
             }
+        } else {
+            Toast.makeText(getApplicationContext(), "Sorry! your device does not support camera", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -239,19 +260,21 @@ public class MainActivity extends AppCompatActivity
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             Calendar curDate = Calendar.getInstance();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
             String formattedDate = dateFormatter.format(curDate.getTime());
-            Log.i("CREATE", formattedDate);
+
+            // Create new event with current date
             Event createdEvent = new Event("-1", "", "", formattedDate, "");
             Log.i("CREATE", "Created Event: " + createdEvent.toString());
+
             // Photo was saved to path in mPhotoPath
+             Log.i("CREATE", "Photo path to be passed: " + mPhotoPath);
+
             mEditEventFragment = new EditEventFragment();
             Bundle args = new Bundle();
-            Log.i("CREATE", "Photo path to be passed: " + mPhotoPath);
             args.putString(EditEventFragment.PHOTO_FILE_PATH, mPhotoPath);
-//            args.putExtra(EditEventFragment.PHOTO_FILE_PATH, mPhotoPath);
             args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, createdEvent);
             mEditEventFragment.setArguments(args);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mEditEventFragment).addToBackStack(null).commit();
@@ -263,16 +286,34 @@ public class MainActivity extends AppCompatActivity
     }
 
     private File saveImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,
-                ".jpg",
-                storageDir
-        );
+
+        // External sdcard location
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), FileUploadConfig.IMAGE_DIRECTORY_NAME);
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                Log.e("CREATE", "Oops! Failed create " + FileUploadConfig.IMAGE_DIRECTORY_NAME + " directory");
+                return null;
+            }
+        }
+
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        File image = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
+
+
+//        // Create an image file name
+//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//        String imageFileName = "JPEG_" + timeStamp;
+//
+//        File storageDir = Environment.getExternalStoragePublicDirectory(
+//                Environment.DIRECTORY_PICTURES);
+//        File image = File.createTempFile(
+//                imageFileName,
+//                ".jpg",
+//                storageDir
+//        );
 
         // Save a file: path for use with ACTION_VIEW intents
         mPhotoPath = image.getAbsolutePath();
@@ -295,36 +336,52 @@ public class MainActivity extends AppCompatActivity
                 .commit();
     }
 
-    public void editEvent(View view) {
-        if (mViewEventFragment != null)
-            mViewEventFragment.editEvent(view);
-    }
-
-//    public void editEvent(View view) {
-//        Log.i("DEBUG", "edit - Main");
-//        mViewEventFragment.editEvent(view);
-//    }
-
     @Override
-    public void onEditEventInteraction(String url) {
-        EditEventTask eet = new EditEventTask(this);
-        eet.execute(url);
+    public void onCreateEventInteraction(ProgressBar progressBar, String eventPhotopath, Event createdEvent) {
+        Log.i("CREATE", "Create task started");
+        CreateEventTask cet = new CreateEventTask(this, progressBar, eventPhotopath, createdEvent, mShared);
+        cet.execute();
     }
 
     @Override
-    public void onCreateEventInteraction(String url) {
-        EditEventTask eet = new EditEventTask(this);
-        eet.execute(url);
-    }
-
-    public void editEventCallback(boolean result, String message) {
-        if (Driver.DEBUG)
-            Toast.makeText(getApplicationContext(), message,
-                Toast.LENGTH_LONG).show();
+    public void createEventCallback(boolean result, String message, Event createdEvent) {
         if (result) {
-            getSupportFragmentManager().popBackStackImmediate();
+            // Insert event in Sqlite
+            EventDB eventDB = mEventListFragment.getEventDB();
+            eventDB.insertEvent(createdEvent);
+
+            // TODO: show ViewEventFragment with new event data
+//            mViewEventFragment.updateView(createdEvent);
+//            getSupportFragmentManager().popBackStackImmediate();
+            Bundle args = new Bundle();
+            args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, createdEvent);
+            mViewEventFragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main_fragment_container, mViewEventFragment)
+                    .commit();
+        } else {
+            Toast.makeText(getApplicationContext(), "Failed to create event: " + message,
+                    Toast.LENGTH_LONG).show();
         }
-        // TODO: update ViewEventFragment with new event data
+    }
+    @Override
+    public void onEditEventInteraction(String url, Event editedEvent) {
+        EditEventTask eet = new EditEventTask(this, editedEvent);
+        eet.execute(url);
+    }
+
+    public void editEventCallback(boolean result, String message, Event editedEvent) {
+        if (result) {
+            // Update view fragment with new data
+            mViewEventFragment.updateView(editedEvent);
+            // Edit event in Sqlite
+            EventDB eventDB = mEventListFragment.getEventDB();
+            eventDB.editEvent(editedEvent);
+            getSupportFragmentManager().popBackStackImmediate();
+        } else {
+            Toast.makeText(getApplicationContext(), message,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -343,9 +400,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onViewEventInteraction(String url, Event event) {
-        DeleteEventTask deleteEventTask = new DeleteEventTask(this, event);
-        deleteEventTask.execute(url);
+    public void onDeleteEventInteraction(String url, Event event) {
+        this.mDeletedEvent = event;
+        this.mDeleteUrl = url;
+        DialogFragment fragment = new ConfirmDeleteDialogFragment();
+        fragment.show(getFragmentManager(), "onOptionsItemSelected");
+    }
+
+    public void deleteConfirmed(boolean confirm) {
+        if (confirm) {
+            DeleteEventTask deleteEventTask = new DeleteEventTask(this, mDeletedEvent);
+            deleteEventTask.execute(mDeleteUrl);
+        }
     }
 
     public void deleteEventCallback(boolean result, String message, Event event) {

@@ -309,11 +309,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
                 for (int i=0; i < mEventList.size(); i++) {
 //                    Log.d("EventList", i + " " + mEventList.get(i).toString());
                     Event event = mEventList.get(i);
-                    mEventDB.insertEvent(event.getId(),
-                            event.getTitle(),
-                            event.getComment(),
-                            event.getDate(),
-                            event.getTags());
+                    mEventDB.insertEvent(event);
                 }
             }
         }

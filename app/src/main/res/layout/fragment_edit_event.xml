@@ -55,4 +55,12 @@
             android:id="@+id/event_edit_submit_button"/>
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="20dp"
+        android:layout_marginBottom="35dp"
+        android:visibility="gone"/>
+
 </LinearLayout>

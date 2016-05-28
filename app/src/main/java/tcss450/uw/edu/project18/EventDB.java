@@ -30,25 +30,43 @@ public class EventDB {
 
     /**
      * Inserts the course into the local sqlite table. Returns true if successful, false otherwise.
-     * @param id
-     * @param title
-     * @param comment
-     * @param date
-     * @param tags
+     * @param createdEvent
      * @return true or false
      */
-    public boolean insertEvent(String id, String title, String comment, String date, String tags) {
+    public boolean insertEvent(Event createdEvent) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put("id", id);
-        contentValues.put("title", title);
-        contentValues.put("comment", comment);
-        contentValues.put("date", date);
-        contentValues.put("tags", tags);
+        contentValues.put("id", createdEvent.getId());
+        contentValues.put("title", createdEvent.getTitle());
+        contentValues.put("comment", createdEvent.getComment());
+        contentValues.put("date", createdEvent.getDate());
+        contentValues.put("tags", createdEvent.getTags());
 
         long rowId = mSQLiteDatabase.insert("Event", null, contentValues);
         return rowId != -1;
     }
 
+    public void editEvent(Event editedEvent) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("title", editedEvent.getTitle());
+        contentValues.put("comment", editedEvent.getComment());
+        contentValues.put("date", editedEvent.getDate());
+        contentValues.put("tags", editedEvent.getTags());
+
+        String whereClause = "id= '" + editedEvent.getId() + "'";
+        mSQLiteDatabase.update("Event", contentValues, whereClause, null);
+    }
+
+    /**
+     * Delete all the data from the COURSE_TABLE
+     */
+    public void deleteEvents() {
+        mSQLiteDatabase.delete(EVENT_TABLE, null, null);
+    }
+
+    public void deleteEvent(Event event) {
+        String whereClause = "id= '" + event.getId() + "'";
+        mSQLiteDatabase.delete(EVENT_TABLE, whereClause, null);
+    }
 
     /**
      * Returns the list of courses from the local Course table.
@@ -85,19 +103,6 @@ public class EventDB {
 
         return list;
     }
-
-    /**
-     * Delete all the data from the COURSE_TABLE
-     */
-    public void deleteEvents() {
-        mSQLiteDatabase.delete(EVENT_TABLE, null, null);
-    }
-
-    public void deleteEvent(Event event) {
-        String whereClause = "id= '" + event.getId() + "'";
-        mSQLiteDatabase.delete(EVENT_TABLE, whereClause, null);
-    }
-
 
     public void closeDB() {
         mSQLiteDatabase.close();
