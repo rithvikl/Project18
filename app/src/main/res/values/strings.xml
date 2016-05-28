@@ -4,6 +4,7 @@
 
     <!-- Strings for the shared preferences. -->
     <string name="LOGIN_PREFS">tcss450.uw.edu.project18.PREFS</string>
+    <string name="FILE_AUTH">tcss450.uw.edu.project18.fileprovider</string>
     <string name="LOGGEDIN">loggedin</string>
     <string name="USER">email</string>
     <string name="PWD">pwd</string>

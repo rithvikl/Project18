@@ -1,14 +1,21 @@
 package tcss450.uw.edu.project18;
 
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.audiofx.EnvironmentalReverb;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +25,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -33,7 +46,8 @@ import tcss450.uw.edu.project18.event.Event;
  * to handle interaction events.
  */
 public class ViewEventFragment extends Fragment
-    implements Serializable {
+    implements Serializable,
+    ConfirmDialogFragment.onConfirmInteraction{
 
     /**
      * The shared preferences file used for storing user info
@@ -91,6 +105,7 @@ public class ViewEventFragment extends Fragment
         mEventItemDateTextView = (TextView) view.findViewById(R.id.event_item_date);
         mEventItemCommentTextView = (TextView) view.findViewById(R.id.event_item_comment);
         mEventItemPhotoView = (ImageView) view.findViewById(R.id.event_item_photo);
+        final ViewEventFragment that = this;
         Button editbtn = (Button) view.findViewById(R.id.event_item_button);
         editbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,28 +114,39 @@ public class ViewEventFragment extends Fragment
             }
         });
         Button deleteBtn = (Button) view.findViewById(R.id.event_item_delete);
-        editbtn.setOnClickListener(new View.OnClickListener() {
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onViewEventInteraction(buildDeleteURL(), mEventItem);
+                //open confirm first
+                DialogFragment fragment = new ConfirmDialogFragment();
+                Bundle args = new Bundle();
+                args.putString(ConfirmDialogFragment.CONFIRM_MESSAGE, "Delete?");
+                args.putSerializable(ConfirmDialogFragment.CONFIRM_LISTEN, that);
+                fragment.setArguments(args);
+                fragment.show(getActivity().getFragmentManager(), "onOptionsItemSelected");
             }
         });
-        final ViewEventFragment that = this;
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Share an event", Snackbar.LENGTH_LONG)
+                /*Snackbar.make(view, "Share an event", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                //TODO create an dialog that lets them choose between email or messaging
+                //TODO create an dialog that lets them choose between email or messaging?
                 Bundle args = new Bundle();
                 args.putSerializable(ShareDialogFragment.SHARE_VIEW_FRAGMENT, that);
                 ShareDialogFragment share = new ShareDialogFragment();
                 share.setArguments(args);
-                share.show(getActivity().getFragmentManager(), "onCreateView");
+                share.show(getActivity().getFragmentManager(), "onCreateView");*/
+                sendEmail();
             }
         });
         return view;
+    }
+
+    @Override
+    public void onConfirm(boolean confirm) {
+        if(confirm) mListener.onViewEventInteraction(buildDeleteURL(), mEventItem);
     }
 
     @Override
@@ -195,13 +221,60 @@ public class ViewEventFragment extends Fragment
     }
 
     public Bitmap getImage() {
-        return ((BitmapDrawable)mEventItemPhotoView.getBackground()).getBitmap();
+        if(Driver.DEBUG) {
+            Log.d("view:image", "" + mEventItemPhotoView);
+            Log.d("view:image", "" + mEventItemPhotoView.getDrawable());
+        }
+        return ((BitmapDrawable)mEventItemPhotoView.getDrawable()).getBitmap();
     }
 
     public Event getEvent() {
         return mEventItem;
     }
+    public void sendEmail() {
+        try {
+            File file = saveToTemp();
+            if (file == null) throw new Exception("File is null.");
+            /*if (file.getFreeSpace() < (long)(file.getTotalSpace()*.9)) {
+                throw new Exception("Not enough room.");
+            }*/
+            Intent email = new Intent(Intent.ACTION_SEND);
+            //Uri uri = FileProvider.getUriForFile(getActivity(),getString(R.string.FILE_AUTH),file);
+            Uri uri = Uri.fromFile(file);
+            email.putExtra(Intent.EXTRA_STREAM, uri);
+            email.setType("image/jpeg");
+            getActivity().startActivity(Intent.createChooser(email,"Use..."));
+        } catch (Exception e) {
+            Log.i("Share:email",e.getMessage());
+        }
+    }
 
+    public boolean isExternWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Driver.DEBUG) Log.d("view:writable", "State=" + state);
+        if (Environment.MEDIA_MOUNTED.equals(state)) return true;
+        return false;
+    }
+
+    public File saveToTemp() throws IOException {
+        if(!isExternWritable()) throw new IOException("Cannot write to external storage.");
+        File file = new File(Environment.getExternalStorageDirectory(), "tmp.jpg");
+        //if (Driver.DEBUG) Log.d("view:save", file.getAbsolutePath());
+        if (!file.createNewFile()) {
+            Log.i("Share:file", "File not created.");
+        } else Log.i("Share:file", "File created.");
+        //if (Driver.DEBUG) Log.d("view:save", file.getAbsolutePath());
+        Bitmap mImage = getImage();
+        //save image to file
+        if (mImage != null) {
+            OutputStream fout = new FileOutputStream(file);
+            mImage.compress(Bitmap.CompressFormat.JPEG, 85, fout);
+            fout.flush();
+            fout.close();
+        }
+        //if (Driver.DEBUG) Log.d("view:save", file.getAbsolutePath());
+        return file;
+    }
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

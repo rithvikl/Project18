@@ -169,14 +169,16 @@ public class LoginActivity extends AppCompatActivity
 
         // Check for a valid email.
         if (!Driver.isValidEmail(email)) {
-            Toast.makeText(this, "Email is invalid.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Could not log in, please check email and password.",
+                    Toast.LENGTH_LONG).show();
             focusView = mEmailView;
             cancel = true;
         }
         // Check for a valid password, if the user entered one.
         String error = Driver.isValidPassword("login", password, null);
         if (!error.equals("success")) {
-            Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Could not log in," +
+                    "please check email and password.", Toast.LENGTH_LONG).show();
             if (focusView == null) focusView = mPasswordView;
             cancel = true;
         }

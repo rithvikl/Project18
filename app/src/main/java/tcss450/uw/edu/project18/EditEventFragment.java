@@ -52,7 +52,7 @@ public class EditEventFragment extends Fragment
             "http://cssgate.insttech.washington.edu/~_450atm18/editevent.php?";
 
     public static final String CREATE_EVENT_URL =
-            "http://cssgate.insttech.washington.edu/~_450atm18/upload3.php?";
+            "http://cssgate.insttech.washington.edu/~_450atm18/upload.php?";
 
     public static final String GET_PHOTO_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/loadpicture.php?";
