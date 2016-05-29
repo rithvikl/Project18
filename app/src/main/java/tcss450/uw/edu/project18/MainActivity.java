@@ -59,8 +59,6 @@ public class MainActivity extends AppCompatActivity
 
     String mPhotoFileName;
 
-    private ProgressBar mProgressBar;
-    
     /**
      * Holds information about the current user's session.
      */
@@ -148,41 +146,32 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
 
-//        Fragment myFragment = getFragmentManager().findFragmentByTag("EVENT_LIST_FRAG");
-//        if (myFragment != null && myFragment.isVisible()) {
-            mSearchMenu = menu.findItem(R.id.action_search);
+        mSearchMenu = menu.findItem(R.id.action_search);
 //            item.setVisible(true);
-            mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenu);
-            mSearchView.setOnQueryTextListener(mEventListFragment.mQueryTextListener);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenu);
+        mSearchView.setOnQueryTextListener(mEventListFragment.mQueryTextListener);
 
-            // Get the search close button image view
-            ImageView closeButton = (ImageView) mSearchView.findViewById(R.id.search_close_btn);
+        // Get the search close button image view
+        ImageView closeButton = (ImageView) mSearchView.findViewById(R.id.search_close_btn);
 
-            // Set on click listener
-            closeButton.setOnClickListener(new View.OnClickListener() {
+        // Set on click listener
+        closeButton.setOnClickListener(new View.OnClickListener() {
 
-                @Override
-                public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
 
-                    Log.d("FILTER", "Search close button clicked");
+                Log.d("FILTER", "Search close button clicked");
 
-                    //Clear query
-                    mSearchView.setQuery("", false);
-                    //Collapse the action view
-                    mSearchView.onActionViewCollapsed();
-                    //Collapse the search widget
-                    mSearchMenu.collapseActionView();
+                //Clear query
+                mSearchView.setQuery("", false);
+                //Collapse the action view
+                mSearchView.onActionViewCollapsed();
+                //Collapse the search widget
+                mSearchMenu.collapseActionView();
 
-                    mEventListFragment.onQueryTextSubmit("");
-                }
-            });
-
-//        }
-//        if (myFragment == null) {
-//            Log.e("FILTER", "Fragment null");
-//        } else if (!myFragment.isVisible()) {
-//            Log.e("FILTER", "Fragment invisible");
-//        }
+                mEventListFragment.onQueryTextSubmit("");
+            }
+        });
 
         return true;
     }
@@ -340,12 +329,12 @@ public class MainActivity extends AppCompatActivity
     private File saveImageFile() throws IOException {
 
         // External sdcard location
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), FileUploadConfig.IMAGE_DIRECTORY_NAME);
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "GatherFileUpload");
 
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.e("CREATE", "Oops! Failed create " + FileUploadConfig.IMAGE_DIRECTORY_NAME + " directory");
+                Log.e("CREATE", "Oops! Failed create GatherFileUpload directory");
                 return null;
             }
         }
@@ -393,7 +382,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onCreateEventInteraction(ProgressBar progressBar, Event createdEvent, String createURL) {
         Log.i("CREATE", "Create task started");
-        mProgressBar = progressBar;
         mCreatedEvent = createdEvent;
 
         mProgressDialog.setTitle("Creating Event");
@@ -405,7 +393,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void createEventCallback(boolean result, String message) {
         if (result) {
-            UploadImageTask uit = new UploadImageTask(mPhotoFilePath, mProgressBar, this);
+            UploadPhotoTask uit = new UploadPhotoTask(this);
             uit.execute(new String[]{mPhotoFilePath, mCreatedEvent.getPhotoFileName()});
         } else {
             Toast.makeText(getApplicationContext(), "Failed to create event: " + message,
@@ -421,9 +409,7 @@ public class MainActivity extends AppCompatActivity
         eventDB.insertEvent(mCreatedEvent);
 
         mProgressDialog.dismiss();
-//        getSupportFragmentManager().popBackStackImmediate();
 
-        // TODO: show ViewEventFragment with new event data
         Bundle args = new Bundle();
         args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, mCreatedEvent);
         mViewEventFragment.setArguments(args);

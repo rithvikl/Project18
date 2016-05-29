@@ -43,21 +43,11 @@ import tcss450.uw.edu.project18.event.Event;
 public class EditEventFragment extends Fragment
     implements DatePickerDialog.OnDateSetListener, Serializable {
 
-    /**
-     * The shared preferences file used for storing user info
-     */
-    private SharedPreferences mShared;
-
-    private String mUser;
-
     public static final String EDIT_EVENT_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/editevent.php?";
 
     public static final String CREATE_EVENT_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/upload.php?";
-
-    public static final String GET_PHOTO_URL =
-            "http://cssgate.insttech.washington.edu/~_450atm18/loadpicture.php?";
 
     public static final String PHOTO_FILE_PATH = "photo_file_path";
 
@@ -76,7 +66,6 @@ public class EditEventFragment extends Fragment
     private String mEventItemPhotoFilePath;
     private Event mEventItem;
     private String mEventItemNewDate;
-//    private Bitmap mBitmap;
 
     public EditEventFragment() {
         // Required empty public constructor
@@ -91,14 +80,6 @@ public class EditEventFragment extends Fragment
             throw new RuntimeException(context.toString()
                     + " must implement OnEditEventInteractionListener");
         }
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Get the user's username from shared preferences
-        mShared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
-        mUser = mShared.getString(getString(R.string.USER), "");
     }
 
     @Override
@@ -214,15 +195,7 @@ public class EditEventFragment extends Fragment
             mEventItemId = event.getId();
             if (mEventItemId != "-1") {
                 // Download the photo from the web service
-//                String get_photo_url = Uri.parse(GET_PHOTO_URL)
-//                        .buildUpon()
-//                        .appendQueryParameter("email", mUser)
-//                        .appendQueryParameter("id", mEventItemId)
-//                        .build()
-//                        .toString();
-//                GetPhotoUrlTask task = new GetPhotoUrlTask(getActivity());
-//                task.execute(new String[]{get_photo_url, "edit"});
-                DownloadImageTask dit = new DownloadImageTask(mEventImageView, mEventItem.getPhotoFileName(), getContext());
+                DownloadPhotoUrlTask dit = new DownloadPhotoUrlTask(mEventImageView, mEventItem.getPhotoFileName(), getContext());
                 dit.execute();
             } else {
                 // Event is being created, get photo from device

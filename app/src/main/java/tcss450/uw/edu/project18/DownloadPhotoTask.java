@@ -31,7 +31,6 @@ public class DownloadPhotoTask extends AsyncTask<String, Void, Bitmap>{
         HttpURLConnection urlConnection = null;
         Bitmap bitmap = null;
         try {
-//            mImageHolderFragment = urls[1];
 
             Log.i("DOWNLOADPHOTO", "DownloadingPhoto " + urls[0]);
             URL urlObject = new URL(urls[0]);
@@ -59,36 +58,7 @@ public class DownloadPhotoTask extends AsyncTask<String, Void, Bitmap>{
      */
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-
-        // Something wrong with the network or the URL.
-//        try {
-//            if (mImageHolderFragment.equals("view")) {
-//                imageView = (ImageView) activity.findViewById(R.id.event_item_photo);
-//            } else {
-//                imageView = (ImageView) activity.findViewById(R.id.event_item_photo_edit);
-//            }
-
-//            try {
-//                ExifInterface exif = new ExifInterface();
-//                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
-
-//                if (orientation == 6) {
-//                    Matrix matrix = new Matrix();
-//                    matrix.postRotate(EditEventFragment.ROTATE_90);
-//                    Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                    mImageView.setImageBitmap(bitmap);
-                    mProgressDialog.dismiss();
-//                } else {
-//                    mEventImageView.setImageBitmap(myBitmap);
-//                }
-//            } catch (IOException e) {
-//                Log.e("CREATE", "Unable to find file: " + e.getMessage());
-//            }
-//            Log.i("DOWNLOADPHOTO:post", mImageHolderFragment);
-//        } catch (Exception e) {
-//            Log.e("DOWNLOADPHOTO:post", "Failed to Download: " + e);
-
-//            Toast.makeText(mWeakActivity.get(), "Unable to download photo. Reason: " + e.getMessage(), Toast.LENGTH_LONG).show();
-//        }
+        mImageView.setImageBitmap(bitmap);
+        mProgressDialog.dismiss();
     }
 }

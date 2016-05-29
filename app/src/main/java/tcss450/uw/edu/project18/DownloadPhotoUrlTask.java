@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Created by rithvikl on 5/29/16.
  */
-public class DownloadImageTask extends AsyncTask<Void, Void, String>{
+public class DownloadPhotoUrlTask extends AsyncTask<Void, Void, String>{
 
     private Cloudinary mCloudinary;
 
@@ -24,7 +24,7 @@ public class DownloadImageTask extends AsyncTask<Void, Void, String>{
 
     private ProgressDialog mProgressDialog;
 
-    public DownloadImageTask(ImageView imageView, String photoFileName, Context context) {
+    public DownloadPhotoUrlTask(ImageView imageView, String photoFileName, Context context) {
         Map config = new HashMap();
         config.put("cloud_name", "gathercloud");
         config.put("api_key", "341693643768687");

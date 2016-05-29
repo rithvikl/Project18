@@ -40,17 +40,8 @@ import tcss450.uw.edu.project18.event.Event;
 public class ViewEventFragment extends Fragment
     implements Serializable {
 
-    /**
-     * The shared preferences file used for storing user info
-     */
-    private SharedPreferences mShared;
-
-//    private String mUser;
 
     public static final String EVENT_ITEM_SELECTED = "EventItemSelected";
-
-//    public static final String GET_PHOTO_URL =
-//            "http://cssgate.insttech.washington.edu/~_450atm18/loadpicture.php?";
 
     public static final String DELETE_EVENT_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/deleteevent.php?";
@@ -66,14 +57,6 @@ public class ViewEventFragment extends Fragment
 
     public ViewEventFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Get the user's username from shared preferences
-        mShared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
-//        mUser = mShared.getString(getString(R.string.USER), "");
     }
 
     @Override
@@ -115,14 +98,6 @@ public class ViewEventFragment extends Fragment
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Snackbar.make(view, "Share an event", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                //TODO create an dialog that lets them choose between email or messaging?
-                Bundle args = new Bundle();
-                args.putSerializable(ShareDialogFragment.SHARE_VIEW_FRAGMENT, that);
-                ShareDialogFragment share = new ShareDialogFragment();
-                share.setArguments(args);
-                share.show(getActivity().getFragmentManager(), "onCreateView");*/
                 sendEmail();
             }
         });
@@ -158,17 +133,7 @@ public class ViewEventFragment extends Fragment
 
             mEventItemCommentTextView.setText(event.getComment());
 
-//            mEventItemPhotoId = event.getId();
-//            String get_photo_url = Uri.parse(GET_PHOTO_URL)
-//                    .buildUpon()
-//                    .appendQueryParameter("email", mUser)
-//                    .appendQueryParameter("id", mEventItemPhotoId)
-//                    .build()
-//                    .toString();
-//            GetPhotoUrlTask task = new GetPhotoUrlTask(getActivity());
-//            task.execute(new String[]{get_photo_url, "view"});
-//            mProgressDialog.show();
-            DownloadImageTask dit = new DownloadImageTask(mEventItemPhotoView, mEventItem.getPhotoFileName(), getContext());
+            DownloadPhotoUrlTask dit = new DownloadPhotoUrlTask(mEventItemPhotoView, mEventItem.getPhotoFileName(), getContext());
             dit.execute();
         }
     }
