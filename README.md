@@ -1,7 +1,9 @@
 # Gather
 
 ## About Us
+
 Rithvik Lagisetti
+
 Melinda Robertson
 
 We are a team of two Computer Science students working on our Bachelor's. This project is for a mobile applications class and is our first attempt at a mobile app.
@@ -13,6 +15,15 @@ We are a team of two Computer Science students working on our Bachelor's. This p
 ## About the App
 
 Gather is a mobile electronic scrapbook designed to allow users to carry their most precious memories in their pocket. Gather allows users to have a perpetuating record of events by taking pictures, adding comments and sharing them with loved ones.
+
+###Features
+
+* Account: An account ensures you will not lose your events by backing up your data on a server.
+* Take pictures: Take pictures with your phone and immediately back them up on our (our school's) server.
+* Save events: Say something about your picture, give it a title and categories.
+* View events: See events that you have previously saved to remember the good times.
+* Filter events: Search your events by a particular tag, the category you gave the event when it was created.
+* Share: Sharing is caring! Let your friends know how awesome you are by sharing pictures straight from Gather.
 
 ## Development Notes
 
