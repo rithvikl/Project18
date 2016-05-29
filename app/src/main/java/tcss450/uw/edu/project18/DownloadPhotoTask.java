@@ -1,16 +1,14 @@
 package tcss450.uw.edu.project18;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -19,12 +17,13 @@ import java.net.URL;
  */
 public class DownloadPhotoTask extends AsyncTask<String, Void, Bitmap>{
 
-    private String mImageHolderFragment;
+    private ImageView mImageView;
 
-    WeakReference<Activity> mWeakActivity;
+    private ProgressDialog mProgressDialog;
 
-    public DownloadPhotoTask(Activity activity) {
-        mWeakActivity = new WeakReference<Activity>(activity);
+    public DownloadPhotoTask(ImageView imageView, ProgressDialog progressDialog) {
+        mImageView = imageView;
+        mProgressDialog = progressDialog;
     }
 
     @Override
@@ -32,9 +31,9 @@ public class DownloadPhotoTask extends AsyncTask<String, Void, Bitmap>{
         HttpURLConnection urlConnection = null;
         Bitmap bitmap = null;
         try {
-            mImageHolderFragment = urls[1];
+//            mImageHolderFragment = urls[1];
 
-            Log.i("DEBUG", "DownloadingPhoto " + urls[0]);
+            Log.i("DOWNLOADPHOTO", "DownloadingPhoto " + urls[0]);
             URL urlObject = new URL(urls[0]);
             urlConnection = (HttpURLConnection) urlObject.openConnection();
 
@@ -62,21 +61,34 @@ public class DownloadPhotoTask extends AsyncTask<String, Void, Bitmap>{
     protected void onPostExecute(Bitmap bitmap) {
 
         // Something wrong with the network or the URL.
-        try {
-            Activity activity = mWeakActivity.get();
-            if (activity != null) {
-                ImageView imageView = null;
-                if (mImageHolderFragment.equals("view")) {
-                    imageView = (ImageView) activity.findViewById(R.id.event_item_photo);
-                } else {
-                    imageView = (ImageView) activity.findViewById(R.id.event_item_photo_edit);
-                }
-                imageView.setImageBitmap(bitmap);
-                Log.i("DEBUG", mImageHolderFragment);
-            }
-        } catch (Exception e) {
-            Log.e("DEBUG", e.getMessage());
-            Toast.makeText(mWeakActivity.get(), "Unable to download photo. Reason: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
+//        try {
+//            if (mImageHolderFragment.equals("view")) {
+//                imageView = (ImageView) activity.findViewById(R.id.event_item_photo);
+//            } else {
+//                imageView = (ImageView) activity.findViewById(R.id.event_item_photo_edit);
+//            }
+
+//            try {
+//                ExifInterface exif = new ExifInterface();
+//                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+
+//                if (orientation == 6) {
+//                    Matrix matrix = new Matrix();
+//                    matrix.postRotate(EditEventFragment.ROTATE_90);
+//                    Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                    mImageView.setImageBitmap(bitmap);
+                    mProgressDialog.dismiss();
+//                } else {
+//                    mEventImageView.setImageBitmap(myBitmap);
+//                }
+//            } catch (IOException e) {
+//                Log.e("CREATE", "Unable to find file: " + e.getMessage());
+//            }
+//            Log.i("DOWNLOADPHOTO:post", mImageHolderFragment);
+//        } catch (Exception e) {
+//            Log.e("DOWNLOADPHOTO:post", "Failed to Download: " + e);
+
+//            Toast.makeText(mWeakActivity.get(), "Unable to download photo. Reason: " + e.getMessage(), Toast.LENGTH_LONG).show();
+//        }
     }
 }

@@ -10,4 +10,5 @@ public class FileUploadConfig {
 
     // Directory name to store captured images and videos
     public static final String IMAGE_DIRECTORY_NAME = "GatherFileUpload";
+
 }

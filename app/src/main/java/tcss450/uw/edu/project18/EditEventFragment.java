@@ -7,7 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
-import android.net.Uri;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -60,7 +61,7 @@ public class EditEventFragment extends Fragment
 
     public static final String PHOTO_FILE_PATH = "photo_file_path";
 
-    private static final float ROTATE_90 = 90;
+    public static final float ROTATE_90 = 90;
 
     private OnEditEventInteractionListener mEditListener;
 
@@ -71,10 +72,11 @@ public class EditEventFragment extends Fragment
     private ImageView mEventImageView;
     public ProgressBar mProgressBar;
 
-    private String mEventItemPhotoId;
+    private String mEventItemId;
     private String mEventItemPhotoFilePath;
     private Event mEventItem;
     private String mEventItemNewDate;
+//    private Bitmap mBitmap;
 
     public EditEventFragment() {
         // Required empty public constructor
@@ -153,14 +155,22 @@ public class EditEventFragment extends Fragment
         submitbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mEventItem.setTitle(mEventItemTitleEditText.getText().toString());
-                mEventItem.setDate(mEventItemNewDate);
-                mEventItem.setComment(mEventItemCommentEditText.getText().toString());
-                mEventItem.setTags(mEventTagsEditText.getText().toString());
-                if (mEventItemPhotoId != "-1") {
-                    mEditListener.onEditEventInteraction(buildEditURL(), mEventItem);
+                ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                if (networkInfo != null && networkInfo.isConnected()) {
+                    mEventItem.setTitle(mEventItemTitleEditText.getText().toString());
+                    mEventItem.setDate(mEventItemNewDate);
+                    mEventItem.setComment(mEventItemCommentEditText.getText().toString());
+                    mEventItem.setTags(mEventTagsEditText.getText().toString());
+                    if (mEventItemId != "-1") {
+                        mEditListener.onEditEventInteraction(buildEditURL(), mEventItem);
+                    } else {
+                        mEditListener.onCreateEventInteraction(mProgressBar, mEventItem, buildCreateURL());
+                    }
                 } else {
-                    mEditListener.onCreateEventInteraction(mProgressBar, mEventItemPhotoFilePath, mEventItem);
+                    Toast.makeText(v.getContext(),
+                            "No network connection available. Please connect to a network to edit or create events.",
+                            Toast.LENGTH_LONG) .show();
                 }
             }
         });
@@ -178,8 +188,9 @@ public class EditEventFragment extends Fragment
         if (args != null) {
             // Set article based on argument passed in
             //can be used for creating an event as well
-            mEventItemPhotoFilePath = args.getString(PHOTO_FILE_PATH, "");
-            updateView((Event) args.getSerializable(ViewEventFragment.EVENT_ITEM_SELECTED));
+            mEventItemPhotoFilePath = args.getString(PHOTO_FILE_PATH);
+            mEventItem = (Event) args.getSerializable(ViewEventFragment.EVENT_ITEM_SELECTED);
+            updateView(mEventItem);
         }
     }
 
@@ -189,9 +200,7 @@ public class EditEventFragment extends Fragment
      */
     public void updateView(Event event) {
         if (event != null) {
-            mEventItem = event;
             mEventItemTitleEditText.setText(event.getTitle());
-            //mEventItemDateEditText.setText(event.getDate());
             mEventItemNewDate = event.getDate();
             try {
                 mEventEditDate.setText(Driver.parseDateForDisplay(
@@ -202,17 +211,19 @@ public class EditEventFragment extends Fragment
             mEventItemCommentEditText.setText(event.getComment());
             mEventTagsEditText.setText(event.getTags());
 
-            mEventItemPhotoId = event.getId();
-            if (mEventItemPhotoId != "-1") {
+            mEventItemId = event.getId();
+            if (mEventItemId != "-1") {
                 // Download the photo from the web service
-                String get_photo_url = Uri.parse(GET_PHOTO_URL)
-                        .buildUpon()
-                        .appendQueryParameter("email", mUser)
-                        .appendQueryParameter("id", mEventItemPhotoId)
-                        .build()
-                        .toString();
-                GetPhotoUrlTask task = new GetPhotoUrlTask(getActivity());
-                task.execute(new String[]{get_photo_url, "edit"});
+//                String get_photo_url = Uri.parse(GET_PHOTO_URL)
+//                        .buildUpon()
+//                        .appendQueryParameter("email", mUser)
+//                        .appendQueryParameter("id", mEventItemId)
+//                        .build()
+//                        .toString();
+//                GetPhotoUrlTask task = new GetPhotoUrlTask(getActivity());
+//                task.execute(new String[]{get_photo_url, "edit"});
+                DownloadImageTask dit = new DownloadImageTask(mEventImageView, mEventItem.getPhotoFileName(), getContext());
+                dit.execute();
             } else {
                 // Event is being created, get photo from device
                 File imgFile = new  File(mEventItemPhotoFilePath);
@@ -279,35 +290,35 @@ public class EditEventFragment extends Fragment
         return sb.toString();
     }
 
-//    /**
-//     * Create the URL for creating an Event.
-//     * @return a String URL.
-//     */
-//    public String buildCreateURL() {
-//        StringBuilder sb = new StringBuilder();
-//        try {
-//            SharedPreferences sp = getActivity().getSharedPreferences(getString(
-//                    R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
-//            sb.append(CREATE_EVENT_URL);
-//            sb.append("file=");
-//            sb.append(URLEncoder.encode(mEventItemPhotoFilePath, "UTF-8"));
-//            sb.append("&email=");
-//            sb.append(URLEncoder.encode(sp.getString(getString(R.string.USER),null), "UTF-8"));
-//            sb.append("&title=");
-//            sb.append(URLEncoder.encode(mEventItemTitleEditText.getText().toString(), "UTF-8"));
-//            sb.append("&date=");
-//            sb.append(URLEncoder.encode(mEventItemNewDate, "UTF-8"));
-//            sb.append("&comment=");
-//            sb.append(URLEncoder.encode(mEventItemCommentEditText.getText().toString(), "UTF-8"));
-//            sb.append("&tags=");
-//            sb.append(URLEncoder.encode(mEventTagsEditText.getText().toString(), "UTF-8"));
-//        } catch (UnsupportedEncodingException e) {
-//            if (Driver.DEBUG) Toast.makeText(getActivity(), "Illegal something.",
-//                    Toast.LENGTH_LONG).show();
-//        }
-//        Log.i("CREATE", "Create URL: " + sb.toString());
-//        return sb.toString();
-//    }
+    /**
+     * Create the URL for creating an Event.
+     * @return a String URL.
+     */
+    public String buildCreateURL() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            SharedPreferences sp = getActivity().getSharedPreferences(getString(
+                    R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
+            sb.append(CREATE_EVENT_URL);
+            sb.append("&email=");
+            sb.append(URLEncoder.encode(sp.getString(getString(R.string.USER),null), "UTF-8"));
+            sb.append("&title=");
+            sb.append(URLEncoder.encode(mEventItemTitleEditText.getText().toString(), "UTF-8"));
+            sb.append("&date=");
+            sb.append(URLEncoder.encode(mEventItemNewDate, "UTF-8"));
+            sb.append("&comment=");
+            sb.append(URLEncoder.encode(mEventItemCommentEditText.getText().toString(), "UTF-8"));
+            sb.append("&tags=");
+            sb.append(URLEncoder.encode(mEventTagsEditText.getText().toString(), "UTF-8"));
+            sb.append("&photoFileName=");
+            sb.append(URLEncoder.encode(mEventItem.getPhotoFileName(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            if (Driver.DEBUG) Toast.makeText(getActivity(), "Illegal something.",
+                    Toast.LENGTH_LONG).show();
+        }
+        Log.i("CREATE", "Create URL: " + sb.toString());
+        return sb.toString();
+    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -322,7 +333,8 @@ public class EditEventFragment extends Fragment
     public interface OnEditEventInteractionListener {
         void onEditEventInteraction(String url, Event editedEvent);
         void editEventCallback(boolean result, String message, Event editedEvent);
-        void onCreateEventInteraction(ProgressBar progressBar, String eventPhotoPath, Event createdEvent);
-        void createEventCallback(boolean result, String message, Event createdEvent);
+        void onCreateEventInteraction(ProgressBar progressBar, Event createdEvent, String url);
+        void createEventCallback(boolean result, String message);
+        void uploadImageCallback(boolean result, String message);
     }
 }

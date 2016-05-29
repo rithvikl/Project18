@@ -1,21 +1,15 @@
 package tcss450.uw.edu.project18;
 
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.audiofx.EnvironmentalReverb;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,11 +19,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -53,12 +45,12 @@ public class ViewEventFragment extends Fragment
      */
     private SharedPreferences mShared;
 
-    private String mUser;
+//    private String mUser;
 
     public static final String EVENT_ITEM_SELECTED = "EventItemSelected";
 
-    public static final String GET_PHOTO_URL =
-            "http://cssgate.insttech.washington.edu/~_450atm18/loadpicture.php?";
+//    public static final String GET_PHOTO_URL =
+//            "http://cssgate.insttech.washington.edu/~_450atm18/loadpicture.php?";
 
     public static final String DELETE_EVENT_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/deleteevent.php?";
@@ -81,7 +73,7 @@ public class ViewEventFragment extends Fragment
         super.onCreate(savedInstanceState);
         // Get the user's username from shared preferences
         mShared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
-        mUser = mShared.getString(getString(R.string.USER), "");
+//        mUser = mShared.getString(getString(R.string.USER), "");
     }
 
     @Override
@@ -165,15 +157,19 @@ public class ViewEventFragment extends Fragment
             }
 
             mEventItemCommentTextView.setText(event.getComment());
-            mEventItemPhotoId = event.getId();
-            String get_photo_url = Uri.parse(GET_PHOTO_URL)
-                    .buildUpon()
-                    .appendQueryParameter("email", mUser)
-                    .appendQueryParameter("id", mEventItemPhotoId)
-                    .build()
-                    .toString();
-            GetPhotoUrlTask task = new GetPhotoUrlTask(getActivity());
-            task.execute(new String[]{get_photo_url, "view"});
+
+//            mEventItemPhotoId = event.getId();
+//            String get_photo_url = Uri.parse(GET_PHOTO_URL)
+//                    .buildUpon()
+//                    .appendQueryParameter("email", mUser)
+//                    .appendQueryParameter("id", mEventItemPhotoId)
+//                    .build()
+//                    .toString();
+//            GetPhotoUrlTask task = new GetPhotoUrlTask(getActivity());
+//            task.execute(new String[]{get_photo_url, "view"});
+//            mProgressDialog.show();
+            DownloadImageTask dit = new DownloadImageTask(mEventItemPhotoView, mEventItem.getPhotoFileName(), getContext());
+            dit.execute();
         }
     }
 
@@ -201,11 +197,11 @@ public class ViewEventFragment extends Fragment
      *             but it doesn't matter.
      */
     public void editEvent(View view) {
-            EditEventFragment editEventFragment = new EditEventFragment();
-            Bundle args = new Bundle();
-            args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, mEventItem);
-            editEventFragment.setArguments(args);
-            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, editEventFragment).addToBackStack(null).commit();
+        EditEventFragment editEventFragment = new EditEventFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, mEventItem);
+        editEventFragment.setArguments(args);
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, editEventFragment).addToBackStack(null).commit();
     }
 
     public Bitmap getImage() {

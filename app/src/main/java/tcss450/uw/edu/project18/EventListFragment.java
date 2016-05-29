@@ -1,5 +1,6 @@
 package tcss450.uw.edu.project18;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -11,11 +12,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v7.widget.SearchView;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -83,6 +85,8 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
      */
     private String mUser;
 
+    private ProgressDialog mProgressDialog;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -144,6 +148,10 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
             }
         }
 
+        mProgressDialog = new ProgressDialog(getContext());
+        mProgressDialog.setTitle("Loading Events");
+        mProgressDialog.setMessage("Please wait...");
+
         ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
@@ -152,6 +160,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
 
             // Build the query url
             // Execute async task with url
+            mProgressDialog.show();
             DownloadEventsTask task = new DownloadEventsTask();
             String method_url = buildUrlString();
             task.execute(new String[]{method_url});
@@ -159,7 +168,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
 
             // User can't do anything without network connection
             Toast.makeText(view.getContext(),
-                    "No network connection available. Please connect to a network to edit or create your events.",
+                    "No network connection available. Please connect to a network to view pictures and edit or create events.",
                     Toast.LENGTH_LONG) .show();
 
             if (mEventDB == null) {
@@ -236,13 +245,21 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
 
             Log.i("FILTER", "Post filter full list:" + mEventList.toString());
             Log.i("FILTER", "Post filter filtered list:" + filteredEventList);
-            return true;
+
         } else {
             Log.i("FILTER", "Empty query list:" + mFullEventList.toString());
             mAdapter.animateTo(mFullEventList);
             mRecyclerView.scrollToPosition(0);
-            return true;
         }
+
+        // Check if no view has focus:
+        View view = this.getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
+        return true;
     }
 
 
@@ -342,6 +359,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
                 mAdapter = new MyEventRecyclerViewAdapter(mEventList, mListener);
                 mRecyclerView.setAdapter(mAdapter);
             }
+            mProgressDialog.dismiss();
         }
     }
 }

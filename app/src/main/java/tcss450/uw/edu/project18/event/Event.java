@@ -38,7 +38,9 @@ public class Event implements Serializable {
     /**
      * The tags associated with the event
      */
-        private String mTags;
+    private String mTags;
+
+    private String mPhotoFileName;
 
     /**
      * The name of the id property of each event
@@ -63,7 +65,9 @@ public class Event implements Serializable {
     /**
      * The name of the tag property of each event
      */
-        public static final String TAGS = "tags";
+    public static final String TAGS = "tags";
+
+    public static final String PHOTOFILENAME = "photoFileName";
 
     /**
      * Contructor for an event
@@ -72,12 +76,13 @@ public class Event implements Serializable {
      * @param comment the comment on the event
      * @param date the date the event was created
      */
-    public Event (String id, String title, String comment, String date, String tags) {
+    public Event (String id, String title, String comment, String date, String tags, String photoFileName) {
         this.mId = id;
         this.mTitle = title;
         this.mComment = comment;
         this.mDate = date;
         this.mTags = tags;
+        this.mPhotoFileName = photoFileName;
     }
 
     /**
@@ -118,6 +123,10 @@ public class Event implements Serializable {
      */
     public String getTags () {
         return this.mTags;
+    }
+
+    public String getPhotoFileName() {
+        return mPhotoFileName;
     }
 
     public String[] getTagsAsArray() {
@@ -168,6 +177,10 @@ public class Event implements Serializable {
         mTags.replace(tag + ",","");
     }
 
+    public void setPhotoFileName(String photoFileName) {
+        this.mPhotoFileName = photoFileName;
+    }
+
 
     /**
      * Parses the json string, returns an error message if unsuccessful.
@@ -189,7 +202,8 @@ public class Event implements Serializable {
                             obj.getString(Event.TITLE),
                             obj.getString(Event.COMMENT),
                             obj.getString(Event.DATE),
-                            obj.getString(Event.TAGS)
+                            obj.getString(Event.TAGS),
+                            obj.getString(Event.PHOTOFILENAME)
                     );
                     eventList.add(event);
                 }
@@ -204,7 +218,7 @@ public class Event implements Serializable {
 
     @Override
     public String toString() {
-        return "{id: " + mId + ", title: " + mTitle + ", comment: " + mComment + ", date: " + mDate + ", tags: " + mTags + "}";
+        return "{id: " + mId + ", title: " + mTitle + ", comment: " + mComment + ", date: " + mDate + ", tags: " + mTags + ", photoFileName: " + mPhotoFileName + "}";
     }
 
 //

@@ -1,6 +1,7 @@
 package tcss450.uw.edu.project18;
 
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,7 +55,11 @@ public class MainActivity extends AppCompatActivity
 
     private static final int REQUEST_TAKE_PHOTO = 100;
 
-    String mPhotoPath;
+    String mPhotoFilePath;
+
+    String mPhotoFileName;
+
+    private ProgressBar mProgressBar;
     
     /**
      * Holds information about the current user's session.
@@ -73,13 +78,18 @@ public class MainActivity extends AppCompatActivity
 
     private EventListFragment mEventListFragment;
 
+    private Event mCreatedEvent;
+
     private Event mDeletedEvent;
 
     private String mDeleteUrl;
 
     private SearchView mSearchView;
 
-    private MenuItem mSearchMenu;
+    public MenuItem mSearchMenu;
+
+    private ProgressDialog mProgressDialog;
+
 
     //hiding the toolbar and fab
     //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
@@ -103,6 +113,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle("Loading");
+        mProgressDialog.setMessage("Please wait...");
 
         // Navigate to event list fragment
         if (savedInstanceState == null || getSupportFragmentManager().findFragmentById(R.id.list) == null) {
@@ -154,12 +168,12 @@ public class MainActivity extends AppCompatActivity
 
                     //Clear query
                     mSearchView.setQuery("", false);
-
-                    mEventListFragment.onQueryTextSubmit("");
                     //Collapse the action view
                     mSearchView.onActionViewCollapsed();
                     //Collapse the search widget
                     mSearchMenu.collapseActionView();
+
+                    mEventListFragment.onQueryTextSubmit("");
                 }
             });
 
@@ -276,8 +290,7 @@ public class MainActivity extends AppCompatActivity
                 File photoFile = null;
                 try {
                     photoFile = saveImageFile();
-                    Log.i("PHOTOFILE", photoFile.getAbsolutePath());
-                    Log.i("PHOTOFILE", mPhotoPath);
+                    Log.i("PHOTOFILE", mPhotoFilePath);
 
                 } catch (IOException ex) {
                     // Error occurred while creating the File
@@ -308,15 +321,12 @@ public class MainActivity extends AppCompatActivity
             String formattedDate = dateFormatter.format(curDate.getTime());
 
             // Create new event with current date
-            Event createdEvent = new Event("-1", "", "", formattedDate, "");
+            Event createdEvent = new Event("-1", "", "", formattedDate, "", mPhotoFileName);
             Log.i("CREATE", "Created Event: " + createdEvent.toString());
-
-            // Photo was saved to path in mPhotoPath
-             Log.i("CREATE", "Photo path to be passed: " + mPhotoPath);
 
             mEditEventFragment = new EditEventFragment();
             Bundle args = new Bundle();
-            args.putString(EditEventFragment.PHOTO_FILE_PATH, mPhotoPath);
+            args.putString(EditEventFragment.PHOTO_FILE_PATH, mPhotoFilePath);
             args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, createdEvent);
             mEditEventFragment.setArguments(args);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mEditEventFragment).addToBackStack(null).commit();
@@ -342,24 +352,14 @@ public class MainActivity extends AppCompatActivity
 
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        File image = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
 
-
-//        // Create an image file name
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//        String imageFileName = "JPEG_" + timeStamp;
-//
-//        File storageDir = Environment.getExternalStoragePublicDirectory(
-//                Environment.DIRECTORY_PICTURES);
-//        File image = File.createTempFile(
-//                imageFileName,
-//                ".jpg",
-//                storageDir
-//        );
+        File image = new File(mediaStorageDir.getPath() + File.separator + mPhotoFileName);
 
         // Save a file: path for use with ACTION_VIEW intents
-        mPhotoPath = image.getAbsolutePath();
+        mPhotoFileName = "IMG_" + timeStamp + ".jpg";
+        mPhotoFilePath = image.getAbsolutePath();
         return image;
+
     }
 
     /**
@@ -368,6 +368,8 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onListFragmentInteraction(Event item) {
+
+        closeSearchMenu();
         mViewEventFragment = new ViewEventFragment();
         Bundle args = new Bundle();
         args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, item);
@@ -378,41 +380,68 @@ public class MainActivity extends AppCompatActivity
                 .commit();
     }
 
-    @Override
-    public void onCreateEventInteraction(ProgressBar progressBar, String eventPhotopath, Event createdEvent) {
-        Log.i("CREATE", "Create task started");
-        CreateEventTask cet = new CreateEventTask(this, progressBar, eventPhotopath, createdEvent, mShared);
-        cet.execute();
+    public void closeSearchMenu() {
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(mSearchMenu);
+        //Clear query
+        searchView.setQuery("", false);
+        //Collapse the action view
+        searchView.onActionViewCollapsed();
+        //Collapse the search widget
+        mSearchMenu.collapseActionView();
     }
 
     @Override
-    public void createEventCallback(boolean result, String message, Event createdEvent) {
-        if (result) {
-            // Insert event in Sqlite
-            EventDB eventDB = mEventListFragment.getEventDB();
-            eventDB.insertEvent(createdEvent);
+    public void onCreateEventInteraction(ProgressBar progressBar, Event createdEvent, String createURL) {
+        Log.i("CREATE", "Create task started");
+        mProgressBar = progressBar;
+        mCreatedEvent = createdEvent;
 
-            // TODO: show ViewEventFragment with new event data
-//            mViewEventFragment.updateView(createdEvent);
-//            getSupportFragmentManager().popBackStackImmediate();
-            Bundle args = new Bundle();
-            args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, createdEvent);
-            mViewEventFragment.setArguments(args);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_fragment_container, mViewEventFragment)
-                    .commit();
+        mProgressDialog.setTitle("Creating Event");
+        mProgressDialog.show();
+        CreateEventTask cet = new CreateEventTask(this);
+        cet.execute(createURL);
+    }
+
+    @Override
+    public void createEventCallback(boolean result, String message) {
+        if (result) {
+            UploadImageTask uit = new UploadImageTask(mPhotoFilePath, mProgressBar, this);
+            uit.execute(new String[]{mPhotoFilePath, mCreatedEvent.getPhotoFileName()});
         } else {
             Toast.makeText(getApplicationContext(), "Failed to create event: " + message,
                     Toast.LENGTH_LONG).show();
         }
     }
+
+    @Override
+    public void uploadImageCallback(boolean status, String response) {
+
+        // Insert event in Sqlite
+        EventDB eventDB = mEventListFragment.getEventDB();
+        eventDB.insertEvent(mCreatedEvent);
+
+        mProgressDialog.dismiss();
+//        getSupportFragmentManager().popBackStackImmediate();
+
+        // TODO: show ViewEventFragment with new event data
+        Bundle args = new Bundle();
+        args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, mCreatedEvent);
+        mViewEventFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_fragment_container, mViewEventFragment)
+                .commit();
+    }
+
     @Override
     public void onEditEventInteraction(String url, Event editedEvent) {
+        mProgressDialog.setTitle("Updating Event");
+        mProgressDialog.show();
         EditEventTask eet = new EditEventTask(this, editedEvent);
         eet.execute(url);
     }
 
     public void editEventCallback(boolean result, String message, Event editedEvent) {
+        mProgressDialog.dismiss();
         if (result) {
             // Update view fragment with new data
             mViewEventFragment.updateView(editedEvent);

@@ -40,6 +40,7 @@ public class EventDB {
         contentValues.put("comment", createdEvent.getComment());
         contentValues.put("date", createdEvent.getDate());
         contentValues.put("tags", createdEvent.getTags());
+        contentValues.put("photoFileName", createdEvent.getPhotoFileName());
 
         long rowId = mSQLiteDatabase.insert("Event", null, contentValues);
         return rowId != -1;
@@ -47,10 +48,12 @@ public class EventDB {
 
     public void editEvent(Event editedEvent) {
         ContentValues contentValues = new ContentValues();
+        contentValues.put("id", editedEvent.getId());
         contentValues.put("title", editedEvent.getTitle());
         contentValues.put("comment", editedEvent.getComment());
         contentValues.put("date", editedEvent.getDate());
         contentValues.put("tags", editedEvent.getTags());
+        contentValues.put("photoFileName", editedEvent.getPhotoFileName());
 
         String whereClause = "id= '" + editedEvent.getId() + "'";
         mSQLiteDatabase.update("Event", contentValues, whereClause, null);
@@ -75,7 +78,7 @@ public class EventDB {
     public List<Event> getEvents() {
 
         String[] columns = {
-                "id", "title", "comment", "date", "tags"
+                "id", "title", "comment", "date", "tags", "photoFileName"
         };
 
         Cursor c = mSQLiteDatabase.query(
@@ -96,7 +99,8 @@ public class EventDB {
             String comment = c.getString(2);
             String date = c.getString(3);
             String tags = c.getString(4);
-            Event event = new Event(id, title, comment, date, tags);
+            String photoFileName = c.getString(5);
+            Event event = new Event(id, title, comment, date, tags, photoFileName);
             list.add(event);
             c.moveToNext();
         }
@@ -112,7 +116,7 @@ public class EventDB {
     class EventDBHelper extends SQLiteOpenHelper {
 
         private static final String CREATE_EVENT_SQL = "CREATE TABLE IF NOT EXISTS Event "
-                + "(id TEXT PRIMARY KEY, title TEXT, comment TEXT, date TEXT, tags TEXT)";
+                + "(id TEXT PRIMARY KEY, title TEXT, comment TEXT, date TEXT, tags TEXT, photoFileName TEXT)";
 
         private static final String DROP_EVENT_SQL = "DROP TABLE IF EXISTS Event";
 
