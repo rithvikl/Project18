@@ -55,6 +55,14 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         assertTrue("editing event", solo.searchText(""));
         solo.clickOnButton("Edit Date");
         assertTrue("edit date", solo.searchText("Enter date..."));
+        solo.clickOnButton("Cancel"); //exit date picker
+        solo.clickOnButton("Cancel"); //cancel edit
+        solo.goBack(); //return from view event
+    }
 
+    public void testShareEvent() {
+        solo.clickInRecyclerView(0);
+        solo.clickOnView(getActivity().findViewById(R.id.fab));
+        assertTrue("sharing event", solo.searchText("Use..."));
     }
 }

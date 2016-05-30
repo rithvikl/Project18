@@ -108,25 +108,4 @@ public class EventTest {
     public void testContainsTag() {
         assertTrue("tag contains", event.containsTag("tag1"));
     }
-
-    @Test
-    public void testParseJSON() throws Exception {
-        String json = "{\"result\":\"success\",\"data\":[{\"id\":\"1\"," +
-                "\"title\":\"My Title\"," +
-                "\"comment\":\"My comment.\"," +
-                "\"date\":\"00000000\"," +
-                "\"tags\":\"tag1,tag2\"," +
-                "\"photoFileName\":\"1234.jpg\"},"
-                + "{\"id\":\"2\","
-                + "\"title\":\"My Awesome Title\","
-                + "\"comment\":\"This is a comment that I hope will not be too long.\","
-                + "\"date\":\"20160405\","
-                + "\"tags\":\"tag2,tag3\","
-                + "\"photoFileName\":\"1235.jpg\"}]}";
-        String json2 = "{\"result\": \"success\"}";
-        ArrayList<Event> array = new ArrayList<Event>();
-        Event.parseEventJSON(json,array);
-        assertEquals("parse json", event.getComment(),
-                array.get(0).getComment());
-    }
 }
