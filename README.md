@@ -23,7 +23,7 @@ Gather is a mobile electronic scrapbook designed to allow users to carry their m
 ###Features
 
 * Account: An account ensures you will not lose your events by backing up your data on a server.
-* Take pictures: Take pictures with your phone and immediately back them up on our (our school's) server.
+* Take pictures: Take pictures with your phone and immediately back them up on a persistent storage cloud server.
 * Save events: Say something about your picture, give it a title and categories.
 * View events: See events that you have previously saved to remember the good times.
 * Filter events: Search your events by a particular tag, the category you gave the event when it was created.
@@ -55,12 +55,22 @@ Gather is a mobile electronic scrapbook designed to allow users to carry their m
   * Enter the title, date, comment and tags you want.
   * Touch save to save your event.
 6. Share events
-  * 
+  * Login
+  * Tap on an event in the list
+  * Tap on the fab (little button on the bottom right)
+  * Choose the application you want to share with (like email)
+  * Follow directions for that app to send the photo
 7. Edit events
+  * Login
+  * Tap on an event in the list
+  * Tap on the Edit button at the bottom
+  * Change the information (title, date, comment and tags)
+  * Tap on Save
 8. Logout
+  * Once you've logged in you can logout by tapping on 'Logout' at the top right in the top menu.
 
 ## Development Notes
 
-The app is not currently complete. Do not use.
+The app is working! New users can register an account and upload photos however there may still be bugs.
 
 1. Registering in the first iteration was difficult because we used text fields to enter the user's birthdate. We changed it to use a date picker dialog.
