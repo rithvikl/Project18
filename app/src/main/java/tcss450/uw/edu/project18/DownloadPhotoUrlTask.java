@@ -43,7 +43,7 @@ public class DownloadPhotoUrlTask extends AsyncTask<Void, Void, String>{
 
         String imageUrl = mCloudinary.url().generate(mPhotoFileName + ".jpg");
         StringBuilder imageUrlRotate = new StringBuilder(imageUrl);
-        imageUrlRotate.insert(51, "a_auto_left/");
+        imageUrlRotate.insert(51, "a_auto_left,r_40/");
 
         return imageUrlRotate.toString();
     }

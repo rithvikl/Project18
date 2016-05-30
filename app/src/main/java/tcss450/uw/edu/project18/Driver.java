@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.text.ParseException;
@@ -215,5 +216,13 @@ public class Driver {
             Toast.makeText(context, "No network connection available. Cannot authenticate user", Toast.LENGTH_SHORT) .show();
             return false;
         }
+    }
+
+    public static String cleanString(String s) {
+        s = s.replaceAll("'", "");
+        s = s.replaceAll("$", "");
+        s = s.replaceAll("\"", "");
+        Log.i("CLEANSTRING", "Clean: " + s);
+        return s;
     }
 }

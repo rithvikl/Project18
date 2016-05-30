@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/edit_event_hint_title"
+        android:inputType="textCapSentences"
         android:id="@+id/event_item_title_edit"/>
 
     <ImageView
@@ -20,24 +21,27 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/event_edit_date_display"/>
+        android:id="@+id/event_edit_date_display"
+        android:textSize="25dp"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/edit_event_date_button"
-        android:id="@+id/event_edit_date_button"/>
+        android:id="@+id/event_edit_date_button" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/edit_event_hint_comment"
+        android:inputType="textCapSentences"
         android:id="@+id/event_item_comment_edit"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/edit_event_hint_tags"
+        android:inputType="text"
         android:id="@+id/event_edit_tags"/>
 
     <LinearLayout

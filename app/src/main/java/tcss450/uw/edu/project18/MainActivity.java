@@ -23,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -359,10 +358,18 @@ public class MainActivity extends AppCompatActivity
     public void onListFragmentInteraction(Event item) {
 
         closeSearchMenu();
-        mViewEventFragment = new ViewEventFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, item);
-        mViewEventFragment.setArguments(args);
+        Bundle args;
+        if (mViewEventFragment == null) {
+            mViewEventFragment = new ViewEventFragment();
+            args = new Bundle();
+            args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, item);
+            mViewEventFragment.setArguments(args);
+        } else {
+            args = mViewEventFragment.getArguments();
+            args.clear();
+            args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, item);
+        }
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_fragment_container, mViewEventFragment)
                 .addToBackStack(null)
@@ -380,7 +387,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCreateEventInteraction(ProgressBar progressBar, Event createdEvent, String createURL) {
+    public void onCreateEventInteraction(Event createdEvent, String createURL) {
         Log.i("CREATE", "Create task started");
         mCreatedEvent = createdEvent;
 
@@ -396,6 +403,7 @@ public class MainActivity extends AppCompatActivity
             UploadPhotoTask uit = new UploadPhotoTask(this);
             uit.execute(new String[]{mPhotoFilePath, mCreatedEvent.getPhotoFileName()});
         } else {
+            mProgressDialog.dismiss();
             Toast.makeText(getApplicationContext(), "Failed to create event: " + message,
                     Toast.LENGTH_LONG).show();
         }
@@ -410,12 +418,7 @@ public class MainActivity extends AppCompatActivity
 
         mProgressDialog.dismiss();
 
-        Bundle args = new Bundle();
-        args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, mCreatedEvent);
-        mViewEventFragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_fragment_container, mViewEventFragment)
-                .commit();
+        getSupportFragmentManager().popBackStackImmediate();
     }
 
     @Override

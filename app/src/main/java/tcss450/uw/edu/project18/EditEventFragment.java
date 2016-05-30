@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,7 +59,6 @@ public class EditEventFragment extends Fragment
     private EditText mEventItemCommentEditText;
     private EditText mEventTagsEditText;
     private ImageView mEventImageView;
-    public ProgressBar mProgressBar;
 
     private String mEventItemId;
     private String mEventItemPhotoFilePath;
@@ -92,7 +90,6 @@ public class EditEventFragment extends Fragment
         mEventItemCommentEditText = (EditText) view.findViewById(R.id.event_item_comment_edit);
         mEventTagsEditText = (EditText) view.findViewById(R.id.event_edit_tags);
         mEventImageView = (ImageView) view.findViewById(R.id.event_item_photo_edit);
-        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         final SharedPreferences shared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS),
                 Context.MODE_PRIVATE);
@@ -139,14 +136,15 @@ public class EditEventFragment extends Fragment
                 ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
                 if (networkInfo != null && networkInfo.isConnected()) {
-                    mEventItem.setTitle(mEventItemTitleEditText.getText().toString());
+                    mEventItem.setTitle(Driver.cleanString(mEventItemTitleEditText.getText().toString()));
                     mEventItem.setDate(mEventItemNewDate);
-                    mEventItem.setComment(mEventItemCommentEditText.getText().toString());
-                    mEventItem.setTags(mEventTagsEditText.getText().toString());
+                    mEventItem.setComment(Driver.cleanString(mEventItemCommentEditText.getText().toString()));
+                    mEventItem.setTags(Driver.cleanString(mEventTagsEditText.getText().toString()));
+                    Log.i("Cleaned Event", mEventItem.toString());
                     if (mEventItemId != "-1") {
                         mEditListener.onEditEventInteraction(buildEditURL(), mEventItem);
                     } else {
-                        mEditListener.onCreateEventInteraction(mProgressBar, mEventItem, buildCreateURL());
+                        mEditListener.onCreateEventInteraction(mEventItem, buildCreateURL());
                     }
                 } else {
                     Toast.makeText(v.getContext(),
@@ -248,13 +246,13 @@ public class EditEventFragment extends Fragment
             sb.append("&id=");
             sb.append(URLEncoder.encode(mEventItem.getId(), "UTF-8"));
             sb.append("&title=");
-            sb.append(URLEncoder.encode(mEventItemTitleEditText.getText().toString(), "UTF-8"));
+            sb.append(URLEncoder.encode(Driver.cleanString(mEventItemTitleEditText.getText().toString()), "UTF-8"));
             sb.append("&date=");
             sb.append(URLEncoder.encode(mEventItemNewDate, "UTF-8"));
             sb.append("&comment=");
-            sb.append(URLEncoder.encode(mEventItemCommentEditText.getText().toString(), "UTF-8"));
+            sb.append(URLEncoder.encode(Driver.cleanString(mEventItemCommentEditText.getText().toString()), "UTF-8"));
             sb.append("&tags=");
-            sb.append(URLEncoder.encode(mEventTagsEditText.getText().toString(), "UTF-8"));
+            sb.append(URLEncoder.encode(Driver.cleanString(mEventTagsEditText.getText().toString()), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             if (Driver.DEBUG) Toast.makeText(getActivity(), "Illegal something.",
                     Toast.LENGTH_LONG).show();
@@ -276,13 +274,13 @@ public class EditEventFragment extends Fragment
             sb.append("&email=");
             sb.append(URLEncoder.encode(sp.getString(getString(R.string.USER),null), "UTF-8"));
             sb.append("&title=");
-            sb.append(URLEncoder.encode(mEventItemTitleEditText.getText().toString(), "UTF-8"));
+            sb.append(URLEncoder.encode(Driver.cleanString(mEventItemTitleEditText.getText().toString()), "UTF-8"));
             sb.append("&date=");
             sb.append(URLEncoder.encode(mEventItemNewDate, "UTF-8"));
             sb.append("&comment=");
-            sb.append(URLEncoder.encode(mEventItemCommentEditText.getText().toString(), "UTF-8"));
+            sb.append(URLEncoder.encode(Driver.cleanString(mEventItemCommentEditText.getText().toString()), "UTF-8"));
             sb.append("&tags=");
-            sb.append(URLEncoder.encode(mEventTagsEditText.getText().toString(), "UTF-8"));
+            sb.append(URLEncoder.encode(Driver.cleanString(mEventTagsEditText.getText().toString()), "UTF-8"));
             sb.append("&photoFileName=");
             sb.append(URLEncoder.encode(mEventItem.getPhotoFileName(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -306,7 +304,7 @@ public class EditEventFragment extends Fragment
     public interface OnEditEventInteractionListener {
         void onEditEventInteraction(String url, Event editedEvent);
         void editEventCallback(boolean result, String message, Event editedEvent);
-        void onCreateEventInteraction(ProgressBar progressBar, Event createdEvent, String url);
+        void onCreateEventInteraction(Event createdEvent, String url);
         void createEventCallback(boolean result, String message);
         void uploadImageCallback(boolean result, String message);
     }
