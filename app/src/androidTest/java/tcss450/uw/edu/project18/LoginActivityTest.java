@@ -6,14 +6,18 @@ import android.widget.EditText;
 import com.robotium.solo.Solo;
 
 /**
+ * Tests the LoginActivity.
  * Created by Melinda Robertson on 5/29/2016.
  */
 public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginActivity> {
 
     private Solo solo;
 
-    public LoginActivityTest(Class<LoginActivity> activityClass) {
-        super(activityClass);
+    /**
+     * Creates a new testing class.
+     */
+    public LoginActivityTest() {
+        super(LoginActivity.class);
     }
     @Override
     public void setUp() throws Exception {
@@ -21,30 +25,39 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
         solo = new Solo(getInstrumentation(), getActivity());
     }
 
+    /**
+     * Tests that the login page loads when the app opens.
+     */
     public void testLoad() {
         assertTrue("Login page opened.", solo.searchText("Sign in"));
     }
 
+    /**
+     * Tests the register fragment.
+     */
     public void testRegister() {
-        solo.clickOnButton(R.id.email_register_button);
-        assertTrue("Register page opened.", solo.searchText("Enter Email"));
-        solo.clickOnButton(R.id.date_button);
+        solo.clickOnButton("Register");
+        assertTrue("Register page opened.", solo.searchText("Must be longer"));
+        solo.clickOnButton("Choose your birthday");
         assertTrue("Opened Date Picker", solo.searchText("Enter date..."));
         solo.clickOnButton("Cancel");
-        assertTrue("Returned to login.", solo.searchText("Enter Email"));
+        assertTrue("Returned to register.", solo.searchText("Must be longer"));
+        solo.clickOnButton("Cancel");
+        assertTrue("Returned to login.", solo.searchText("Sign in"));
     }
 
-    public void testLogin() {
+    /**
+     * Tests logging into a dummy account.
+     */
+    public void testZLogin() {
         EditText email = (EditText) solo.getView(R.id.email);
         solo.clearEditText(email);
         solo.enterText(email, "test@test.com");
         EditText pwd = (EditText) solo.getView(R.id.password);
         solo.clearEditText(pwd);
         solo.enterText(pwd, "Testing1");
-        solo.clickOnButton(R.id.email_sign_in_button);
+        solo.clickOnButton("Sign in");
         assertTrue("Logged in", solo.searchText("Gather"));
-
-        solo.clickOnView(getActivity().findViewById(R.id.menu_logout));
     }
 
 

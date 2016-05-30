@@ -244,10 +244,6 @@ public class MainActivity extends AppCompatActivity
                     .replace(R.id.main_fragment_container, epf)
                     .addToBackStack(null)
                     .commit();
-        } else if (id == R.id.nav_share) {
-            //share via social media
-        } else if (id == R.id.nav_send) {
-            //send via email
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
