@@ -48,6 +48,8 @@ public class DatePickingFragment extends DialogFragment {
             day = c.get(Calendar.DAY_OF_MONTH);
         }
         Log.i("DatePicking", "Bundle: " + savedInstanceState);
-        return new DatePickerDialog(getActivity(), listener, year, month, day);
+        DatePickerDialog dpd = new DatePickerDialog(getActivity(), listener, year, month, day);
+        dpd.setMessage("Enter date...");
+        return dpd;
     }
 }

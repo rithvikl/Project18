@@ -73,16 +73,18 @@ public class Driver {
     public static boolean isValidDate(String date) {
         try {
             int[] date_array = getValueOfDate(date);
-            if(date_array[1] > 12 || date_array[1] < 1) return false;
+            if(date_array[1] > 12 || date_array[1] < 1)
+                throw new ParseException("Incorrent month: " + date_array[1], 1);
             if (date_array[0] < 1900 || date_array[0] > Calendar.getInstance().get(Calendar.YEAR))
-                return false;
+                throw new ParseException("Year out of bounds: " + date_array[0], 2);
             int[] days;
             if (isLeapYear(date_array[0]))
                 days = new int[]{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
             else days = new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
             if (date_array[2] < 1 || date_array[2] > days[date_array[1]-1])
-                return false;
+                throw new ParseException("Incorrect day: " + date_array[2], 3);
         } catch (ParseException e) {
+            System.out.println(e.getMessage());
             return false;
         }
         return true;
@@ -195,7 +197,7 @@ public class Driver {
         try {
             vals[0] = Integer.valueOf(date.substring(0, 4));
             vals[1] = Integer.valueOf(date.substring(4, 6));
-            vals[3] = Integer.valueOf(date.substring(6));
+            vals[2] = Integer.valueOf(date.substring(6));
         } catch (Exception e) {
             throw new ParseException("Could not convert date string.", 0);
         }

@@ -1,5 +1,7 @@
 package tcss450.uw.edu.project18;
 
+import junit.framework.TestCase;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -7,7 +9,11 @@ import static org.junit.Assert.*;
 /**
  * Created by Melinda Robertson on 5/8/2016.
  */
-public class DriverTest {
+public class DriverTest{
+
+    public DriverTest() {
+
+    }
 
     @Test
     public void testIsValidEmail() {

@@ -149,6 +149,13 @@ public class EditProfileFragment extends Fragment
                 mListener.editProfile(query);
             }
         });
+        Button btncancel = (Button) view.findViewById(R.id.profile_cancel);
+        btncancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.editProfileCallback(true,"Action Canceled");
+            }
+        });
         return view;
     }
 
@@ -164,8 +171,16 @@ public class EditProfileFragment extends Fragment
                 profileDate.setText(Driver.parseDateForDisplay(mShared.getString(
                         getString(R.string.BDAY), "00000000")));
             } catch (ParseException e) {
-                Toast.makeText(getActivity(), "Unable to get profile information.",
+                Calendar c = Calendar.getInstance();
+                Log.i("EditProfile:date", "Incorrect format for date. Using default.");
+                try {
+                    String date = Driver.parseDateForDisplay(c.get(Calendar.YEAR),
+                            c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+                    profileDate.setText(date);
+                } catch (ParseException e2) {
+                    Toast.makeText(getActivity(), "Unable to get profile information.",
                         Toast.LENGTH_LONG).show();
+                }
             }
         }
     }

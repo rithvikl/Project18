@@ -37,6 +37,7 @@
     <string name="profile_rules">"Must be longer than 6 characters, contain at least one number and one capital letter."</string>
     <string name="profile_confirm">Confirm Password</string>
     <string name="profile_submit">Submit</string>
+    <string name="profile_cancel">Cancel</string>
 
     <!-- Edit Event fragment. -->
     <string name="edit_event_hint_title">Enter a title</string>
