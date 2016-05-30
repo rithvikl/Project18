@@ -57,8 +57,10 @@
     <string name="action_search">Filter by tag...</string>
 
     <!-- String for view event -->
-    <string name="edit_event_button">Edit Event</string>
-    <string name="delete_event_button">Delete Event</string>
+    <string name="edit_event_button">Edit</string>
+    <string name="delete_event_button">Delete</string>
+
+    <!-- Sidebar labels -->
     <string name="sidebar_camera">Create Event</string>
     <string name="sidebar_share">Share an Event</string>
     <string name="sidebar_profile">Edit Profile</string>

@@ -459,15 +459,8 @@ public class MainActivity extends AppCompatActivity
     public void onDeleteEventInteraction(String url, Event event) {
         this.mDeletedEvent = event;
         this.mDeleteUrl = url;
-        DialogFragment fragment = new ConfirmDeleteDialogFragment();
-        fragment.show(getFragmentManager(), "onOptionsItemSelected");
-    }
-
-    public void deleteConfirmed(boolean confirm) {
-        if (confirm) {
-            DeleteEventTask deleteEventTask = new DeleteEventTask(this, mDeletedEvent);
-            deleteEventTask.execute(mDeleteUrl);
-        }
+        DeleteEventTask deleteEventTask = new DeleteEventTask(this, mDeletedEvent);
+        deleteEventTask.execute(mDeleteUrl);
     }
 
     public void deleteEventCallback(boolean result, String message, Event event) {

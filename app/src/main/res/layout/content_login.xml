@@ -90,16 +90,6 @@
                     android:onClick="onClick_Register"
                     android:text="@string/action_register"
                     android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/email_forgot_button"
-                    style="?android:textAppearanceSmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/action_forgot_password"
-                    android:textStyle="bold" />
-
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

@@ -1,5 +1,6 @@
 package tcss450.uw.edu.project18;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,13 +37,19 @@ import tcss450.uw.edu.project18.event.Event;
  * Activities that contain this fragment must implement the
  * {@link OnDeleteEventInteractionListener} interface
  * to handle interaction events.
+ * @author Rithvik
+ * @version 20160530
  */
 public class ViewEventFragment extends Fragment
-    implements Serializable {
+    implements Serializable, ConfirmDialogFragment.onConfirmInteraction {
 
-
+    /**
+     * Key for sending the selected event through a Bundle.
+     */
     public static final String EVENT_ITEM_SELECTED = "EventItemSelected";
-
+    /**
+     * URL for deleting events.
+     */
     public static final String DELETE_EVENT_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/deleteevent.php?";
 
@@ -51,7 +58,6 @@ public class ViewEventFragment extends Fragment
     private TextView mEventItemDateTextView;
     private TextView mEventItemCommentTextView;
     private ImageView mEventItemPhotoView;
-    private String mEventItemPhotoId;
     private Event mEventItem;
 
 
@@ -91,7 +97,12 @@ public class ViewEventFragment extends Fragment
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onDeleteEventInteraction(buildDeleteURL(), mEventItem);
+                DialogFragment fragment = new ConfirmDialogFragment();
+                Bundle args = new Bundle();
+                args.putString(ConfirmDialogFragment.CONFIRM_MESSAGE, "Logout?");
+                args.putSerializable(ConfirmDialogFragment.CONFIRM_LISTEN, that);
+                fragment.setArguments(args);
+                fragment.show(getActivity().getFragmentManager(), "deleteButton");
             }
         });
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -224,6 +235,12 @@ public class ViewEventFragment extends Fragment
         //if (Driver.DEBUG) Log.d("view:save", file.getAbsolutePath());
         return file;
     }
+
+    @Override
+    public void onConfirm(boolean confirm) {
+        mListener.onDeleteEventInteraction(buildDeleteURL(), mEventItem);
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

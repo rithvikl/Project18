@@ -48,8 +48,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
- * There are also buttons to handle registering a new account
- * and if the user forgot their password.
+ * There is also a button to handle registering a new account.
  * @author Melinda Robertson
  * @version 20160427
  */

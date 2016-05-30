@@ -165,16 +165,8 @@ public class Event implements Serializable {
         this.mTags = tags;
     }
 
-    public void addTag(String tag) {
-        this.mTags += "," + tag.trim();
-    }
-
     public boolean containsTag(String tag) {
         return this.mTags.contains(tag);
-    }
-
-    public void removeTag(String tag) {
-        mTags.replace(tag + ",","");
     }
 
     public void setPhotoFileName(String photoFileName) {
@@ -190,11 +182,14 @@ public class Event implements Serializable {
      */
     public static String parseEventJSON(String eventJSON, List<Event> eventList) {
         String reason = null;
+        System.out.println(eventJSON);
         if (eventJSON != null) {
             try {
                 Log.i("EVENTJSON AFTER", eventJSON);
                 JSONObject jsonBody = new JSONObject(eventJSON);
+                System.out.println(jsonBody.get("result"));
                 JSONArray arr = jsonBody.getJSONArray("data");
+                //System.out.println(arr.get(0).toString());
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject obj = arr.getJSONObject(i);
                     Event event = new Event(
