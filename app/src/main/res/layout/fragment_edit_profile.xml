@@ -22,6 +22,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/Button"
         android:id="@+id/date_button"
         android:text="@string/profile_date"/>
     <TextView
@@ -72,17 +73,13 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            style="?android:textAppearanceSmall"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
+            style="@style/Button"
             android:id="@+id/profile_cancel"
             android:text="@string/profile_cancel"/>
     <!--Submit via a button.-->
     <Button
         android:id="@+id/profile_submit"
-        style="?android:textAppearanceSmall"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
+        style="@style/Button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:text="@string/profile_submit"/>

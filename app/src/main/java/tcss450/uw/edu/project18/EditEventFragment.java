@@ -101,11 +101,10 @@ public class EditEventFragment extends Fragment
                 Bundle b = new Bundle();
                 b.putSerializable(DatePickingFragment.LISTEN, that);
                 try {
-                    int[] vals = Driver.getValueOfDate(shared.getString(
-                            getString(R.string.BDAY), "00000000"));
+                    int[] vals = Driver.getValueOfDate(mEventItem.getDate());
                     b.putInt(DatePickingFragment.YEAR, vals[0]);
                     b.putInt(DatePickingFragment.MONTH, vals[1]);
-                    b.putInt(DatePickingFragment.YEAR, vals[2]);
+                    b.putInt(DatePickingFragment.DAY, vals[2]);
                 } catch (ParseException e) {
                     Calendar c = Calendar.getInstance();
                     Log.i("EditProfile:date", "Incorrect format for date. Using default.");

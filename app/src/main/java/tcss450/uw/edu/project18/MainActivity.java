@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -101,7 +102,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         if (Driver.DEBUG)
             Log.i("Main:create", "Toolbar" + toolbar.getMenu().size());
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -111,6 +111,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        TextView user = (TextView) navigationView.getHeaderView(0)
+                .findViewById(R.id.nav_header_username);
+        String name = mShared.getString(getString(R.string.USER), "Welcome!");
+        user.setText("Hello " + name);
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle("Loading");
         mProgressDialog.setMessage("Please wait...");

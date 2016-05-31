@@ -39,7 +39,7 @@ public class DatePickingFragment extends DialogFragment {
             year = getArguments().getInt(DatePickingFragment.YEAR);
             month = getArguments().getInt(DatePickingFragment.MONTH);
             day = getArguments().getInt(DatePickingFragment.DAY);
-             listener = (android.app.DatePickerDialog.OnDateSetListener)
+            listener = (android.app.DatePickerDialog.OnDateSetListener)
                      getArguments().getSerializable(LISTEN);
         } else {
             Calendar c = Calendar.getInstance();
@@ -47,8 +47,8 @@ public class DatePickingFragment extends DialogFragment {
             month = c.get(Calendar.MONTH);
             day = c.get(Calendar.DAY_OF_MONTH);
         }
-        Log.i("DatePicking", "Bundle: " + savedInstanceState);
-        DatePickerDialog dpd = new DatePickerDialog(getActivity(), listener, year, month, day);
+        Log.i("DatePicking", "Bundle: " + getArguments());
+        DatePickerDialog dpd = new DatePickerDialog(getActivity(), listener, year, month-1, day);
         dpd.setMessage("Enter date...");
         return dpd;
     }

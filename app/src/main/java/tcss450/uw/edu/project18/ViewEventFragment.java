@@ -99,7 +99,7 @@ public class ViewEventFragment extends Fragment
             public void onClick(View v) {
                 DialogFragment fragment = new ConfirmDialogFragment();
                 Bundle args = new Bundle();
-                args.putString(ConfirmDialogFragment.CONFIRM_MESSAGE, "Logout?");
+                args.putString(ConfirmDialogFragment.CONFIRM_MESSAGE, "Delete?");
                 args.putSerializable(ConfirmDialogFragment.CONFIRM_LISTEN, that);
                 fragment.setArguments(args);
                 fragment.show(getActivity().getFragmentManager(), "deleteButton");
