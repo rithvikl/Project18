@@ -69,5 +69,5 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:src="@android:drawable/ic_menu_share" />
+        android:src="@drawable/ic_menu_share" />
 </RelativeLayout>

@@ -8,6 +8,7 @@
         <item name="colorPrimaryDark">@color/DarkerBlue</item>
         <item name="colorAccent">@color/Red</item>
         <item name="actionBarStyle">@style/bar_style</item>
+        <item name="android:textColorPrimary">@color/DarkBlue</item>
     </style>
 
     <style name="bar_style" parent="@style/Widget.AppCompat.ActionBar.Solid">
@@ -17,10 +18,12 @@
 
     <style name="bar_style_title" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@color/DarkBlue</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="bar_style_text" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle">
         <item name="android:textColor">@color/DarkBlue</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -50,5 +53,10 @@
         <item name="android:padding">16dp</item>
         <item name="android:textSize">15sp</item>
     </style>
-
+    <style name="NavDrawer" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColorPrimary">@color/Orange</item>
+        <item name="android:textColorSecondary">@color/LightBlue</item>
+        <item name="android:textColor">@color/Orange</item>
+        <item name="android:colorBackground">@color/DarkBlue</item>
+    </style>
 </resources>
