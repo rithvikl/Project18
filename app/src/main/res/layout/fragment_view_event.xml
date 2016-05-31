@@ -1,57 +1,73 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="tcss450.uw.edu.project18.ViewEventFragment">
-
-    <TextView
-        style="@style/TextView"
-        android:id="@+id/event_item_title"
-        android:textSize="30dp" />
-
-    <ImageView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.40"
-        android:id="@+id/event_item_photo"/>
-
-    <TextView
-        style="@style/TextView"
-        android:id="@+id/event_item_date" />
-
-    <TextView
-        style="@style/TextView"
-        android:id="@+id/event_item_comment" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/edit_event_button"
-            android:id="@+id/event_item_button"
-            android:textSize="10dp"/>
+            android:orientation="vertical">
+            <TextView
+                style="@style/TextView"
+                android:id="@+id/event_item_title"
+                android:textSize="30dp" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxHeight="500dp"
+                android:maxWidth="350dp"
+                android:layout_gravity="center_horizontal"
+                android:scaleType="fitCenter"
+                android:id="@+id/event_item_photo"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/delete_event_button"
-            android:id="@+id/event_item_delete"
-            android:textSize="10dp"/>
+            <TextView
+                style="@style/TextView"
+                android:id="@+id/event_item_date" />
 
-    </LinearLayout>
+            <TextView
+                style="@style/TextView"
+                android:id="@+id/event_item_comment" />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Button"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:text="@string/edit_event_button"
+                    android:id="@+id/event_item_button"
+                    android:layout_marginLeft="5dp" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    style="@style/Button"
+                    android:text="@string/delete_event_button"
+                    android:id="@+id/event_item_delete" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+    </ScrollView>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:src="@android:drawable/ic_menu_share" />
-
-</LinearLayout>
+</RelativeLayout>
