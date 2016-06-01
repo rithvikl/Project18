@@ -58,7 +58,11 @@ public class DownloadPhotoTask extends AsyncTask<String, Void, Bitmap>{
      */
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        mImageView.setImageBitmap(bitmap);
-        mProgressDialog.dismiss();
+        if (bitmap != null) {
+            mImageView.setImageBitmap(bitmap);
+            mProgressDialog.dismiss();
+        } else {
+            mProgressDialog.dismiss();
+        }
     }
 }
