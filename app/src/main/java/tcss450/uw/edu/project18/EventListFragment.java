@@ -330,6 +330,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
         @Override protected void onPostExecute(String result) {
             if (result.startsWith("Unable to")) {
                 Toast.makeText(getActivity().getApplicationContext(), result, Toast.LENGTH_LONG).show();
+                mProgressDialog.dismiss();
                 return;
             }
 
@@ -338,6 +339,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
             result = Event.parseEventJSON(result, mEventList);
             if (result != null) {
                 Toast.makeText(getActivity().getApplicationContext(), result, Toast.LENGTH_LONG).show();
+                mProgressDialog.dismiss();
                 return;
             }
             if (!mEventList.isEmpty()) {
