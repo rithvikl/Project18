@@ -21,7 +21,7 @@
                     android:id="@+id/profile_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/profile_email"
+                    android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:singleLine="true" />
@@ -32,16 +32,14 @@
                 android:layout_height="wrap_content"
                 style="@style/Button"
                 android:id="@+id/date_button"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
                 android:text="@string/profile_date"/>
             <TextView
                 style="@style/TextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:textSize="16sp"
                 android:id="@+id/profile_date"/>
             <!--Entering the password.-->
             <TextView
@@ -86,6 +84,7 @@
                     style="@style/Button"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
+                    android:layout_marginLeft="5dp"
                     android:id="@+id/profile_cancel"
                     android:text="@string/profile_cancel"/>
                 <!--Submit via a button.-->
@@ -96,6 +95,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
                     android:text="@string/profile_submit"/>
             </RelativeLayout>
         </LinearLayout>
