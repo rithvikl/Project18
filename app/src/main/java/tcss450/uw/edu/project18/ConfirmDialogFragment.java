@@ -38,20 +38,19 @@ public class ConfirmDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final MainActivity main = (MainActivity) getActivity();
-        AlertDialog.Builder builder = new AlertDialog.Builder(main);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(message);
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //go back and logout
-                main.logout(true);
+                listen.onConfirm(true);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                main.logout(false);
+                listen.onConfirm(false);
             }
         });
         return builder.create();
