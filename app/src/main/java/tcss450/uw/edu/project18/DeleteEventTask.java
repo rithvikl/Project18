@@ -18,13 +18,26 @@ import tcss450.uw.edu.project18.event.Event;
 
 /**
  * Created by rithvikl on 5/26/16.
+ *
+ * Deletes an event by sending the id to the database.
  */
 public class DeleteEventTask extends AsyncTask<String, Void, String> {
 
+    /**
+     * The listener waiting for this task to complete.
+     */
     public ViewEventFragment.OnDeleteEventInteractionListener mListener;
 
+    /**
+     * The event to delete.
+     */
     public Event mEvent;
 
+    /**
+     * Constructor.
+     * @param listener is the listener waiting for the task to complete.
+     * @param event is the event to delete.
+     */
     public DeleteEventTask (ViewEventFragment.OnDeleteEventInteractionListener listener, Event event) {
         super();
         mListener = listener;

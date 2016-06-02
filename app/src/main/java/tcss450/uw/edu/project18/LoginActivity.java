@@ -50,7 +50,7 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  * There is also a button to handle registering a new account.
  * @author Melinda Robertson
- * @version 20160427
+ * @version 20160531
  */
 public class LoginActivity extends AppCompatActivity
         implements LoaderCallbacks<Cursor>,

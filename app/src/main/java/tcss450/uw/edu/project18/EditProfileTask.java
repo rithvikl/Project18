@@ -34,8 +34,8 @@ public class EditProfileTask extends AsyncTask<String, Void, String> {
     private EditProfileFragment.EditProfileListener epl;
 
     /**
-     *
-     * @param epl
+     * Constructor.
+     * @param epl is the listener waiting for this task to complete.
      */
     public EditProfileTask(EditProfileFragment.EditProfileListener epl) {
         super();

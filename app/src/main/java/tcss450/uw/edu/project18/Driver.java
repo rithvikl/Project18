@@ -21,7 +21,7 @@ public class Driver {
     /**
      * Debug mode displays far more error messages.
      */
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     /**
      * Private constructor.
@@ -70,6 +70,11 @@ public class Driver {
         return month + "/" + day + "/" + year;
     }
 
+    /**
+     * Checks if a date is valid. Expects input in YYYYMMDD format.
+     * @param date is a string represenation of a date in YYYYMMDD format.
+     * @return true is the date is a valid date, false otherwise.
+     */
     public static boolean isValidDate(String date) {
         try {
             int[] date_array = getValueOfDate(date);
@@ -156,6 +161,13 @@ public class Driver {
         return "success";
     }
 
+    /**
+     * Converts values from a date picker to a string in YYYYMMDD format.
+     * @param year is the year where 1900 <= year <= current year.
+     * @param month is the month where 1 <= month <= 12.
+     * @param day is the day of the month.
+     * @return a string date in YYYYMMDD format.
+     */
     public static String parseDateForDB(int year, int month, int day) {
         String str = "";
         str += String.valueOf(year);
@@ -168,7 +180,7 @@ public class Driver {
      * Formats a date string in format YYYYMMDD to a legible date in format
      * Month Day, Year
      * @param date is the String date in format YYYYMMDD
-     * @return a String that is a more legible date.
+     * @return a String that is a more legible date; Month Day, Year
      * @throws ParseException if the date is in the wrong format.
      */
     public static String parseDateForDisplay(String date) throws ParseException{
@@ -204,10 +216,24 @@ public class Driver {
         return vals;
     }
 
+    /**
+     * Converts three integers to a string in Month Day, Year format.
+     * @param year is the year where 1900 <= year <= current year.
+     * @param month is the month where 1 <= month <= 12.
+     * @param day is the day of the month.
+     * @return a string date in Month DD, YYYY format
+     * @throws ParseException if the date cannot be parsed due to format or incorrect values.
+     */
     public static String parseDateForDisplay(int year, int month, int day) throws ParseException{
         return parseDateForDisplay(parseDateForDB(year,month,day));
     }
 
+    /**
+     * Checks if the phone is connected to the internet.
+     * @param context is a context.
+     * @param activity is the running activity.
+     * @return
+     */
     public static boolean networkConnectionExists(Context context, Activity activity) {
         ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -220,6 +246,11 @@ public class Driver {
         }
     }
 
+    /**
+     * Cleans a string for php processing.
+     * @param s is the string.
+     * @return a clean string.
+     */
     public static String cleanString(String s) {
         s = s.replaceAll("'", "");
         s = s.replaceAll("$", "");

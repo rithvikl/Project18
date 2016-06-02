@@ -16,6 +16,11 @@ import tcss450.uw.edu.project18.event.Event;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Event} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
+ *
+ * Populates a list with event objects in the correct format.
+ *
+ * @author Rithvik Lagisetti
+ * @version 20160601
  */
 public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
 

@@ -53,10 +53,19 @@ public class MainActivity extends AppCompatActivity
         ConfirmDialogFragment.onConfirmInteraction,
         Serializable {
 
+    /**
+     * Number for requesting a picture taken.
+     */
     private static final int REQUEST_TAKE_PHOTO = 100;
 
+    /**
+     * File path for a picture.
+     */
     String mPhotoFilePath;
 
+    /**
+     * File name of a picture.
+     */
     String mPhotoFileName;
 
     /**
@@ -74,23 +83,40 @@ public class MainActivity extends AppCompatActivity
      */
     private EditEventFragment mEditEventFragment;
 
+    /**
+     * Shows a list of events. This is the fragment the main activity starts with.
+     */
     private EventListFragment mEventListFragment;
 
+    /**
+     * A newly created event.
+     */
     private Event mCreatedEvent;
 
+    /**
+     * An event to delete.
+     */
     private Event mDeletedEvent;
 
+    /**
+     * The url for deleting an event.
+     */
     private String mDeleteUrl;
 
+    /**
+     * The search bar to filter the list.
+     */
     private SearchView mSearchView;
 
+    /**
+     * Search menu button that opens the search view.
+     */
     public MenuItem mSearchMenu;
 
+    /**
+     * Shows the progress of tasks.
+     */
     private ProgressDialog mProgressDialog;
-
-
-    //hiding the toolbar and fab
-    //https://mzgreen.github.io/2015/06/23/How-to-hideshow-Toolbar-when-list-is-scrolling%28part3%29/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,11 +213,7 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        // noinspection SimplifiableIfStatement
         // the camera should add an event
         if (id == R.id.menu_camera) {
             this.takePicture();
@@ -211,6 +233,11 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Checks to see if the user has confirmed logging out then executes
+     * logout if true.
+     * @param confirm is whether or not to logout the user.
+     */
     public void logout(boolean confirm) {
         if (confirm) {
             mShared.edit().clear();
@@ -227,9 +254,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * do things in the buttons here
-     * @param item the navigation item selected
-     * @return true
+     * Determines what the navigation drawer items do.
+     * @param item the navigation item selected.
+     * @return true no matter what.
      */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -257,7 +284,8 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Checking device has camera hardware or not
-     * */
+     * @return true if the device has a camera, false otherwise.
+     */
     private boolean supportsCamera() {
         if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             // this device has a camera
@@ -269,7 +297,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Start the camera to take a picture
+     * Start the camera to take a picture.
      */
     public void takePicture() {
         if (supportsCamera()) {
@@ -296,10 +324,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Handle the photo taken with the camera
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * Handle the photo taken with the camera.
+     * @param requestCode is the code for requesting a photograph to be taken.
+     * @param resultCode is the result of the request.
+     * @param data is the returned intent.
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -325,6 +353,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Saves an image taken with the device's camera to a public directory.
+     * @return the File that the image was saved to.
+     * @throws IOException if the file could not be created.
+     */
     private File saveImageFile() throws IOException {
 
         // External sdcard location
@@ -351,8 +384,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * This will open a new fragment that displays the event details
-     * @param item
+     * This will open a new fragment that displays the event details.
+     * @param item is the Event that was selected.
      */
     @Override
     public void onListFragmentInteraction(Event item) {
@@ -376,6 +409,9 @@ public class MainActivity extends AppCompatActivity
                 .commit();
     }
 
+    /**
+     * Safely closes the search menu.
+     */
     public void closeSearchMenu() {
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(mSearchMenu);
         //Clear query
@@ -429,6 +465,7 @@ public class MainActivity extends AppCompatActivity
         eet.execute(url);
     }
 
+    @Override
     public void editEventCallback(boolean result, String message, Event editedEvent) {
         mProgressDialog.dismiss();
         if (result) {
@@ -467,6 +504,7 @@ public class MainActivity extends AppCompatActivity
         deleteEventTask.execute(mDeleteUrl);
     }
 
+    @Override
     public void deleteEventCallback(boolean result, String message, Event event) {
         if (result) {
             // Delete event from Sqlite

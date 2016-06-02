@@ -16,11 +16,20 @@ import java.net.URL;
 
 /**
  * Created by rithvikl on 5/27/16.
+ *
+ * Creates a new event by sending infromation about the event to a database.
  */
 public class CreateEventTask extends AsyncTask<String, Void, String> {
 
+    /**
+     * The listener is waiting for this task to complete.
+     */
     EditEventFragment.OnEditEventInteractionListener mListener;
 
+    /**
+     * Constructor.
+     * @param listener is the listener for task completion.
+     */
     public CreateEventTask(EditEventFragment.OnEditEventInteractionListener listener) {
         super();
         this.mListener = listener;

@@ -37,7 +37,10 @@ import tcss450.uw.edu.project18.event.Event;
  * Activities that contain this fragment must implement the
  * {@link OnDeleteEventInteractionListener} interface
  * to handle interaction events.
- * @author Rithvik
+ *
+ * Let's the user view an event's details.
+ *
+ * @author Rithvik Lagissetti
  * @version 20160530
  */
 public class ViewEventFragment extends Fragment
@@ -53,11 +56,21 @@ public class ViewEventFragment extends Fragment
     public static final String DELETE_EVENT_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/deleteevent.php?";
 
+    /**
+     * Listens for the delete button to be pressed.
+     */
     private OnDeleteEventInteractionListener mListener;
+    /**
+     * UI objects
+     */
     private TextView mEventItemTitleTextView;
     private TextView mEventItemDateTextView;
     private TextView mEventItemCommentTextView;
     private ImageView mEventItemPhotoView;
+
+    /**
+     * Event being displayed.
+     */
     private Event mEventItem;
 
 
@@ -94,6 +107,7 @@ public class ViewEventFragment extends Fragment
             }
         });
         Button deleteBtn = (Button) view.findViewById(R.id.event_item_delete);
+        //confirms deletion before deleting event
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,11 +132,7 @@ public class ViewEventFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-
         // During startup, check if there are arguments passed to the fragment.
-        // onStart is a good place to do this because the layout has already been
-        // applied to the fragment at this point so we can safely call the method
-        // below that sets the article text.
         Bundle args = getArguments();
         if (args != null) {
             // Set article based on argument passed in
@@ -130,6 +140,10 @@ public class ViewEventFragment extends Fragment
         }
     }
 
+    /**
+     * Updates the UI views with information from an Event.
+     * @param event holds the information to update.
+     */
     public void updateView(Event event) {
         if (event != null) {
             mEventItem = event;
@@ -149,6 +163,10 @@ public class ViewEventFragment extends Fragment
         }
     }
 
+    /**
+     * Creates a URL for deleting an event.
+     * @return the URL string for deleting an event.
+     */
     public String buildDeleteURL() {
         StringBuilder sb = new StringBuilder();
         try {
@@ -180,6 +198,10 @@ public class ViewEventFragment extends Fragment
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, editEventFragment).addToBackStack(null).commit();
     }
 
+    /**
+     * Creates and returns a bitmap from what is set in the ImageView.
+     * @return a bitmap from the photo view.
+     */
     public Bitmap getImage() {
         if(Driver.DEBUG) {
             Log.d("view:image", "" + mEventItemPhotoView);
@@ -188,18 +210,23 @@ public class ViewEventFragment extends Fragment
         return ((BitmapDrawable)mEventItemPhotoView.getDrawable()).getBitmap();
     }
 
+    /**
+     * Get an event.
+     * @return the event that is being displayed.
+     */
     public Event getEvent() {
         return mEventItem;
     }
+
+    /**
+     * Saves the photograph to a temporary file and starts an intent
+     * to send it via another app.
+     */
     public void sendEmail() {
         try {
             File file = saveToTemp();
             if (file == null) throw new Exception("File is null.");
-            /*if (file.getFreeSpace() < (long)(file.getTotalSpace()*.9)) {
-                throw new Exception("Not enough room.");
-            }*/
             Intent email = new Intent(Intent.ACTION_SEND);
-            //Uri uri = FileProvider.getUriForFile(getActivity(),getString(R.string.FILE_AUTH),file);
             Uri uri = Uri.fromFile(file);
             email.putExtra(Intent.EXTRA_STREAM, uri);
             email.setType("image/jpeg");
@@ -209,6 +236,10 @@ public class ViewEventFragment extends Fragment
         }
     }
 
+    /**
+     * Determines if the external storage is writable.
+     * @return true if a file can be saved to external storage, false otherwise.
+     */
     public boolean isExternWritable() {
         String state = Environment.getExternalStorageState();
         if (Driver.DEBUG) Log.d("view:writable", "State=" + state);
@@ -216,14 +247,18 @@ public class ViewEventFragment extends Fragment
         return false;
     }
 
+    /**
+     * Saves an image to a temporary file.
+     * @return the file that was saved to.
+     * @throws IOException if the file cannot be saved.
+     */
     public File saveToTemp() throws IOException {
         if(!isExternWritable()) throw new IOException("Cannot write to external storage.");
         File file = new File(Environment.getExternalStorageDirectory(), "tmp.jpg");
-        //if (Driver.DEBUG) Log.d("view:save", file.getAbsolutePath());
+        if (Driver.DEBUG) Log.d("view:save", file.getAbsolutePath());
         if (!file.createNewFile()) {
             Log.i("Share:file", "File not created.");
         } else Log.i("Share:file", "File created.");
-        //if (Driver.DEBUG) Log.d("view:save", file.getAbsolutePath());
         Bitmap mImage = getImage();
         //save image to file
         if (mImage != null) {
@@ -232,7 +267,6 @@ public class ViewEventFragment extends Fragment
             fout.flush();
             fout.close();
         }
-        //if (Driver.DEBUG) Log.d("view:save", file.getAbsolutePath());
         return file;
     }
 
@@ -252,7 +286,19 @@ public class ViewEventFragment extends Fragment
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnDeleteEventInteractionListener {
+        /**
+         * Called when the user requests an event to be deleted.
+         * @param url is the delete url.
+         * @param event is the Event to delete.
+         */
         void onDeleteEventInteraction(String url, Event event);
+
+        /**
+         * Called when the deletion task is complete.
+         * @param result is whether or not the task was successful.
+         * @param message is an error message if applicable.
+         * @param event is the event that was deleted.
+         */
         void deleteEventCallback(boolean result, String message, Event event);
     }
 }

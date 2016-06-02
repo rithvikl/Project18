@@ -38,10 +38,9 @@ public class EditProfileFragment extends Fragment
      * Not sure what this is using this for.
      */
     public static final String PROFILE_ITEM = "profile";
-    //TODO create these php files
     /**
      * The URLs for adding or editing the user
-     * profile. I might consolidate this.
+     * profile.
      */
     public static final String PROFILE_ADD_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/addprofile.php?";
@@ -72,6 +71,9 @@ public class EditProfileFragment extends Fragment
      */
     private boolean loggedin;
 
+    /**
+     * The shared preferences for the user.
+     */
     private SharedPreferences mShared;
 
     /**
@@ -104,6 +106,7 @@ public class EditProfileFragment extends Fragment
         profileDate = (TextView) view.findViewById(R.id.profile_date);
         Button date = (Button) view.findViewById(R.id.date_button);
         final EditProfileFragment that = this;
+        //opens the date picker with the current
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -211,9 +214,6 @@ public class EditProfileFragment extends Fragment
             profilePass1.requestFocus();
             return false;
         }
-        if (loggedin) {
-            //TODO check if the password equals old...naw too hard...
-        }
         if (Driver.DEBUG) {
             String print = "{email:" + email + ", "
                     + ", pass1:" + pass1 + ", pass2:" + pass2;
@@ -266,16 +266,18 @@ public class EditProfileFragment extends Fragment
             sb.append(URLEncoder.encode(profileQuery[2], "UTF-8"));
             if(Driver.DEBUG) Log.i("EditProfile:build", sb.toString());
         } catch (IllegalArgumentException e) {
-            //Toast.makeText(view.getContext(), "Arguments: We were unable to update your profile.",
-            //        Toast.LENGTH_LONG).show();
+            if (Driver.DEBUG)
+                Toast.makeText(view.getContext(), "Arguments: We were unable to update your profile.",
+                    Toast.LENGTH_SHORT).show();
             return null;
         } catch (UnsupportedEncodingException e3) {
-            //Toast.makeText(view.getContext(), "Encoding: We were unable to update your profile.",
-            //        Toast.LENGTH_LONG).show();
+            if (Driver.DEBUG)
+                Toast.makeText(view.getContext(), "Encoding: We were unable to update your profile.",
+                    Toast.LENGTH_SHORT).show();
             return null;
         } catch(Exception e2) {
-            //if(Driver.DEBUG) Toast.makeText(view.getContext(), e2.getLocalizedMessage(),
-            //        Toast.LENGTH_SHORT).show();
+            if(Driver.DEBUG) Toast.makeText(view.getContext(), e2.getLocalizedMessage(),
+                    Toast.LENGTH_SHORT).show();
             return null;
         }
         return sb.toString();

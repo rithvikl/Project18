@@ -15,13 +15,28 @@ import java.util.Map;
 
 /**
  * Created by rithvikl on 5/28/16.
+ *
+ * Task for uploading a photograph to Cloudinary.
+ *
+ * @author Rithvik Lagisetti
+ * @version 20160601
  */
 public class UploadPhotoTask extends AsyncTask<String, Void, String> {
 
+    /**
+     * Cloudinary connector object.
+     */
     private Cloudinary mCloudinary;
 
+    /**
+     * Listens for the task to complete.
+     */
     EditEventFragment.OnEditEventInteractionListener mListener;
 
+    /**
+     * Constructor.
+     * @param listener is waiting for the task to complete.
+     */
     public UploadPhotoTask(EditEventFragment.OnEditEventInteractionListener listener) {
         Map config = new HashMap();
         config.put("cloud_name", "gathercloud");

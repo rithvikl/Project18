@@ -14,13 +14,26 @@ import java.net.URL;
 
 /**
  * Created by rithvikl on 5/23/16.
+ *
+ * Downloads a photograph for an event from Cloudinary.
  */
 public class DownloadPhotoTask extends AsyncTask<String, Void, Bitmap>{
 
+    /**
+     * The image view in which to put the photograph.
+     */
     private ImageView mImageView;
 
+    /**
+     * A progress dialog to indicate the progress of the task.
+     */
     private ProgressDialog mProgressDialog;
 
+    /**
+     * Constructor.
+     * @param imageView is the image view for the photograph.
+     * @param progressDialog is a dialog to indicate task progress.
+     */
     public DownloadPhotoTask(ImageView imageView, ProgressDialog progressDialog) {
         mImageView = imageView;
         mProgressDialog = progressDialog;

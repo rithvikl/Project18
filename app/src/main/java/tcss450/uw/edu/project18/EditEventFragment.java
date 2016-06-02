@@ -42,18 +42,35 @@ import tcss450.uw.edu.project18.event.Event;
 public class EditEventFragment extends Fragment
     implements DatePickerDialog.OnDateSetListener, Serializable {
 
+    /**
+     * URL for editing events.
+     */
     public static final String EDIT_EVENT_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/editevent.php?";
 
+    /**
+     * URL for creating events.
+     */
     public static final String CREATE_EVENT_URL =
             "http://cssgate.insttech.washington.edu/~_450atm18/upload.php?";
 
+    /**
+     * Key for argument bundle.
+     */
     public static final String PHOTO_FILE_PATH = "photo_file_path";
 
+    /**
+     * To fix the orientation of the photograph according to how
+     * the user took it.
+     */
     public static final float ROTATE_90 = 90;
 
+    /**
+     * The listener waiting for an event to be edited.
+     */
     private OnEditEventInteractionListener mEditListener;
 
+    /** UI elements **/
     private EditText mEventItemTitleEditText;
     private TextView mEventEditDate;
     private EditText mEventItemCommentEditText;
@@ -94,12 +111,15 @@ public class EditEventFragment extends Fragment
         final SharedPreferences shared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS),
                 Context.MODE_PRIVATE);
         final EditEventFragment that = this;
+        //the date button opens a date picker
         Button datebtn = (Button) view.findViewById(R.id.event_edit_date_button);
         datebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle b = new Bundle();
                 b.putSerializable(DatePickingFragment.LISTEN, that);
+                //tries to set the current date to an event's date
+                //if there is an error is will default to today's date
                 try {
                     int[] vals = Driver.getValueOfDate(mEventItem.getDate());
                     b.putInt(DatePickingFragment.YEAR, vals[0]);
@@ -136,6 +156,7 @@ public class EditEventFragment extends Fragment
                 NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
                 if (networkInfo != null && networkInfo.isConnected()) {
                     mEventItem.setTitle(Driver.cleanString(mEventItemTitleEditText.getText().toString()));
+                    //confirm date on submit
                     mEventItem.setDate(mEventItemNewDate);
                     mEventItem.setComment(Driver.cleanString(mEventItemCommentEditText.getText().toString()));
                     mEventItem.setTags(Driver.cleanString(mEventTagsEditText.getText().toString()));
@@ -159,9 +180,6 @@ public class EditEventFragment extends Fragment
     public void onStart() {
         super.onStart();
         // During startup, check if there are arguments passed to the fragment.
-        // onStart is a good place to do this because the layout has already been
-        // applied to the fragment at this point so we can safely call the method
-        // below that sets the article text.
         Bundle args = getArguments();
         if (args != null) {
             // Set article based on argument passed in
@@ -222,7 +240,7 @@ public class EditEventFragment extends Fragment
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        try {
+        try { //set the date of the event when the user chooses an option
             mEventItemNewDate = Driver.parseDateForDB(year,monthOfYear+1,dayOfMonth);
             mEventEditDate.setText(Driver.parseDateForDisplay(mEventItemNewDate));
         } catch (ParseException e) {
@@ -301,10 +319,41 @@ public class EditEventFragment extends Fragment
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnEditEventInteractionListener {
+        /**
+         * Called when new event information is submitted.
+         * @param url is the url to update an event.
+         * @param editedEvent is the event that needs editing.
+         */
         void onEditEventInteraction(String url, Event editedEvent);
+
+        /**
+         * Called when the task to update an event is complete.
+         * @param result is true if the result was successful, false otherwise.
+         * @param message is an error message if applicable.
+         * @param editedEvent is the event that was edited.
+         */
         void editEventCallback(boolean result, String message, Event editedEvent);
+
+        /**
+         * Called when a new event is created.
+         * @param createdEvent is the new event.
+         * @param url is the url for creating an event.
+         */
         void onCreateEventInteraction(Event createdEvent, String url);
+
+        /**
+         * Called when the task for creating an event is complete.
+         * @param result is true if the result was successful, false otherwise.
+         * @param message is an error message if applicable.
+         */
         void createEventCallback(boolean result, String message);
+
+        /**
+         * Called when the task for uploading an image when creating an
+         * event is complete.
+         * @param result is true if the result is successful, false otherwise.
+         * @param message is an error message if applicable.
+         */
         void uploadImageCallback(boolean result, String message);
     }
 }

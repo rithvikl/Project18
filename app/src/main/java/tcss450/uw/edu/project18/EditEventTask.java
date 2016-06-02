@@ -18,13 +18,28 @@ import tcss450.uw.edu.project18.event.Event;
 
 /**
  * Created by Melinda Robertson on 5/19/2016.
+ *
+ * Task that executes a request to the server to change an event.
+ *
+ * @version 20160601
  */
 public class EditEventTask extends AsyncTask<String, Void, String> {
 
+    /**
+     * The listener waiting for this task to complete.
+     */
     EditEventFragment.OnEditEventInteractionListener mListener;
 
+    /**
+     * The event that is being edited.
+     */
     Event mEditedEvent;
 
+    /**
+     * Constructor.
+     * @param listener is waiting for the task to complete.
+     * @param editedEvent is the event to edit.
+     */
     public EditEventTask (EditEventFragment.OnEditEventInteractionListener listener, Event editedEvent) {
         super();
         this.mListener = listener;

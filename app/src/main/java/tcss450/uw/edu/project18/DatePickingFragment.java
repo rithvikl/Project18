@@ -15,7 +15,14 @@ import java.util.Calendar;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link DialogFragment} subclass.
+ *
+ * Creates a dialog for picking a date. The picker will start from the
+ * date specified in the bundle arguments or from today's date if there
+ * are none.
+ *
+ * @version 20160601
+ * @author Melinda Robertson
  */
 public class DatePickingFragment extends DialogFragment {
 

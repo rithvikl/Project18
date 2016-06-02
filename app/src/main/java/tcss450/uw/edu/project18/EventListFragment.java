@@ -57,10 +57,18 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
      */
     private OnListFragmentInteractionListener mListener;
 
+    /**
+     * Listener for search box.
+     */
     public SearchView.OnQueryTextListener mQueryTextListener;
 
+    /**
+     * Local SQLite database for events.
+     */
     public EventDB mEventDB;
-
+    /**
+     * Adapter for the list view recycler.
+     */
     public MyEventRecyclerViewAdapter mAdapter;
 
     /**
@@ -73,6 +81,9 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
      */
     private List<Event> mEventList;
 
+    /**
+     * The full list of events without any filters applied.
+     */
     private List<Event> mFullEventList;
 
     /**
@@ -85,6 +96,9 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
      */
     private String mUser;
 
+    /**
+     * Shows the progress of on-going tasks.
+     */
     private ProgressDialog mProgressDialog;
 
     /**
@@ -262,7 +276,12 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
         return true;
     }
 
-
+    /**
+     * Filter the list view by a string query using the event tags.
+     * @param events is the list of events.
+     * @param query is the string to search for.
+     * @return a filter list of events.
+     */
     private List<Event> filter(List<Event> events, String query) {
         query = query.toLowerCase();
 
@@ -286,12 +305,16 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
         void onListFragmentInteraction(Event item);
     }
 
+    /**
+     * Get the local SQLite database.
+     * @return the database.
+     */
     public EventDB getEventDB() {
         return mEventDB;
     }
 
     /**
-     * Async task to get the user's list of events
+     * Async task to get the user's list of events.
      */
     private class DownloadEventsTask extends AsyncTask<String, Void, String> {
 

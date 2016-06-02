@@ -12,13 +12,29 @@ import android.view.ViewGroup;
 
 /**
  * Created by Melinda Robertson on 5/26/2016.
+ *
+ * The confirm dialog lets the user confirm an action in case they made a mistake.
  */
 public class ConfirmDialogFragment extends DialogFragment {
 
+    /**
+     * Key for the message in the argument bundle.
+     */
     public final static String CONFIRM_MESSAGE = "confirm_message";
+    /**
+     * Key for the listener in the argument bundle.
+     */
     public final static String CONFIRM_LISTEN = "confirm_listen";
 
+    /**
+     * The message to display in the dialog.
+     * Determined by calling activity.
+     */
     private String message;
+    /**
+     * The listener that is waiting for confirmation
+     * of an action.
+     */
     private onConfirmInteraction listen;
 
     public ConfirmDialogFragment() {
@@ -56,6 +72,9 @@ public class ConfirmDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    /**
+     * Required interface to get a response from the confirm dialog.
+     */
     interface onConfirmInteraction {
         public void onConfirm(boolean confirm);
     }
