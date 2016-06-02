@@ -1,7 +1,5 @@
 package tcss450.uw.edu.project18;
 
-
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,16 +11,10 @@ import android.view.ViewGroup;
 import android.widget.*;
 import android.widget.DatePicker;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.sql.Date;
 import java.text.ParseException;
 import java.util.Calendar;
-import java.util.IllegalFormatException;
-
-import tcss450.uw.edu.project18.event.Event;
-
 
 /**
  * Allows the user to create or edit their profile.
@@ -35,9 +27,9 @@ public class EditProfileFragment extends Fragment
     implements java.io.Serializable, android.app.DatePickerDialog.OnDateSetListener {
 
     /**
-     * Not sure what this is using this for.
+     * Tag to identify the fragment.
      */
-    public static final String PROFILE_ITEM = "profile";
+    public static final String TAG = "EDIT_PROFILE";
     /**
      * The URLs for adding or editing the user
      * profile.
@@ -190,11 +182,10 @@ public class EditProfileFragment extends Fragment
 
     /**
      * Validates the information in the text boxes.
-     * @view is for sending toasts. Still trying to get this to work.
      * @return true if the information can be used,
      *          false otherwise.
      */
-    private boolean validate(View v) {
+    private boolean validate() {
         String email = profileEmail.getText().toString();
         String date = profileDate.getText().toString();
         String pass1 = profilePass1.getText().toString();
@@ -245,7 +236,7 @@ public class EditProfileFragment extends Fragment
                 sb.append("&");
             }
             else sb.append(PROFILE_ADD_URL);
-            boolean arg = validate(view);
+            boolean arg = validate();
             if(Driver.DEBUG)
                 Log.i("EditProfile:text2", "{0:" + profileQuery[0] +
                         ", 1:" + profileQuery[1] +

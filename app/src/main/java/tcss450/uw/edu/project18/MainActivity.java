@@ -1,5 +1,6 @@
 package tcss450.uw.edu.project18;
 
+import android.annotation.SuppressLint;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -79,11 +80,6 @@ public class MainActivity extends AppCompatActivity
     private ViewEventFragment mViewEventFragment;
 
     /**
-     * Instance of createEventFragment
-     */
-    private EditEventFragment mEditEventFragment;
-
-    /**
      * Shows a list of events. This is the fragment the main activity starts with.
      */
     private EventListFragment mEventListFragment;
@@ -92,16 +88,6 @@ public class MainActivity extends AppCompatActivity
      * A newly created event.
      */
     private Event mCreatedEvent;
-
-    /**
-     * An event to delete.
-     */
-    private Event mDeletedEvent;
-
-    /**
-     * The url for deleting an event.
-     */
-    private String mDeleteUrl;
 
     /**
      * The search bar to filter the list.
@@ -131,16 +117,20 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        if (drawer != null) drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        TextView user = null;
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this);
+            user = (TextView) navigationView.getHeaderView(0)
+                    .findViewById(R.id.nav_header_username);
+        }
 
-        TextView user = (TextView) navigationView.getHeaderView(0)
-                .findViewById(R.id.nav_header_username);
-        String name = mShared.getString(getString(R.string.USER), "Welcome!");
-        user.setText("Hello " + name);
+        String name = getString(R.string.greeting_name) +
+                mShared.getString(getString(R.string.USER), getString(R.string.greeting_default));
+        if (user != null) user.setText(name);
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle("Loading");
         mProgressDialog.setMessage("Please wait...");
@@ -160,10 +150,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        if (drawer != null) {
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
@@ -241,7 +233,7 @@ public class MainActivity extends AppCompatActivity
     public void logout(boolean confirm) {
         if (confirm) {
             mShared.edit().clear();
-            mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
+            mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).apply();
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
             finish();
@@ -272,13 +264,15 @@ public class MainActivity extends AppCompatActivity
             Bundle args = new Bundle(); //these are useless
             epf.setArguments(args);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_fragment_container, epf)
+                    .replace(R.id.main_fragment_container, epf, EditProfileFragment.TAG)
                     .addToBackStack(null)
                     .commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        if (drawer != null) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
         return true;
     }
 
@@ -287,13 +281,9 @@ public class MainActivity extends AppCompatActivity
      * @return true if the device has a camera, false otherwise.
      */
     private boolean supportsCamera() {
-        if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-            // this device has a camera
-            return true;
-        } else {
-            // no camera on this device
-            return false;
-        }
+        // this device has a camera
+// no camera on this device
+        return getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
     /**
@@ -333,14 +323,18 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             Calendar curDate = Calendar.getInstance();
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
+            @SuppressLint("SimpleDateFormat")
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
             String formattedDate = dateFormatter.format(curDate.getTime());
 
             // Create new event with current date
             Event createdEvent = new Event("-1", "", "", formattedDate, "", mPhotoFileName);
             Log.i("CREATE", "Created Event: " + createdEvent.toString());
 
-            mEditEventFragment = new EditEventFragment();
+            /*
+      Instance of createEventFragment
+     */
+            EditEventFragment mEditEventFragment = new EditEventFragment();
             Bundle args = new Bundle();
             args.putString(EditEventFragment.PHOTO_FILE_PATH, mPhotoFilePath);
             args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, createdEvent);
@@ -404,7 +398,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_fragment_container, mViewEventFragment)
+                .replace(R.id.main_fragment_container, mViewEventFragment, ViewEventFragment.TAG)
                 .addToBackStack(null)
                 .commit();
     }
@@ -437,7 +431,7 @@ public class MainActivity extends AppCompatActivity
     public void createEventCallback(boolean result, String message) {
         if (result) {
             UploadPhotoTask uit = new UploadPhotoTask(this);
-            uit.execute(new String[]{mPhotoFilePath, mCreatedEvent.getPhotoFileName()});
+            uit.execute(mPhotoFilePath, mCreatedEvent.getPhotoFileName());
         } else {
             mProgressDialog.dismiss();
             Toast.makeText(getApplicationContext(), "Failed to create event: " + message,
@@ -491,17 +485,15 @@ public class MainActivity extends AppCompatActivity
     public void editProfileCallback(boolean success, String message) {
         if (Driver.DEBUG)
             Toast.makeText(getApplicationContext(), message,
-                Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_LONG).show();
         if (success)
             getSupportFragmentManager().popBackStackImmediate();
     }
 
     @Override
     public void onDeleteEventInteraction(String url, Event event) {
-        this.mDeletedEvent = event;
-        this.mDeleteUrl = url;
-        DeleteEventTask deleteEventTask = new DeleteEventTask(this, mDeletedEvent);
-        deleteEventTask.execute(mDeleteUrl);
+        DeleteEventTask deleteEventTask = new DeleteEventTask(this, event);
+        deleteEventTask.execute(url);
     }
 
     @Override

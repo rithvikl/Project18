@@ -7,10 +7,15 @@ import com.robotium.solo.Solo;
 
 /**
  * Tests the LoginActivity.
- * Created by Melinda Robertson on 5/29/2016.
+ *
+ * @author Melinda Robertson
+ * @version 20160601
  */
 public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginActivity> {
 
+    /**
+     * Pseudo user.
+     */
     private Solo solo;
 
     /**
@@ -48,8 +53,9 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 
     /**
      * Tests logging into a dummy account.
+     * @throws Exception if solo is interrupted.
      */
-    public void testZLogin() {
+    public void testZLogin() throws Exception {
         EditText email = (EditText) solo.getView(R.id.email);
         solo.clearEditText(email);
         solo.enterText(email, "test@test.com");

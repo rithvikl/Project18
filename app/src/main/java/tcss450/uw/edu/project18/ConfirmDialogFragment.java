@@ -6,9 +6,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 /**
  * Created by Melinda Robertson on 5/26/2016.
@@ -76,6 +73,10 @@ public class ConfirmDialogFragment extends DialogFragment {
      * Required interface to get a response from the confirm dialog.
      */
     interface onConfirmInteraction {
-        public void onConfirm(boolean confirm);
+        /**
+         * Says what option the user picked.
+         * @param confirm true if the user confirmed the action, false otherwise.
+         */
+        void onConfirm(boolean confirm);
     }
 }

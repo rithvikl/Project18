@@ -1,25 +1,27 @@
 package tcss450.uw.edu.project18;
 
-import android.support.v4.widget.DrawerLayout;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.robotium.solo.Solo;
 
 /**
- * Created by Mindy on 5/30/2016.
+ * Created by Melinda Robertson on 5/30/2016.
  *
- * Test class for the main activity:
- *  - open menu
- *  - open edit profile
- *  - view event
- *  - open edit event
- *  - open date picker from edit event
- *  - open share intent
+ * Test class for the main activity.
+ *
+ *  @author Melinda Robertson
+ *  @version 20160106
  */
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
+    /**
+     * Pseudo user.
+     */
     private Solo solo;
 
+    /**
+     * Required constructor.
+     */
     public MainActivityTest() {
         super(MainActivity.class);
     }
@@ -30,26 +32,31 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         solo = new Solo(getInstrumentation(), getActivity());
     }
 
-    public void testOpenSideBar() {
-        solo.setNavigationDrawer(Solo.OPENED);
-        assertTrue("sidebar opened", solo.searchText("Welcome!"));
-        solo.setNavigationDrawer(Solo.CLOSED);
+    /**
+     * Tests if the navigation drawer opens.
+     */
+    public void testAOpenSideBar() {
+        //solo.setNavigationDrawer(Solo.OPENED);
+        solo.clickOnImageButton(0);
+        assertTrue("sidebar opened", solo.searchText("Hello"));
+        //solo.setNavigationDrawer(Solo.CLOSED);
+//        solo.swipe(new PointF(300,300), new PointF(300,300),
+//                new PointF(0,300), new PointF(0,300));
+        solo.drag(300,0,300,300,10);
     }
 
-    public void testEditProfile() {
-        solo.setNavigationDrawer(Solo.OPENED);
-        solo.clickOnButton("Edit Profile");
-        assertTrue("found edit profile", solo.searchText("Must be longer"));
-        solo.goBack();
-        assertTrue("returned to event list", solo.searchText("Gather"));
-    }
-
-    public void testViewEvent() {
+    /**
+     * Tests if the view event fragment opens.
+     */
+    public void testCViewEvent() {
         solo.clickInRecyclerView(0);
         assertTrue("opened view event", solo.searchText(""));
     }
 
-    public void testEditEvent() {
+    /**
+     * Tests if the edit event fragment opens.
+     */
+    public void testDEditEvent() {
         solo.clickInRecyclerView(0);
         solo.clickOnButton("Edit");
         assertTrue("editing event", solo.searchText(""));
@@ -58,11 +65,5 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         solo.clickOnButton("Cancel"); //exit date picker
         solo.clickOnButton("Cancel"); //cancel edit
         solo.goBack(); //return from view event
-    }
-
-    public void testShareEvent() {
-        solo.clickInRecyclerView(0);
-        solo.clickOnView(getActivity().findViewById(R.id.fab));
-        assertTrue("sharing event", solo.searchText("Use..."));
     }
 }

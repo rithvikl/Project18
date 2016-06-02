@@ -51,6 +51,10 @@ public class ViewEventFragment extends Fragment
      */
     public static final String EVENT_ITEM_SELECTED = "EventItemSelected";
     /**
+     * Tag to identify the fragment.
+     */
+    public static final String TAG = "VIEW_EVENT";
+    /**
      * URL for deleting events.
      */
     public static final String DELETE_EVENT_URL =
@@ -103,7 +107,7 @@ public class ViewEventFragment extends Fragment
         editbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editEvent(v);
+                editEvent();
             }
         });
         Button deleteBtn = (Button) view.findViewById(R.id.event_item_delete);
@@ -187,10 +191,8 @@ public class ViewEventFragment extends Fragment
 
     /**
      * Opens a fragment to edit an Event.
-     * @param view is the button that triggered calling this function,
-     *             but it doesn't matter.
      */
-    public void editEvent(View view) {
+    public void editEvent() {
         EditEventFragment editEventFragment = new EditEventFragment();
         Bundle args = new Bundle();
         args.putSerializable(ViewEventFragment.EVENT_ITEM_SELECTED, mEventItem);
@@ -243,8 +245,7 @@ public class ViewEventFragment extends Fragment
     public boolean isExternWritable() {
         String state = Environment.getExternalStorageState();
         if (Driver.DEBUG) Log.d("view:writable", "State=" + state);
-        if (Environment.MEDIA_MOUNTED.equals(state)) return true;
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     /**

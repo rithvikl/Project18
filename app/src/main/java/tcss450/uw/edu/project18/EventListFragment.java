@@ -87,11 +87,6 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
     private List<Event> mFullEventList;
 
     /**
-     * The shared preferences file used for storing user info
-     */
-    private SharedPreferences mShared;
-
-    /**
      * The username of the currently logged in user
      */
     private String mUser;
@@ -135,7 +130,10 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
         }
 
         // Get the user's username from shared preferences
-        mShared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
+        /*
+            The shared preferences file used for storing user info
+        */
+        SharedPreferences mShared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS), Context.MODE_PRIVATE);
         mUser = mShared.getString(getString(R.string.USER), "");
     }
 
@@ -177,7 +175,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
             mProgressDialog.show();
             DownloadEventsTask task = new DownloadEventsTask();
             String method_url = buildUrlString();
-            task.execute(new String[]{method_url});
+            task.execute(method_url);
         } else {
 
             // User can't do anything without network connection
@@ -203,13 +201,12 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
      * @return the url string
      */
     public String buildUrlString () {
-        String url = Uri.parse(GET_EVENTS_URL)
+        return Uri.parse(GET_EVENTS_URL)
                 .buildUpon()
                 .appendQueryParameter("email", mUser)
                 .appendQueryParameter("tag", "ALL")
                 .build()
                 .toString();
-        return url;
     }
 
 
@@ -248,10 +245,10 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
     @Override
     public boolean onQueryTextSubmit(String query) {
         Log.i("FILTER", "Query: " + query);
-        if (query != "") {
+        if (!query.equals("")) {
             Log.i("FILTER", "Pre filter full list:" + mEventList.toString());
 
-            List<Event> tempList = new ArrayList<Event>();
+            List<Event> tempList = new ArrayList<>();
             tempList.addAll(mFullEventList);
             final List<Event> filteredEventList = filter(tempList, query);
             mAdapter.animateTo(filteredEventList);
@@ -357,7 +354,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
                 return;
             }
 
-            mEventList = new ArrayList<Event>();
+            mEventList = new ArrayList<>();
             Log.i("RESPONSE", mEventList.toString());
             result = Event.parseEventJSON(result, mEventList);
             if (result != null) {
@@ -366,7 +363,7 @@ public class EventListFragment extends Fragment implements SearchView.OnQueryTex
                 return;
             }
             if (!mEventList.isEmpty()) {
-                mFullEventList = new ArrayList<Event>();
+                mFullEventList = new ArrayList<>();
                 mFullEventList.addAll(mEventList);
 
                 if (mEventDB == null) {

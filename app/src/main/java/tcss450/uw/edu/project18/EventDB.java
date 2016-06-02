@@ -27,10 +27,6 @@ public class EventDB {
     private static final String EVENT_TABLE = "Event";
 
     /**
-     * The database helper.
-     */
-    private EventDBHelper mEventDBHelper;
-    /**
      * The SQLite database.
      */
     private SQLiteDatabase mSQLiteDatabase;
@@ -40,14 +36,17 @@ public class EventDB {
      * @param context is the current activity's activity.
      */
     public EventDB(Context context) {
-        mEventDBHelper = new EventDBHelper(context, DB_NAME, null, DB_VERSION);
+        /*
+      The database helper.
+     */
+        EventDBHelper mEventDBHelper = new EventDBHelper(context, DB_NAME, null, DB_VERSION);
         mSQLiteDatabase = mEventDBHelper.getWritableDatabase();
     }
 
     /**
      * Inserts the course into the local sqlite table. Returns true if successful, false otherwise.
-     * @param createdEvent
-     * @return true or false
+     * @param createdEvent is the event that was created.
+     * @return true if the event was inserted, false otherwise.
      */
     public boolean insertEvent(Event createdEvent) {
         ContentValues contentValues = new ContentValues();
@@ -116,7 +115,7 @@ public class EventDB {
         );
 
         c.moveToFirst();
-        List<Event> list = new ArrayList<Event>();
+        List<Event> list = new ArrayList<>();
         for (int i=0; i<c.getCount(); i++) {
             String id = c.getString(0);
             String title = c.getString(1);
@@ -128,15 +127,8 @@ public class EventDB {
             list.add(event);
             c.moveToNext();
         }
-
+        c.close();
         return list;
-    }
-
-    /**
-     * Closes the database.
-     */
-    public void closeDB() {
-        mSQLiteDatabase.close();
     }
 
     /**

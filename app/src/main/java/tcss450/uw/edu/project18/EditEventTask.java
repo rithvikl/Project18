@@ -56,7 +56,7 @@ public class EditEventTask extends AsyncTask<String, Void, String> {
                 con = (HttpURLConnection) urlobj.openConnection();
                 InputStream content = con.getInputStream();
                 BufferedReader br = new BufferedReader(new InputStreamReader(content));
-                String s = "";
+                String s;
                 while ((s = br.readLine()) != null) {
                     response += s;
                 }

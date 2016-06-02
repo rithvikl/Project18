@@ -1,11 +1,6 @@
 package tcss450.uw.edu.project18;
 
-import android.app.Activity;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -15,6 +10,9 @@ import java.util.regex.Pattern;
  * This class holds miscellaneous functions for concurrency
  * across activities and fragments.
  * Created by Mindy on 4/20/2016.
+ *
+ * @author Melinda Robertson
+ * @version 20160601
  */
 public class Driver {
 
@@ -26,7 +24,7 @@ public class Driver {
     /**
      * Private constructor.
      */
-    private Driver(){};
+    private Driver(){}
 
     /**
      * http://www.regexplanet.com/advanced/java/index.html
@@ -37,37 +35,7 @@ public class Driver {
      *          false otherwise.
      */
     public static boolean isValidEmail(String email) {
-        if (email.isEmpty()) return false;
-        if (!email.matches("\\S+@\\w+.\\D{3}"))
-            return false;
-        return true;
-    }
-
-    /**
-     * Checks to see if a date is valid from three Strings.
-     * @param day is the day of the month. 1 <= day <= 31
-     * @param month is the month in the year. 1 <= month <= 12
-     * @param year is the year. year <= 2016 (this year)
-     * @return the date in MM/DD/YYYY format if valid.
-     * @throws IllegalArgumentException
-     */
-    public static String isValidDate(String day, String month, String year)
-        throws IllegalArgumentException {
-        String ret = "error";
-        int[] days;
-        int m = Integer.parseInt(month);
-        if (m > 12 || m < 1) throw new IllegalArgumentException("Month");
-        int y = Integer.parseInt(year);
-        if (y < 1900 || y > Calendar.getInstance().get(Calendar.YEAR))
-            throw new IllegalArgumentException("Year");
-        if (isLeapYear(y)) {
-            days = new int[]{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        } else {
-            days = new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        }
-        int d = Integer.parseInt(day);
-        if (d < 1 || d > days[m-1]) throw new IllegalArgumentException("Day");
-        return month + "/" + day + "/" + year;
+        return !email.isEmpty() && email.matches("\\S+@\\w+.\\D{3}");
     }
 
     /**
@@ -102,10 +70,7 @@ public class Driver {
      *          false otherwise.
      */
     public static boolean isLeapYear(int y) {
-        if (y % 4 != 0) return false;
-        if (y % 400 == 0) return true;
-        if (y % 100 == 0) return false;
-        return true;
+        return y % 4 == 0 && (y % 400 == 0 || y % 100 != 0);
     }
 
 
@@ -226,24 +191,6 @@ public class Driver {
      */
     public static String parseDateForDisplay(int year, int month, int day) throws ParseException{
         return parseDateForDisplay(parseDateForDB(year,month,day));
-    }
-
-    /**
-     * Checks if the phone is connected to the internet.
-     * @param context is a context.
-     * @param activity is the running activity.
-     * @return
-     */
-    public static boolean networkConnectionExists(Context context, Activity activity) {
-        ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            return true;
-        }
-        else {
-            Toast.makeText(context, "No network connection available. Cannot authenticate user", Toast.LENGTH_SHORT) .show();
-            return false;
-        }
     }
 
     /**

@@ -108,8 +108,6 @@ public class EditEventFragment extends Fragment
         mEventTagsEditText = (EditText) view.findViewById(R.id.event_edit_tags);
         mEventImageView = (ImageView) view.findViewById(R.id.event_item_photo_edit);
 
-        final SharedPreferences shared = getActivity().getSharedPreferences(getString(R.string.LOGIN_PREFS),
-                Context.MODE_PRIVATE);
         final EditEventFragment that = this;
         //the date button opens a date picker
         Button datebtn = (Button) view.findViewById(R.id.event_edit_date_button);
@@ -161,7 +159,7 @@ public class EditEventFragment extends Fragment
                     mEventItem.setComment(Driver.cleanString(mEventItemCommentEditText.getText().toString()));
                     mEventItem.setTags(Driver.cleanString(mEventTagsEditText.getText().toString()));
                     Log.i("Cleaned Event", mEventItem.toString());
-                    if (mEventItemId != "-1") {
+                    if (!mEventItemId.equals("-1")) {
                         mEditListener.onEditEventInteraction(buildEditURL(), mEventItem);
                     } else {
                         mEditListener.onCreateEventInteraction(mEventItem, buildCreateURL());
@@ -208,7 +206,7 @@ public class EditEventFragment extends Fragment
             mEventTagsEditText.setText(event.getTags());
 
             mEventItemId = event.getId();
-            if (mEventItemId != "-1") {
+            if (!mEventItemId.equals("-1")) {
                 // Download the photo from the web service
                 DownloadPhotoUrlTask dit = new DownloadPhotoUrlTask(mEventImageView, mEventItem.getPhotoFileName(), getContext());
                 dit.execute();

@@ -109,12 +109,14 @@ public class LoginActivity extends AppCompatActivity
         });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+        if (mEmailSignInButton != null) {
+            mEmailSignInButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    attemptLogin();
+                }
+            });
+        }
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
@@ -268,7 +270,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        //TODO should something happen here?
+        //required blank method
     }
 
     /**
@@ -285,7 +287,7 @@ public class LoginActivity extends AppCompatActivity
 
     /**
      * Open the edit profile fragment to register a new user.
-     * @param view
+     * @param view is the view that was clicked on.
      */
     public void onClick_Register(View view) {
         EditProfileFragment epf = new EditProfileFragment();
@@ -293,7 +295,7 @@ public class LoginActivity extends AppCompatActivity
         args.putCharSequence(PROFILE_NEW, "none");
         epf.setArguments(args);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.login_container, epf)
+                .replace(R.id.login_container, epf, EditProfileFragment.TAG)
                 .addToBackStack(null)
                 .commit();
         mLoginFormView.setVisibility(View.GONE);
@@ -317,7 +319,7 @@ public class LoginActivity extends AppCompatActivity
     @Override
     public void editProfile(String url) {
         EditProfileTask ept = new EditProfileTask(this);
-        ept.execute(new String[]{url});
+        ept.execute(url);
     }
 
     /**
@@ -350,7 +352,6 @@ public class LoginActivity extends AppCompatActivity
         };
 
         int ADDRESS = 0;
-        int IS_PRIMARY = 1;
     }
 
 
@@ -367,8 +368,11 @@ public class LoginActivity extends AppCompatActivity
         /**
          * The strings for the table attributes; also found in string.xml
          */
-        public final static String RESULT = "result", USER = "email", PSWD = "pwd",
-            FAIL = "fail", SUCCESS = "success", BDAY = "bday", UID = "uid";
+        public final static String RESULT = "result";
+        public final static String USER = "email";
+        public final static String SUCCESS = "success";
+        public final static String BDAY = "bday";
+        public final static String UID = "uid";
         /**
          * The email to send to the database.
          */
@@ -397,7 +401,7 @@ public class LoginActivity extends AppCompatActivity
         @Override
         protected Boolean doInBackground(Void... urls) {
             response = "";
-            HttpURLConnection urlConnection = null;
+            HttpURLConnection urlConnection;
             //some way to add the email and pswd to request...
             String loginurl = url + "?email=" + this.mEmail + "&pwd=" + this.mPassword;
                 try {
@@ -405,7 +409,7 @@ public class LoginActivity extends AppCompatActivity
                     urlConnection = (HttpURLConnection) urlObject.openConnection();
                     InputStream content = urlConnection.getInputStream();
                     BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
-                    String s = "";
+                    String s;
                     while ((s = buffer.readLine()) != null)
                         response += s;
                 } catch (MalformedURLException e) {
@@ -416,10 +420,7 @@ public class LoginActivity extends AppCompatActivity
                 } catch (Exception e) {
                     if (Driver.DEBUG) Log.i("Login:do", e.getMessage());
                 }
-            if (response.contains(SUCCESS)) {
-                return true;
-            }
-            return false;
+            return response.contains(SUCCESS);
         }
 
         @Override
@@ -432,10 +433,10 @@ public class LoginActivity extends AppCompatActivity
                     String status = (String) jo.get(RESULT);
                     //Store user data into shared preferences.
                     if (status.equals(SUCCESS)) {
-                        mShared.edit().putBoolean(getString(R.string.LOGGEDIN), true).commit();
-                        mShared.edit().putString(getString(R.string.USER), (String) jo.get(USER)).commit();
-                        mShared.edit().putString(getString(R.string.BDAY), (String) jo.get(BDAY)).commit();
-                        mShared.edit().putString(getString(R.string.UID), (String) jo.get(UID)).commit();
+                        mShared.edit().putBoolean(getString(R.string.LOGGEDIN), true).apply();
+                        mShared.edit().putString(getString(R.string.USER), (String) jo.get(USER)).apply();
+                        mShared.edit().putString(getString(R.string.BDAY), (String) jo.get(BDAY)).apply();
+                        mShared.edit().putString(getString(R.string.UID), (String) jo.get(UID)).apply();
                         startMain();
                     } else if (Driver.DEBUG) {
                         Log.i("Login:post", "Status:" + status);
@@ -446,7 +447,7 @@ public class LoginActivity extends AppCompatActivity
                         Log.i("Login:post", response);
                         Log.i("Login:post", e.toString());
                     }
-                    mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).commit();
+                    mShared.edit().putBoolean(getString(R.string.LOGGEDIN), false).apply();
                 }
             } else {
                 if(Driver.DEBUG) {
@@ -481,7 +482,7 @@ public class LoginActivity extends AppCompatActivity
 
     /**
      * This is part of the auto-complete thing for the email field.
-     * @return
+     * @return true if permission is granted to read contacts, false otherwise.
      */
     private boolean mayRequestContacts() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {

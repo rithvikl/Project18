@@ -95,10 +95,6 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         return mValues.size();
     }
 
-    public void setValues(List<Event> values) {
-        mValues = values;
-    }
-
     public Event removeItem(int position) {
         final Event event = mValues.remove(position);
         notifyItemRemoved(position);

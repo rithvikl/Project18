@@ -12,7 +12,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- TODO: Update blank fragment layout -->
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -85,6 +84,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
                     android:id="@+id/profile_cancel"
                     android:text="@string/profile_cancel"/>
                 <!--Submit via a button.-->
@@ -96,6 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
+                    android:layout_marginStart="5dp"
                     android:text="@string/profile_submit"/>
             </RelativeLayout>
         </LinearLayout>

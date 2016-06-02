@@ -45,7 +45,7 @@ public class DownloadPhotoUrlTask extends AsyncTask<Void, Void, String>{
      * @param context is the current activity's context.
      */
     public DownloadPhotoUrlTask(ImageView imageView, String photoFileName, Context context) {
-        Map config = new HashMap();
+        Map<String,String> config = new HashMap<>();
         config.put("cloud_name", "gathercloud");
         config.put("api_key", "341693643768687");
         config.put("api_secret", "CKl9isOYrdDwAM1r9_QVJFjtPZU");

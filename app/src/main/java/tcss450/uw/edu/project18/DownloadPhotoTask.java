@@ -53,8 +53,8 @@ public class DownloadPhotoTask extends AsyncTask<String, Void, Bitmap>{
             bitmap = BitmapFactory.decodeStream(is);
 
         } catch (Exception e) {
-            String response = "Unable to download the image, Reason: "
-                    + e.getMessage();
+            if (Driver.DEBUG) Log.i("DownloadPhoto", "Unable to download the image, Reason: "
+                    + e.getMessage());
         } finally {
             if (urlConnection != null)
                 urlConnection.disconnect();

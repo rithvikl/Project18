@@ -1,20 +1,29 @@
 package tcss450.uw.edu.project18;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
  * Created by Melinda Robertson on 5/8/2016.
+ *
+ * Tests if the Driver class works.
+ *
+ * @author Melinda Robertson
+ * @version 20160601
  */
 public class DriverTest{
 
+    /**
+     * Required constructor.
+     */
     public DriverTest() {
 
     }
 
+    /**
+     * Tests if validation for email is working.
+     */
     @Test
     public void testIsValidEmail() {
         assertTrue(Driver.isValidEmail("test@test.com"));
@@ -22,6 +31,9 @@ public class DriverTest{
         assertFalse(Driver.isValidEmail(""));
     }
 
+    /**
+     * Tests if the validation for dates is working.
+     */
     @Test
     public void testIsValidDate() {
         assertTrue(Driver.isValidDate("20160518"));
@@ -33,6 +45,9 @@ public class DriverTest{
         assertFalse(Driver.isValidDate("00000000"));
     }
 
+    /**
+     * Tests if the validation for passwords is working.
+     */
     @Test
     public void testIsValidPassword() {
         assertEquals(Driver.isValidPassword(
@@ -54,11 +69,18 @@ public class DriverTest{
                 Driver.PWD_ERROR_NUM);
     }
 
+    /**
+     * Tests if dates can be parsed properly for database storage.
+     */
     @Test
     public void testParseDateForDB() {
         assertEquals(Driver.parseDateForDB(1950, 3, 15), "19500315");
     }
 
+    /**
+     * Tests if dates can be parsed properly for display.
+     * @throws Exception if the date cannot be parsed.
+     */
     @Test
     public void testParseDateForDisplay() throws Exception {
         assertEquals(Driver.parseDateForDisplay(1950,3,15),
@@ -67,6 +89,10 @@ public class DriverTest{
                 "March 15, 1950");
     }
 
+    /**
+     * Tests if the integer values in a date (YYYYMMDD) can be extracted.
+     * @throws Exception if the date could not be parsed.
+     */
     @Test
     public void testGetValueOfDate() throws Exception {
         assertArrayEquals(Driver.getValueOfDate("19500315"),

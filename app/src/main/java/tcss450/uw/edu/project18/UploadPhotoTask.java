@@ -38,7 +38,7 @@ public class UploadPhotoTask extends AsyncTask<String, Void, String> {
      * @param listener is waiting for the task to complete.
      */
     public UploadPhotoTask(EditEventFragment.OnEditEventInteractionListener listener) {
-        Map config = new HashMap();
+        Map<String,String> config = new HashMap<>();
         config.put("cloud_name", "gathercloud");
         config.put("api_key", "341693643768687");
         config.put("api_secret", "CKl9isOYrdDwAM1r9_QVJFjtPZU");

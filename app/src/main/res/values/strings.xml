@@ -3,6 +3,8 @@
     <string name="quote">We do not remember days, we remember moments.</string>
     <string name="quote_author">- Cesare Pavese</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="greeting_default">Welcome!</string>
+    <string name="greeting_name">Hello </string>
 
     <!-- Strings for the shared preferences. -->
     <string name="LOGIN_PREFS">tcss450.uw.edu.project18.PREFS</string>
@@ -56,7 +58,7 @@
 
     <!-- Toolbar menu items. -->
     <string name="toolbar_camera">Take a picture!</string>
-    <string name="action_search">Filter by tag...</string>
+    <string name="action_search">Filter by tag…</string>
 
     <!-- String for view event -->
     <string name="edit_event_button">Edit</string>
