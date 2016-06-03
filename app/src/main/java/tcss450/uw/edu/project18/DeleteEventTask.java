@@ -17,9 +17,11 @@ import java.net.URL;
 import tcss450.uw.edu.project18.event.Event;
 
 /**
- * Created by rithvikl on 5/26/16.
  *
  * Deletes an event by sending the id to the database.
+ *
+ * @version 20160601
+ * @author Rithvik Lagisetti
  */
 public class DeleteEventTask extends AsyncTask<String, Void, String> {
 

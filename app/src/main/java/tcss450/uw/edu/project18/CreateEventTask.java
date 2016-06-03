@@ -15,9 +15,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Created by rithvikl on 5/27/16.
- *
  * Creates a new event by sending infromation about the event to a database.
+ *
+ * @version 20160601
+ * @author Rithvik Lagisetti
  */
 public class CreateEventTask extends AsyncTask<String, Void, String> {
 

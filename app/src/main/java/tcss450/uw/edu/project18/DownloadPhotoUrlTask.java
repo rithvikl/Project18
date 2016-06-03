@@ -12,9 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by rithvikl on 5/29/16.
  *
  * Downloads the photograph's network location.
+ *
+ * @version 20160601
+ * @author Rithvik Lagisetti
  */
 public class DownloadPhotoUrlTask extends AsyncTask<Void, Void, String>{
 

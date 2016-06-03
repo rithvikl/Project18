@@ -13,9 +13,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Created by rithvikl on 5/23/16.
  *
  * Downloads a photograph for an event from Cloudinary.
+ *
+ * @version 20160601
+ * @author Rithvik Lagisetti
  */
 public class DownloadPhotoTask extends AsyncTask<String, Void, Bitmap>{
 

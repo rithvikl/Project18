@@ -8,9 +8,11 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 /**
- * Created by Melinda Robertson on 5/26/2016.
  *
  * The confirm dialog lets the user confirm an action in case they made a mistake.
+ *
+ * @version 20160601
+ * @author Melinda Robertson
  */
 public class ConfirmDialogFragment extends DialogFragment {
 
